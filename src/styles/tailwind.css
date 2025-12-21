@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  /* Custom utility used by .card — keeps shadows consistent and easy to tweak */
+  .shadow-soft {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+  }
+}
+
+
+/*
+  Global polish:
+  - Slightly smoother typography
+  - Consistent focus rings
+  - A soft background gradient + subtle noise
+*/
+:root {
+  color-scheme: light;
+
+  /*
+    Brand colors (from your provided scheme)
+    Using CSS vars keeps the gradient/focus styles easy to tweak in one place.
+  */
+  --brand-blue: #083796;
+  --brand-gold: #f49728;
+  --brand-orange: #fb904e;
+}
+
+html {
+  scroll-behavior: smooth; /* Enables nice anchor scrolling for the navbar links */
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+  font-feature-settings: "ss01" on, "ss02" on;
+}
+
+/* A reusable focus style so keyboard navigation looks intentional */
+:focus-visible {
+  /* Use brand gold so keyboard focus matches the color scheme */
+  outline: 2px solid rgba(244, 151, 40, 0.90);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+/* Soft but vibrant gradient background using your brand palette (more color, less white) */
+.bg-hero {
+  background:
+    /* Brand glows - increased opacity and adjusted positions */
+    radial-gradient(1200px 600px at 5% 5%, rgba(8, 55, 150, 0.45), transparent 70%),
+    radial-gradient(1100px 600px at 95% 15%, rgba(251, 144, 78, 0.35), transparent 65%),
+    radial-gradient(1200px 700px at 50% 120%, rgba(244, 151, 40, 0.3), transparent 70%),
+    /* Base wash - more tinted towards blue/orange blend */
+    linear-gradient(to bottom, #f0f7ff 0%, #fffbf5 50%, #fdf5e9 100%);
+}
+/* Better default selection */
+::selection {
+  background: rgba(8, 55, 150, 0.3);
+  color: #000;
+}
+
+@layer components {
+  /*
+    Shared form field styling.
+    Tinted bg to separate from the vibrant background.
+  */
+  .input-field {
+    @apply w-full rounded-2xl border border-brand-blue/20 bg-white/85 backdrop-blur px-4 py-3 text-sm focus:bg-white;
+  }
+
+  .select-field {
+    @apply w-full rounded-2xl border border-brand-blue/20 bg-white/85 backdrop-blur px-4 py-3 text-sm focus:bg-white;
+  }
+  .card {
+    @apply rounded-2xl border border-brand-blue/15 bg-white/80 backdrop-blur shadow-soft;
+  }
+  .pill {
+    @apply rounded-full border border-brand-blue/15 bg-white/70 backdrop-blur px-4 py-2;
+  }
+
+  /*
+    Item browse cards
+  */
+  .item-card {
+    @apply overflow-hidden rounded-3xl border border-brand-blue/15 bg-white/90 backdrop-blur shadow-soft transition-transform hover:scale-[1.01];
+  }
+
+  .item-card__image {
+    @apply aspect-[4/3] w-full overflow-hidden bg-brand-blue/10;
+  }
+}
+
+
+/* Respect user accessibility preference: reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
