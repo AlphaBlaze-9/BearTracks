@@ -1,77 +1,98 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { readJSON, writeJSON } from '../lib/storage.js'
+import { supabase } from '../lib/supabase'
 
 /**
  * ItemsContext
  * ------------
- * Stores lost & found posts in localStorage.
- *
- * This keeps the app fully "frontend-only" for now, which is what you asked.
- * Later, you can replace the persistence layer with real API calls.
+ * Manages lost & found items using Supabase.
  */
 
 const ItemsContext = createContext(null)
 
-const ITEMS_KEY = 'bt_items'
-
-function seedItems() {
-  // A couple starter items so "Browse" isn't empty on first run.
-  // Images are optional — if there's no image, the card shows a clean placeholder.
-  return [
-    {
-      id: 'seed-1',
-      title: 'Calculator',
-      description: 'Blue TI calculator. Found near the library tables.',
-      category: 'Electronics',
-      status: 'Found',
-      location: 'Library',
-      date: '2025-12-18',
-      imageDataUrl: '',
-      createdAt: Date.now() - 1000 * 60 * 60 * 5,
-    },
-    {
-      id: 'seed-2',
-      title: 'Hydro Flask',
-      description: 'Silver bottle with a “BEARS” sticker.',
-      category: 'Water Bottle',
-      status: 'Lost',
-      location: '',
-      date: '',
-      imageDataUrl: '',
-      createdAt: Date.now() - 1000 * 60 * 60 * 28,
-    },
-  ]
-}
-
 export function ItemsProvider({ children }) {
   const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const fetchItems = async () => {
+    setLoading(true)
+    const { data, error } = await supabase
+      .from('lost_found_items')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('Error fetching items:', error)
+    } else {
+      // Map Supabase fields to the names the frontend components expect
+      const mapped = (data || []).map((dbItem) => ({
+        ...dbItem,
+        status: dbItem.type,
+        imageDataUrl: dbItem.image_url,
+        date: dbItem.date_incident,
+        createdAt: new Date(dbItem.created_at).getTime(),
+      }))
+      setItems(mapped)
+    }
+    setLoading(false)
+  }
 
   useEffect(() => {
-    const existing = readJSON(ITEMS_KEY, null)
-    if (existing && Array.isArray(existing) && existing.length) {
-      setItems(existing)
-    } else {
-      const seeded = seedItems()
-      setItems(seeded)
-      writeJSON(ITEMS_KEY, seeded)
+    fetchItems()
+
+    // Subscribe to changes for real-time updates
+    const subscription = supabase
+      .channel('public:lost_found_items')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'lost_found_items' }, () => {
+        fetchItems()
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(subscription)
     }
   }, [])
 
   const value = useMemo(() => {
     function addItem(newItem) {
-      setItems((prev) => {
-        const next = [newItem, ...prev]
-        writeJSON(ITEMS_KEY, next)
-        return next
-      })
+      // Local state update – the Postgres change listener will also trigger a fetch
+      setItems((prev) => [newItem, ...prev])
+    }
+
+    async function deleteItem(item) {
+      if (!item) return
+
+      // 1. Delete from database
+      const { error: dbError } = await supabase
+        .from('lost_found_items')
+        .delete()
+        .eq('id', item.id)
+
+      if (dbError) throw dbError
+
+      // 2. Delete from storage if image exists
+      if (item.image_url) {
+        try {
+          // Extract file path from public URL
+          // URL format: .../storage/v1/object/public/lost-found-photos/USER_ID/FILENAME
+          const urlParts = item.image_url.split('/')
+          const filePath = urlParts.slice(-2).join('/') // Gets USER_ID/FILENAME
+
+          await supabase.storage
+            .from('lost-found-photos')
+            .remove([filePath])
+        } catch (storageErr) {
+          console.error('Failed to remove image from storage:', storageErr)
+          // We don't throw here to ensure the UI updates since the record is already gone
+        }
+      }
     }
 
     function getItem(id) {
       return items.find((it) => String(it.id) === String(id))
     }
 
-    return { items, addItem, getItem }
-  }, [items])
+    return { items, addItem, getItem, deleteItem, loading, refreshItems: fetchItems }
+  }, [items, loading])
 
   return <ItemsContext.Provider value={value}>{children}</ItemsContext.Provider>
 }

@@ -10,14 +10,24 @@ import { CameraIcon } from './Icons.jsx'
  * Later you can swap this to upload to S3/Cloudinary/etc.
  */
 
-export default function ImagePicker({ value, onChange }) {
+export default function ImagePicker({ value, onChange, onFileSelect }) {
   const inputRef = useRef(null)
 
   function handleFile(file) {
     if (!file) return
+
+    // 1. Pass the raw file object to the parent for Supabase upload
+    if (onFileSelect) onFileSelect(file)
+
+    // 2. Local preview using base64 (remains unchanged for UI logic)
     const reader = new FileReader()
     reader.onload = () => onChange(String(reader.result || ''))
     reader.readAsDataURL(file)
+  }
+
+  function handleRemove() {
+    onChange('')
+    if (onFileSelect) onFileSelect(null)
   }
 
   return (
@@ -57,7 +67,7 @@ export default function ImagePicker({ value, onChange }) {
           {value && (
             <button
               type="button"
-              onClick={() => onChange('')}
+              onClick={handleRemove}
               className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 hover:bg-slate-50"
             >
               Remove

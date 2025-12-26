@@ -1,16 +1,13 @@
 import { Link, useParams } from 'react-router-dom'
 import Container from '../components/Container.jsx'
 import Section from '../components/Section.jsx'
+import MotionReveal from '../components/MotionReveal.jsx'
 import { useItems } from '../context/ItemsContext.jsx'
 
 /**
  * ItemDetailsPage
  * ---------------
  * One item, bigger photo, and the full details.
- *
- * NOTE: You asked not to show location/date "like that card".
- * We keep them out of the browse cards, but it's still useful to have them
- * on the detail page if provided.
  */
 
 export default function ItemDetailsPage() {
@@ -21,20 +18,23 @@ export default function ItemDetailsPage() {
   if (!item) {
     return (
       <div className="min-h-screen bg-hero">
-        <Section className="pt-10">
+        <Section className="pt-24 pb-12">
           <Container>
-            <div className="card p-6">
-              <div className="text-lg font-semibold">Item not found</div>
-              <p className="mt-2 text-sm text-slate-600">
-                This item may have been removed or your link is wrong.
-              </p>
-              <Link
-                to="/browse"
-                className="mt-5 inline-flex rounded-2xl bg-brand-blue px-5 py-3 text-sm font-medium text-white"
-              >
-                Back to browse
-              </Link>
-            </div>
+            <MotionReveal>
+              <div className="mx-auto max-w-md card p-12 text-center bg-white/70 backdrop-blur-xl border-none shadow-soft">
+                <div className="text-6xl mb-6 text-slate-300">🔎</div>
+                <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Item not found</h2>
+                <p className="mt-3 text-slate-600 font-medium">
+                  This item may have been removed or the link is incorrect.
+                </p>
+                <Link
+                  to="/browse"
+                  className="mt-8 inline-flex rounded-2xl bg-brand-blue px-8 py-4 text-sm font-bold text-white shadow-lg shadow-brand-blue/20 hover:bg-brand-blue-dark transition-all"
+                >
+                  Back to browse
+                </Link>
+              </div>
+            </MotionReveal>
           </Container>
         </Section>
       </div>
@@ -43,73 +43,99 @@ export default function ItemDetailsPage() {
 
   return (
     <div className="min-h-screen bg-hero">
-      <Section className="pt-10">
+      <Section className="pt-16 sm:pt-20 pb-10">
         <Container>
-          <div className="mb-6 flex items-center justify-between">
-            <Link to="/browse" className="text-sm text-slate-600 hover:text-slate-900">
-              ← Back
-            </Link>
-            <span
-              className={
-                'rounded-full border px-3 py-1 text-xs font-medium ' +
-                (item.status === 'Found'
-                  ? 'border-brand-blue/20 bg-brand-blue/10 text-brand-blue'
-                  : 'border-brand-orange/30 bg-brand-orange/10 text-brand-blue-dark')
-              }
-            >
-              {item.status}
-            </span>
-          </div>
-
-          <div className="grid gap-6 lg:grid-cols-2">
-            <div className="card overflow-hidden">
-              <div className="aspect-[4/3] w-full bg-brand-blue/5">
-                {item.imageDataUrl ? (
-                  <img src={item.imageDataUrl} alt={item.title} className="h-full w-full object-cover" />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-5xl">📷</div>
-                      <div className="mt-2 text-xs text-slate-500">No photo uploaded</div>
-                    </div>
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+            {/* Left Column: Image */}
+            <div className="w-full lg:w-[42%]">
+              <MotionReveal>
+                <Link to="/browse" className="inline-flex items-center gap-2 mb-8 px-5 py-2.5 rounded-2xl bg-white/70 backdrop-blur-md border border-brand-blue/10 text-xs font-extrabold text-slate-600 shadow-soft hover:bg-brand-blue hover:text-white hover:border-brand-blue transition-all group w-fit">
+                  <span className="transform transition-transform group-hover:-translate-x-1 text-lg leading-none">←</span>
+                  <span>Back to browse</span>
+                </Link>
+                <div className="card overflow-hidden border-none shadow-xl bg-white/40 backdrop-blur-xl p-2.5">
+                  <div className="aspect-[4/5] w-full rounded-[1.75rem] overflow-hidden bg-brand-blue/5">
+                    {item.imageDataUrl ? (
+                      <img src={item.imageDataUrl} alt={item.title} className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-slate-100">
+                        <div className="text-center grayscale opacity-30">
+                          <div className="text-8xl">📦</div>
+                          <div className="mt-4 text-sm font-bold uppercase tracking-widest">No photo uploaded</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
+                </div>
+              </MotionReveal>
             </div>
 
-            <div className="card p-6">
-              <h1 className="text-3xl font-semibold tracking-tight">{item.title}</h1>
-              <p className="mt-3 text-sm text-slate-600 leading-relaxed">{item.description}</p>
-
-              <div className="mt-6 grid gap-3">
-                <div className="rounded-2xl border border-brand-blue/10 bg-white/60 p-4">
-                  <div className="text-xs font-semibold text-slate-700">Category</div>
-                  <div className="mt-1 text-sm text-slate-900">{item.category || 'Other'}</div>
+            {/* Right Column: Details */}
+            <div className="w-full lg:w-[54%] pt-2 lg:pt-8">
+              <MotionReveal delay={0.1}>
+                <div className="flex items-center gap-3 mb-4">
+                  <span
+                    className={
+                      'rounded-full px-3 py-1 text-[9px] font-extrabold uppercase tracking-[0.1em] shadow-sm ' +
+                      (item.status === 'Found'
+                        ? 'bg-green-500 text-white shadow-green-500/20'
+                        : 'bg-brand-blue text-white shadow-brand-blue/20')
+                    }
+                  >
+                    {item.status}
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-400">ID: #{item.id.toString().slice(-6)}</span>
                 </div>
 
-                {(item.location || item.date) && (
-                  <div className="rounded-2xl border border-brand-blue/10 bg-white/60 p-4">
-                    <div className="text-xs font-semibold text-slate-700">Extra details</div>
-                    <div className="mt-2 grid gap-1 text-sm text-slate-700">
-                      {item.location && (
-                        <div>
-                          <span className="font-medium">Location:</span> {item.location}
-                        </div>
-                      )}
-                      {item.date && (
-                        <div>
-                          <span className="font-medium">Date:</span> {item.date}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
+                <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">{item.title}</h1>
+                <p className="mt-4 text-base text-slate-700 font-medium leading-relaxed">{item.description}</p>
 
-              <div className="mt-6 rounded-2xl bg-brand-blue/10 p-4 text-sm text-slate-700">
-                <span className="font-medium">Next step:</span> When you connect this to a backend, this is where
-                you'd add a "Claim" or "Message" button.
-              </div>
+                <div className="mt-8 grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-[1.75rem] border border-brand-blue/5 bg-white/70 backdrop-blur-xl p-5 shadow-soft">
+                    <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Category</div>
+                    <div className="mt-1 text-lg font-extrabold text-slate-900">{item.category || 'Other'}</div>
+                  </div>
+
+                  {(item.location || item.date) && (
+                    <div className="sm:col-span-2 rounded-[1.75rem] border border-brand-blue/5 bg-white/70 backdrop-blur-xl p-5 shadow-soft">
+                      <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-3">Extra details</div>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        {item.location && (
+                          <div className="flex items-start gap-3">
+                            <div className="mt-1 h-5 w-5 bg-brand-blue/10 rounded-full flex items-center justify-center flex-shrink-0">
+                              <div className="h-2 w-2 bg-brand-blue rounded-full" />
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.05em]">Location</span>
+                              <span className="text-slate-800 font-bold">{item.location}</span>
+                            </div>
+                          </div>
+                        )}
+                        {item.date && (
+                          <div className="flex items-start gap-3">
+                            <div className="mt-1 h-5 w-5 bg-brand-orange/10 rounded-full flex items-center justify-center flex-shrink-0">
+                              <div className="h-2 w-2 bg-brand-orange rounded-full" />
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.05em]">Date</span>
+                              <span className="text-slate-800 font-bold">{item.date}</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-8 p-1 rounded-[1.75rem] bg-gradient-to-r from-brand-blue to-teal-400 shadow-xl shadow-brand-blue/10 group overflow-hidden relative">
+                  <div className="bg-white/95 backdrop-blur-sm rounded-[1.5rem] p-6 transition-all group-hover:bg-transparent">
+                    <h3 className="text-base font-extrabold text-slate-900 group-hover:text-white transition-colors">Want to claim this?</h3>
+                    <p className="mt-1.5 text-xs text-slate-600 font-medium group-hover:text-white/80 transition-colors">
+                      We’re working on a secure messaging feature. For now, please check with your school’s main office or lost & found center.
+                    </p>
+                  </div>
+                </div>
+              </MotionReveal>
             </div>
           </div>
         </Container>

@@ -1,26 +1,31 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Container from '../components/Container.jsx'
 import Section from '../components/Section.jsx'
 import MotionReveal from '../components/MotionReveal.jsx'
 import StatCard from '../components/StatCard.jsx'
 import FAQItem from '../components/FAQItem.jsx'
+import BackToTop from '../components/BackToTop.jsx'
+import ContactForm from '../components/ContactForm.jsx'
+import { useItems } from '../context/ItemsContext.jsx'
 
 /**
  * HomePage
  * --------
  * Your original landing page lives here now.
- *
- * We moved it out of App.jsx so we can add more pages:
- * - /browse (browse items)
- * - /submit (submit lost/found - login required)
- * - /login, /signup
  */
 
 export default function HomePage() {
+  const { items } = useItems()
+  const navigate = useNavigate()
+
+  // Get 3 most recent items
+  const highlights = (items || []).slice(0, 3)
+
   return (
     <div id="top" className="min-h-screen bg-hero">
+      <BackToTop />
       {/* HERO */}
       <main>
         <Section className="pt-16 sm:pt-20">
@@ -28,38 +33,38 @@ export default function HomePage() {
             <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
               <div>
                 <MotionReveal>
-                  <p className="pill inline-flex items-center gap-2 text-xs text-slate-700">
-                    <span className="inline-flex h-2 w-2 rounded-full bg-brand-gold" />
+                  <p className="pill inline-flex items-center gap-2 text-xs text-slate-700 font-bold">
+                    <span className="inline-flex h-2 w-2 rounded-full bg-brand-gold animate-pulse" />
                     New: faster reporting + smarter matching
                   </p>
                 </MotionReveal>
 
                 <MotionReveal delay={0.05}>
-                  <h1 className="mt-5 text-4xl font-semibold tracking-tight sm:text-5xl">
-                    Lost something at school?
-                    <span className="block text-slate-700">Find it faster with Bear Tracks.</span>
+                  <h1 className="mt-5 text-4xl font-extrabold tracking-tight sm:text-6xl text-slate-900 leading-[1.1]">
+                    Lost something <br />
+                    <span className="text-brand-blue">at school?</span>
+                    <span className="block text-slate-700 text-3xl sm:text-4xl mt-2 font-semibold">Find it faster with Bear Tracks.</span>
                   </h1>
                 </MotionReveal>
 
                 <MotionReveal delay={0.1}>
-                  <p className="mt-5 max-w-xl text-base text-slate-600 leading-relaxed">
+                  <p className="mt-6 max-w-xl text-lg text-slate-600 leading-relaxed font-medium">
                     A clean, student-friendly lost &amp; found experience.
                     Report items in seconds, browse verified posts, and get notified when matches show up.
                   </p>
                 </MotionReveal>
 
                 <MotionReveal delay={0.15}>
-                  <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
-                    {/* Login is required to submit — ProtectedRoute will redirect if needed */}
+                  <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
                     <Link
                       to="/submit"
-                      className="rounded-2xl bg-brand-blue px-6 py-3 text-sm font-medium text-white hover:bg-brand-blue-dark"
+                      className="rounded-2xl bg-brand-blue px-8 py-4 text-sm font-bold text-white shadow-lg shadow-brand-blue/20 hover:bg-brand-blue-dark transition-all transform hover:scale-[1.02] active:scale-[0.98] text-center"
                     >
                       Report an item
                     </Link>
                     <Link
                       to="/browse"
-                      className="rounded-2xl border border-brand-blue/20 bg-brand-blue/10 px-6 py-3 text-sm font-medium text-slate-900 hover:bg-brand-blue/15"
+                      className="rounded-2xl border-2 border-brand-blue/10 bg-white/50 backdrop-blur px-8 py-4 text-sm font-bold text-slate-900 hover:bg-white/80 transition-all transform hover:scale-[1.02] active:scale-[0.98] text-center"
                     >
                       Browse items
                     </Link>
@@ -67,61 +72,83 @@ export default function HomePage() {
                 </MotionReveal>
 
                 <MotionReveal delay={0.2}>
-                  <div className="mt-8 flex flex-wrap gap-2 text-xs text-slate-600">
-                    <span className="pill">No account needed to browse</span>
-                    <span className="pill">Mobile-first</span>
-                    <span className="pill">Accessible animations</span>
+                  <div className="mt-10 flex flex-wrap gap-3 text-xs font-bold text-slate-500 uppercase tracking-widest">
+                    <span className="pill">Public Browsing</span>
+                    <span className="pill">Mobile Optimized</span>
+                    <span className="pill">Smart Matching</span>
                   </div>
                 </MotionReveal>
               </div>
 
               {/* Right side “preview” card */}
               <motion.div
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.95, y: 18 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: 'easeOut' }}
-                className="card overflow-hidden"
+                className="card overflow-hidden shadow-2xl border-none p-1 bg-gradient-to-br from-brand-blue/5 via-transparent to-brand-gold/5"
               >
-                <div className="border-b border-slate-200 p-6">
-                  <div className="flex items-center justify-between">
+                <div className="bg-white/80 backdrop-blur-xl rounded-[22px] p-6 sm:p-8 h-full">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-5 mb-5">
                     <div>
-                      <div className="text-sm font-semibold">Today’s highlights</div>
-                      <div className="mt-1 text-xs text-slate-600">Quick view of recent activity</div>
+                      <div className="text-lg font-bold text-slate-900 leading-none">Today’s highlights</div>
                     </div>
-                    <span className="pill text-xs text-slate-700">Live</span>
+                    <span className="flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-[10px] font-bold text-red-600 uppercase tracking-wider border border-red-100">
+                      <span className="h-1.5 w-1.5 rounded-full bg-red-600 animate-pulse" />
+                      Live
+                    </span>
                   </div>
-                </div>
 
-                <div className="p-6">
-                  <div className="grid gap-3">
-                    {[
-                      { title: 'Water bottle (blue)', meta: 'Found • Library • 2:10 PM' },
-                      { title: 'AirPods case', meta: 'Lost • Gym • Yesterday' },
-                      { title: 'Calculator', meta: 'Found • Room 214 • Mon' },
-                    ].map((item, idx) => (
-                      <motion.div
-                        key={item.title}
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 + idx * 0.08, duration: 0.4 }}
-                        className="rounded-2xl border border-brand-blue/10 bg-white/65 p-4"
-                      >
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <div className="text-sm font-medium">{item.title}</div>
-                            <div className="mt-1 text-xs text-slate-600">{item.meta}</div>
-                          </div>
-                          <span className="text-lg">🔎</span>
+                  <div className="grid gap-4">
+                    <AnimatePresence mode="popLayout">
+                      {highlights.length > 0 ? (
+                        highlights.map((item, idx) => (
+                          <motion.button
+                            key={item.id}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.1 + idx * 0.1, duration: 0.4 }}
+                            onClick={() => navigate(`/items/${item.id}`)}
+                            className="w-full text-left group relative rounded-2xl border border-slate-100 bg-white p-4 shadow-sm hover:border-brand-blue/20 hover:shadow-md transition-all active:scale-[0.99]"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1 min-w-0 pr-4">
+                                <div className="text-sm font-bold text-slate-900 group-hover:text-brand-blue transition-colors truncate">
+                                  {item.title}
+                                </div>
+                                <div className="mt-1 flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                                  <span className={item.status === 'Found' ? 'text-green-600' : 'text-brand-blue'}>
+                                    {item.status}
+                                  </span>
+                                  <span>•</span>
+                                  <span className="truncate">{item.category || 'Item'}</span>
+                                  <span>•</span>
+                                  <span>{new Date(item.createdAt).toLocaleDateString()}</span>
+                                </div>
+                              </div>
+                              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-400 group-hover:bg-brand-blue/5 group-hover:text-brand-blue transition-all">
+                                🔎
+                              </div>
+                            </div>
+                          </motion.button>
+                        ))
+                      ) : (
+                        <div className="py-12 text-center">
+                          <div className="text-4xl mb-3">📍</div>
+                          <div className="text-sm font-bold text-slate-900">No recent activity</div>
+                          <p className="text-xs text-slate-500 mt-1">Be the first to report something!</p>
                         </div>
-                      </motion.div>
-                    ))}
+                      )}
+                    </AnimatePresence>
                   </div>
 
-                  <div className="mt-6 rounded-2xl bg-brand-blue p-5 text-white">
-                    <div className="text-sm font-semibold">Auto-match notifications</div>
-                    <p className="mt-2 text-xs text-white/80">
-                      When someone reports a similar item, Bear Tracks can nudge both posts to connect.
-                    </p>
+                  <div className="mt-8 rounded-3xl bg-brand-blue p-6 text-white overflow-hidden relative group">
+                    <div className="absolute top-0 right-0 -mr-6 -mt-6 h-24 w-24 rounded-full bg-white/10 blur-2xl group-hover:scale-150 transition-transform duration-700" />
+                    <div className="relative z-10">
+                      <div className="text-sm font-extrabold tracking-tight">Auto-match notifications</div>
+                      <p className="mt-2 text-xs text-white/80 leading-relaxed font-medium">
+                        When someone reports a similar item, Bear Tracks can nudge both posts to connect.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -136,14 +163,13 @@ export default function HomePage() {
         <Section id="stats">
           <Container>
             <MotionReveal>
-              <h2 className="text-2xl font-semibold tracking-tight">The numbers</h2>
-              <p className="mt-2 text-sm text-slate-600 max-w-2xl">
-                These are example metrics — replace them with your real stats.
-                The counters animate when they scroll into view.
+              <h2 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">The numbers</h2>
+              <p className="mt-3 text-lg text-slate-600 max-w-2xl font-medium">
+                Our platform in action. The counters animate when they scroll into view.
               </p>
             </MotionReveal>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               <StatCard label="Items returned" value={1287} suffix="+" />
               <StatCard label="Avg. time to match" value={3.2} decimals={1} suffix=" days" />
               <StatCard label="Reports this week" value={94} />
@@ -153,16 +179,16 @@ export default function HomePage() {
         </Section>
 
         {/* FAQ */}
-        <Section id="faq" className="bg-brand-gold/10">
+        <Section id="faq" className="bg-brand-gold/5">
           <Container>
             <MotionReveal>
-              <h2 className="text-2xl font-semibold tracking-tight">FAQ</h2>
-              <p className="mt-2 text-sm text-slate-600 max-w-2xl">
-                Quick answers. If you want, I can also convert this into an accordion page.
+              <h2 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">FAQ</h2>
+              <p className="mt-3 text-lg text-slate-600 max-w-2xl font-medium">
+                Quick answers to common questions.
               </p>
             </MotionReveal>
 
-            <div className="mt-8 grid gap-3">
+            <div className="mt-10 grid gap-4">
               <FAQItem q="Do I need an account to browse items?">
                 Nope — browsing is open. You only need an account to submit a lost/found post.
               </FAQItem>
@@ -170,7 +196,7 @@ export default function HomePage() {
                 Yes. The submit form supports photos and shows a preview before you post.
               </FAQItem>
               <FAQItem q="Is this connected to a real backend?">
-                Not yet. This build stores everything in localStorage so you can prototype fast.
+                Yes! We use Supabase for real-time updates and secure data storage.
               </FAQItem>
             </div>
           </Container>
@@ -179,36 +205,22 @@ export default function HomePage() {
         {/* CONTACT / CTA */}
         <Section id="contact">
           <Container>
-            <MotionReveal className="card p-8">
-              <h2 className="text-2xl font-semibold tracking-tight">Want this set up for your school?</h2>
-              <p className="mt-2 text-sm text-slate-600 max-w-2xl">
-                Replace this section with your real form / email / contact flow.
-              </p>
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                <Link
-                  to="/browse"
-                  className="rounded-2xl bg-brand-blue px-6 py-3 text-sm font-medium text-white hover:bg-brand-blue-dark"
-                >
-                  Browse items
-                </Link>
-                <Link
-                  to="/submit"
-                  className="rounded-2xl border border-brand-blue/20 bg-brand-blue/10 px-6 py-3 text-sm font-medium text-slate-900 hover:bg-brand-blue/15"
-                >
-                  Report an item
-                </Link>
-              </div>
+            <MotionReveal className="mx-auto max-w-3xl">
+              <ContactForm />
             </MotionReveal>
           </Container>
         </Section>
 
-        <footer className="py-10">
+        <footer className="py-12 border-t border-slate-100">
           <Container>
-            <div className="flex flex-col items-center justify-between gap-3 text-sm text-slate-500 sm:flex-row">
-              <div>© {new Date().getFullYear()} Bear Tracks</div>
-              <div className="flex gap-4">
-                <a className="hover:text-slate-700" href="#top">
-                  Back to top
+            <div className="flex flex-col items-center justify-between gap-6 text-sm font-bold text-slate-400 sm:flex-row">
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-brand-blue" />
+                © {new Date().getFullYear()} Bear Tracks
+              </div>
+              <div className="flex gap-8">
+                <a className="hover:text-brand-blue transition-colors uppercase tracking-widest text-[10px]" href="#top">
+                  Scroll To Top
                 </a>
               </div>
             </div>

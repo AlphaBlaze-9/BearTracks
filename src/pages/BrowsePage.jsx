@@ -3,22 +3,19 @@ import { motion } from 'framer-motion'
 import Container from '../components/Container.jsx'
 import Section from '../components/Section.jsx'
 import ItemCard from '../components/ItemCard.jsx'
+import MotionReveal from '../components/MotionReveal.jsx'
 import { useItems } from '../context/ItemsContext.jsx'
 
 /**
  * BrowsePage
  * ----------
  * A dedicated page for browsing items.
- *
- * Per your request:
- * - this page has the "photo-first" card layout
- * - cards do NOT show location/date (only title, description, category, status)
  */
 
 export default function BrowsePage() {
   const { items } = useItems()
 
-  // Simple filters — not "too complex" but helps when the list grows.
+  // Simple filters
   const [q, setQ] = useState('')
   const [status, setStatus] = useState('All')
 
@@ -38,47 +35,52 @@ export default function BrowsePage() {
 
   return (
     <div className="min-h-screen bg-hero">
-      <Section className="pt-10">
+      <Section className="pt-12 sm:pt-20 pb-10">
         <Container>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h1 className="text-3xl font-semibold tracking-tight">Browse items</h1>
-              <p className="mt-2 max-w-2xl text-sm text-slate-600">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <MotionReveal>
+              <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+                Browse <span className="text-brand-blue">items</span>
+              </h1>
+              <p className="mt-3 max-w-2xl text-base text-slate-700 font-medium">
                 Photos make posts easier to recognize. You can browse without an account.
               </p>
-            </div>
+            </MotionReveal>
 
-            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-              <label className="w-full sm:w-72">
-                <span className="sr-only">Search</span>
-                <input
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder="Search (calculator, bottle, AirPods…)"
-                  className="input-field focus:outline-none"
-                />
-              </label>
+            <MotionReveal delay={0.1}>
+              <div className="flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row">
+                <label className="w-full sm:w-72">
+                  <span className="sr-only">Search</span>
+                  <input
+                    value={q}
+                    onChange={(e) => setQ(e.target.value)}
+                    placeholder="Search (calculator, bottle, AirPods…)"
+                    className="input-field shadow-sm focus:shadow-md transition-shadow h-12 text-sm font-medium"
+                  />
+                </label>
 
-              <label className="w-full sm:w-40">
-                <span className="sr-only">Status</span>
-                <select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  className="select-field"
-                >
-                  <option>All</option>
-                  <option>Lost</option>
-                  <option>Found</option>
-                </select>
-              </label>
-            </div>
+                <label className="w-full sm:w-40">
+                  <span className="sr-only">Status</span>
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    className="select-field shadow-sm h-12 text-sm font-bold text-slate-700"
+                  >
+                    <option>All</option>
+                    <option>Lost</option>
+                    <option>Found</option>
+                  </select>
+                </label>
+              </div>
+            </MotionReveal>
           </div>
 
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            layout
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35 }}
-            className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            transition={{ duration: 0.4 }}
+            className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
           >
             {filtered.map((it) => (
               <ItemCard key={it.id} item={it} />
@@ -86,9 +88,13 @@ export default function BrowsePage() {
           </motion.div>
 
           {filtered.length === 0 && (
-            <div className="mt-10 rounded-2xl border border-brand-blue/10 bg-white/60 p-6 text-sm text-slate-600">
-              No matches. Try a different search.
-            </div>
+            <MotionReveal delay={0.2}>
+              <div className="mt-12 rounded-[2.5rem] border border-brand-blue/10 bg-white/70 backdrop-blur-xl p-12 text-center shadow-soft">
+                <div className="text-5xl mb-4 text-slate-300">🔎</div>
+                <h3 className="text-xl font-bold text-slate-900">No matches found</h3>
+                <p className="mt-2 text-slate-600 font-medium">Try a different search or filter to find what you're looking for.</p>
+              </div>
+            </MotionReveal>
           )}
         </Container>
       </Section>

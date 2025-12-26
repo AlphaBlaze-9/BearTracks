@@ -1,89 +1,85 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { readJSON, remove, writeJSON } from '../lib/storage.js'
+import { supabase } from '../lib/supabase'
 
 /**
- * AuthContext (mock auth)
- * ----------------------
- * This is intentionally "fake" authentication.
- *
- * What it does:
- * - Stores users + a "current session" in localStorage.
- * - Lets you develop gated UI flows (login required to submit items).
- *
- * What it does NOT do:
- * - Secure password handling
- * - Server-side validation
- *
- * When you're ready to hook up a real service:
- * - Replace the functions in this file with API calls.
- * - Keep the rest of the app unchanged.
+ * AuthContext
+ * -----------
+ * Manages global authentication state using Supabase.
  */
 
 const AuthContext = createContext(null)
 
-const USERS_KEY = 'bt_users'
-const SESSION_KEY = 'bt_session'
-
-function normalizeEmail(email) {
-  return String(email || '').trim().toLowerCase()
-}
-
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // On refresh, load the session (if any)
-    const session = readJSON(SESSION_KEY, null)
-    setUser(session?.user ?? null)
+    // Check active sessions and sets the user
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+      setLoading(false)
+    })
+
+    // Listen for changes on auth state (logged in, signed out, etc.)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+      setLoading(false)
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
   const value = useMemo(() => {
-    function signup({ name, email, password }) {
-      const users = readJSON(USERS_KEY, [])
-      const e = normalizeEmail(email)
-      if (!e) throw new Error('Email is required.')
-      if (users.some((u) => normalizeEmail(u.email) === e)) {
-        throw new Error('An account with that email already exists.')
-      }
-
-      // NOTE: storing passwords like this is NOT secure.
-      // This is only for your prototype. Swap to a real auth provider later.
-      const newUser = { id: crypto.randomUUID(), name: name?.trim() || 'Student', email: e, password }
-      writeJSON(USERS_KEY, [...users, newUser])
-
-      // Auto-login after signup
-      const session = { user: { id: newUser.id, name: newUser.name, email: newUser.email } }
-      writeJSON(SESSION_KEY, session)
-      setUser(session.user)
-      return session.user
+    async function signup({ email, password, name }) {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name,
+          },
+        },
+      })
+      if (error) throw error
+      return data.user
     }
 
-    function login({ email, password }) {
-      const users = readJSON(USERS_KEY, [])
-      const e = normalizeEmail(email)
-      const found = users.find((u) => normalizeEmail(u.email) === e)
-      if (!found || found.password !== password) {
-        throw new Error('Invalid email or password.')
-      }
-      const session = { user: { id: found.id, name: found.name, email: found.email } }
-      writeJSON(SESSION_KEY, session)
-      setUser(session.user)
-      return session.user
+    async function login({ email, password }) {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+      if (error) throw error
+      return data.user
     }
 
-    function logout() {
-      remove(SESSION_KEY)
-      setUser(null)
+    async function logout() {
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+    }
+
+    async function deleteAccount() {
+      if (!user) return
+
+      // Call the secure RPC function to delete account and data
+      const { error } = await supabase.rpc('delete_my_account')
+      if (error) throw error
+
+      // Sign out locally
+      await logout()
     }
 
     return {
       user,
       isAuthed: Boolean(user),
+      isAdmin: user?.email === 'samarthmurali19@gmail.com',
+      loading,
       signup,
       login,
       logout,
+      deleteAccount,
     }
-  }, [user])
+  }, [user, loading])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
