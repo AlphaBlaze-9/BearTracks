@@ -110,12 +110,12 @@ export default function SubmitPage() {
     return (
       <div className="min-h-screen bg-hero flex items-center justify-center p-6">
         <MotionReveal>
-          <div className="text-center card p-12 bg-white/80 backdrop-blur-2xl border-none shadow-2xl rounded-[3rem]">
+          <div className="text-center card p-12 bg-brand-blue/10 backdrop-blur-3xl border border-brand-blue/30 shadow-2xl rounded-[3rem]">
             <div className="inline-flex h-24 w-24 items-center justify-center rounded-[2rem] bg-green-500 text-white text-5xl mb-8 shadow-xl shadow-green-500/30">
               ✓
             </div>
-            <h2 className="text-4xl font-extrabold text-slate-900 mb-3">Item Reported!</h2>
-            <p className="text-lg text-slate-600 font-medium tracking-tight">Redirecting you to the browse page...</p>
+            <h2 className="text-4xl font-extrabold text-[#062d78] mb-3">Item Reported!</h2>
+            <p className="text-lg text-[#083796] font-bold tracking-tight">Redirecting you to the browse page...</p>
           </div>
         </MotionReveal>
       </div>
@@ -137,8 +137,8 @@ export default function SubmitPage() {
             </MotionReveal>
 
             <MotionReveal delay={0.1}>
-              <div className="mt-8 card overflow-hidden border-none p-1 shadow-2xl bg-gradient-to-br from-brand-blue/5 via-transparent to-brand-gold/5">
-                <div className="bg-white/80 backdrop-blur-xl rounded-[20px] p-7 sm:p-9 text-left">
+              <div className="mt-8 card overflow-hidden border border-brand-blue/20 p-1 shadow-2xl bg-gradient-to-br from-brand-blue/20 via-transparent to-brand-gold/15">
+                <div className="bg-brand-blue/5 backdrop-blur-2xl rounded-[20px] p-7 sm:p-9 text-left">
                   <div className="flex gap-3 mb-8">
                     {['Lost', 'Found'].map((s) => (
                       <button
@@ -149,7 +149,7 @@ export default function SubmitPage() {
                           'flex-1 rounded-xl py-4 text-xs font-extrabold border transition-all transform active:scale-[0.98] ' +
                           (status === s
                             ? 'border-brand-blue bg-brand-blue text-white shadow-xl shadow-brand-blue/30 scale-[1.01]'
-                            : 'border-slate-200 bg-white/50 text-slate-500 hover:bg-white hover:text-slate-900')
+                            : 'border-brand-blue/20 bg-brand-blue/5 text-[#083796] hover:bg-brand-blue/15 hover:text-[#062d78]')
                         }
                       >
                         {s === 'Lost' ? 'I Lost Something' : 'I Found Something'}

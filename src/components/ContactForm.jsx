@@ -11,17 +11,17 @@ export default function ContactForm() {
     }
 
     return (
-        <div className="card overflow-hidden border-none p-1 shadow-2xl bg-gradient-to-br from-brand-blue/10 via-transparent to-brand-orange/10">
-            <div className="bg-white/80 backdrop-blur-xl rounded-[22px] p-8 sm:p-10">
-                <h3 className="text-2xl font-bold text-slate-900">Get BearTracks for your school</h3>
-                <p className="mt-2 text-slate-600">
-                    Fill out the form below and we'll get in touch with you shortly.
+        <div className="card overflow-hidden border border-brand-blue/30 p-1 shadow-2xl bg-gradient-to-br from-brand-blue/30 via-transparent to-brand-orange/30">
+            <div className="bg-brand-blue/10 backdrop-blur-xl rounded-[22px] p-8 sm:p-10">
+                <h3 className="text-3xl font-black text-[#062d78]">Get BearTracks</h3>
+                <p className="mt-2 text-[#083796] font-bold">
+                    Partner with us to bring smart lost and found to your school.
                 </p>
 
                 <form onSubmit={handleSubmit} className="mt-8 grid gap-5">
                     <div className="grid gap-5 sm:grid-cols-2">
                         <div>
-                            <label className="text-sm font-semibold text-slate-700 ml-1">Name</label>
+                            <label className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">Name</label>
                             <input
                                 required
                                 type="text"
@@ -30,7 +30,7 @@ export default function ContactForm() {
                             />
                         </div>
                         <div>
-                            <label className="text-sm font-semibold text-slate-700 ml-1">School Email</label>
+                            <label className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">School Email</label>
                             <input
                                 required
                                 type="email"
@@ -41,7 +41,7 @@ export default function ContactForm() {
                     </div>
 
                     <div>
-                        <label className="text-sm font-semibold text-slate-700 ml-1">School Name</label>
+                        <label className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">School Name</label>
                         <input
                             required
                             type="text"
@@ -51,7 +51,7 @@ export default function ContactForm() {
                     </div>
 
                     <div>
-                        <label className="text-sm font-semibold text-slate-700 ml-1">Message</label>
+                        <label className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">Message</label>
                         <textarea
                             required
                             rows={4}

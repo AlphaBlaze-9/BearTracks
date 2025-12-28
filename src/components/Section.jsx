@@ -1,13 +1,14 @@
-/**
- * Section
- * -------
- * Provides consistent vertical spacing between major sections.
- * (You can tweak these padding values to re-scale the whole page.)
- */
-export default function Section({ id, className = '', children }) {
+import { forwardRef } from 'react'
+
+const Section = forwardRef(({ id, className = '', children }, ref) => {
   return (
-    <section id={id} className={`py-16 sm:py-20 ${className}`}>
+    <section ref={ref} id={id} className={`py-16 sm:py-20 ${className}`}>
       {children}
     </section>
   )
-}
+})
+
+Section.displayName = 'Section'
+
+export default Section
+

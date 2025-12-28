@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useRef } from 'react'
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import Container from '../components/Container.jsx'
 import Section from '../components/Section.jsx'
@@ -9,6 +9,8 @@ import FAQItem from '../components/FAQItem.jsx'
 import BackToTop from '../components/BackToTop.jsx'
 import ContactForm from '../components/ContactForm.jsx'
 import { useItems } from '../context/ItemsContext.jsx'
+import heroVideo from '../FBLA Digital Video Production.mov'
+
 
 /**
  * HomePage
@@ -20,6 +22,18 @@ export default function HomePage() {
   const { items } = useItems()
   const navigate = useNavigate()
 
+  // Parallax setup for the hero video
+  const heroRef = useRef(null)
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"]
+  })
+
+  // As we scroll through the hero (0 to 1), move the video down (0% to 30%)
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"])
+  // Scale it slightly so we don't see white space at the bottom as it moves down
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.1])
+
   // Get 3 most recent items
   const highlights = (items || []).slice(0, 3)
 
@@ -28,8 +42,35 @@ export default function HomePage() {
       <BackToTop />
       {/* HERO */}
       <main>
-        <Section className="pt-16 sm:pt-20">
-          <Container>
+        <Section ref={heroRef} className="relative pt-16 sm:pt-20 overflow-hidden min-h-[600px] flex items-center">
+          {/* Video Background with Parallax */}
+          <motion.div
+            style={{ y, scale }}
+            className="absolute inset-0 z-0"
+          >
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="h-full w-full object-cover"
+              onTimeUpdate={(e) => {
+                // Only play the first 10 seconds as requested
+                if (e.target.currentTime > 10) {
+                  e.target.currentTime = 0;
+                }
+              }}
+            >
+              <source src={heroVideo} type="video/quicktime" />
+              <source src={heroVideo} type="video/mp4" />
+            </video>
+            {/* Premium Overlay: Gradient + Noise/Blur feel */}
+            <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-transparent lg:from-white/90 lg:via-white/60" />
+            <div className="absolute inset-0 bg-brand-blue/5 backdrop-blur-[2px]" />
+          </motion.div>
+
+          <Container className="relative z-10">
+
             <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
               <div>
                 <MotionReveal>
@@ -85,8 +126,9 @@ export default function HomePage() {
                 initial={{ opacity: 0, scale: 0.95, y: 18 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: 'easeOut' }}
-                className="card overflow-hidden shadow-2xl border-none p-1 bg-gradient-to-br from-brand-blue/5 via-transparent to-brand-gold/5"
+                className="card overflow-hidden shadow-2xl border-none p-1 bg-gradient-to-br from-brand-blue/5 via-transparent to-brand-gold/5 animate-floaty"
               >
+
                 <div className="bg-white/80 backdrop-blur-xl rounded-[22px] p-6 sm:p-8 h-full">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-5 mb-5">
                     <div>
@@ -105,11 +147,13 @@ export default function HomePage() {
                           <motion.button
                             key={item.id}
                             initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
                             transition={{ delay: 0.1 + idx * 0.1, duration: 0.4 }}
                             onClick={() => navigate(`/items/${item.id}`)}
                             className="w-full text-left group relative rounded-2xl border border-slate-100 bg-white p-4 shadow-sm hover:border-brand-blue/20 hover:shadow-md transition-all active:scale-[0.99]"
                           >
+
                             <div className="flex items-center justify-between">
                               <div className="flex-1 min-w-0 pr-4">
                                 <div className="text-sm font-bold text-slate-900 group-hover:text-brand-blue transition-colors truncate">
@@ -160,56 +204,87 @@ export default function HomePage() {
         <HowItWorksSection />
 
         {/* STATS */}
-        <Section id="stats">
+        <Section id="stats" className="bg-vibrant-gold relative overflow-hidden border-y border-brand-orange/20 shadow-inner">
           <Container>
             <MotionReveal>
-              <h2 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">The numbers</h2>
-              <p className="mt-3 text-lg text-slate-600 max-w-2xl font-medium">
-                Our platform in action. The counters animate when they scroll into view.
+              <h2 className="text-4xl font-extrabold tracking-tight text-[#5d3000] sm:text-5xl">Our impact</h2>
+              <p className="mt-3 text-lg text-[#7c4100] max-w-2xl font-black">
+                Real-time metrics from the Bear Tracks platform.
               </p>
             </MotionReveal>
 
             <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <StatCard label="Items returned" value={1287} suffix="+" />
-              <StatCard label="Avg. time to match" value={3.2} decimals={1} suffix=" days" />
-              <StatCard label="Reports this week" value={94} />
-              <StatCard label="Matches suggested" value={312} />
+              {[
+                { label: "Items returned", value: 1287, suffix: "+" },
+                { label: "Avg. time to match", value: 3.2, decimals: 1, suffix: " days" },
+                { label: "Reports this week", value: 94 },
+                { label: "Matches suggested", value: 312 }
+              ].map((stat, idx) => (
+                <MotionReveal key={stat.label} delay={idx * 0.1} y={20}>
+                  <StatCard {...stat} />
+                </MotionReveal>
+              ))}
             </div>
           </Container>
         </Section>
 
+
         {/* FAQ */}
-        <Section id="faq" className="bg-brand-gold/5">
+        <Section id="faq" className="bg-vibrant-blue border-b border-brand-blue/20 shadow-inner">
           <Container>
             <MotionReveal>
-              <h2 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">FAQ</h2>
-              <p className="mt-3 text-lg text-slate-600 max-w-2xl font-medium">
-                Quick answers to common questions.
+              <h2 className="text-4xl font-extrabold tracking-tight text-[#062d78] sm:text-5xl">Common questions</h2>
+              <p className="mt-3 text-lg text-[#083796] max-w-2xl font-black">
+                Everything you need to know about using Bear Tracks.
               </p>
             </MotionReveal>
 
             <div className="mt-10 grid gap-4">
-              <FAQItem q="Do I need an account to browse items?">
-                Nope — browsing is open. You only need an account to submit a lost/found post.
-              </FAQItem>
-              <FAQItem q="Can I add a photo?">
-                Yes. The submit form supports photos and shows a preview before you post.
-              </FAQItem>
-              <FAQItem q="Is this connected to a real backend?">
-                Yes! We use Supabase for real-time updates and secure data storage.
-              </FAQItem>
+              {[
+                { q: "Do I need an account to browse items?", a: "Nope — browsing is open. You only need an account to submit a lost/found post." },
+                { q: "Can I add a photo?", a: "Yes. The submit form supports photos and shows a preview before you post." },
+                { q: "Is this connected to a real backend?", a: "Yes! We use Supabase for real-time updates and secure data storage." }
+              ].map((item, idx) => (
+                <MotionReveal key={item.q} delay={idx * 0.1} y={15}>
+                  <FAQItem q={item.q}>
+                    {item.a}
+                  </FAQItem>
+                </MotionReveal>
+              ))}
             </div>
           </Container>
         </Section>
 
+
         {/* CONTACT / CTA */}
-        <Section id="contact">
-          <Container>
+        <Section id="contact" className="relative overflow-hidden bg-brand-blue/10 py-24 sm:py-32">
+          {/* Decorative Blobs for Contact Section */}
+          <motion.div
+            animate={{
+              scale: [1, 1.1, 1],
+              x: [0, 20, 0],
+              y: [0, -20, 0],
+            }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-brand-gold/10 rounded-full blur-3xl pointer-events-none"
+          />
+          <motion.div
+            animate={{
+              scale: [1.1, 1, 1.1],
+              x: [0, -20, 0],
+              y: [0, 20, 0],
+            }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-96 h-96 bg-brand-blue/10 rounded-full blur-3xl pointer-events-none"
+          />
+
+          <Container className="relative z-10">
             <MotionReveal className="mx-auto max-w-3xl">
               <ContactForm />
             </MotionReveal>
           </Container>
         </Section>
+
 
         <footer className="py-12 border-t border-slate-100">
           <Container>
@@ -262,8 +337,27 @@ function HowItWorksSection() {
   ]
 
   return (
-    <Section id="how" className="overflow-hidden">
-      <Container>
+    <Section id="how" className="relative overflow-hidden">
+      {/* Decorative Blobs for How It Works Section */}
+      <motion.div
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3],
+        }}
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-brand-blue/5 rounded-full blur-[120px] pointer-events-none"
+      />
+      <motion.div
+        animate={{
+          scale: [1.2, 1, 1.2],
+          opacity: [0.2, 0.4, 0.2],
+        }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-0 right-0 translate-x-1/4 w-[400px] h-[400px] bg-brand-orange/5 rounded-full blur-[100px] pointer-events-none"
+      />
+
+      <Container className="relative z-10">
+
         <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
           <div>
             <MotionReveal>

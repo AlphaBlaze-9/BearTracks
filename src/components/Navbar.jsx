@@ -70,15 +70,15 @@ export default function Navbar() {
 
   const desktopLink = ({ isActive }) =>
     cx(
-      'rounded-full px-3 py-2 text-sm text-slate-700 hover:bg-brand-gold/15 transition-colors',
-      isActive ? 'bg-brand-gold/15 text-slate-900' : ''
+      'rounded-full px-3 py-2 text-sm font-extrabold text-[#062d78] hover:bg-brand-gold/20 transition-colors',
+      isActive ? 'bg-brand-gold/25 text-[#062d78] shadow-sm' : ''
     )
 
   return (
     <header
       className={
-        'sticky top-0 z-50 border-b border-brand-blue/15 bg-white/75 backdrop-blur ' +
-        (scrolled ? 'shadow-soft' : '')
+        'sticky top-0 z-50 border-b border-brand-blue/20 bg-brand-blue/15 backdrop-blur-lg transition-all ' +
+        (scrolled ? 'shadow-soft bg-brand-blue/25' : '')
       }
     >
       <Container className="py-3">
@@ -117,7 +117,7 @@ export default function Navbar() {
               <div className="ml-2 flex items-center gap-2">
                 <NavLink
                   to="/login"
-                  className="rounded-full border border-brand-blue/15 bg-white/60 px-5 py-2 text-sm font-bold text-slate-900 hover:bg-white/80 transition-all shadow-sm"
+                  className="rounded-full border border-brand-blue/20 bg-brand-blue/10 px-5 py-2 text-sm font-black text-[#062d78] hover:bg-brand-blue/20 transition-all shadow-sm"
                 >
                   Log in
                 </NavLink>
@@ -132,7 +132,7 @@ export default function Navbar() {
               <div className="relative ml-3">
                 <button
                   onClick={() => setIsAccountMenuOpen(!isAccountMenuOpen)}
-                  className="flex items-center gap-3 rounded-full border border-brand-blue/15 bg-white/60 px-4 py-2 text-sm font-bold text-slate-900 hover:bg-white/80 transition-all"
+                  className="flex items-center gap-3 rounded-full border border-brand-blue/20 bg-brand-blue/10 px-4 py-2 text-sm font-black text-[#062d78] hover:bg-brand-blue/20 transition-all"
                 >
                   <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
                   {user.user_metadata?.full_name || user.email?.split('@')[0]}
@@ -188,7 +188,7 @@ export default function Navbar() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden rounded-xl border border-brand-blue/15 bg-white/60 px-3 py-2 text-sm"
+            className="md:hidden rounded-xl border border-brand-blue/20 bg-brand-blue/10 px-3 py-2 text-sm font-black text-[#062d78]"
             onClick={() => setIsOpen((s) => !s)}
             aria-expanded={isOpen}
             aria-label="Open menu"

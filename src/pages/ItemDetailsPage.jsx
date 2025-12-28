@@ -21,10 +21,10 @@ export default function ItemDetailsPage() {
         <Section className="pt-24 pb-12">
           <Container>
             <MotionReveal>
-              <div className="mx-auto max-w-md card p-12 text-center bg-white/70 backdrop-blur-xl border-none shadow-soft">
+              <div className="mx-auto max-w-md card p-12 text-center bg-brand-blue/10 backdrop-blur-3xl border border-brand-blue/30 shadow-2xl rounded-[3rem]">
                 <div className="text-6xl mb-6 text-slate-300">🔎</div>
-                <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Item not found</h2>
-                <p className="mt-3 text-slate-600 font-medium">
+                <h2 className="text-3xl font-black text-[#062d78] tracking-tight">Item not found</h2>
+                <p className="mt-3 text-[#083796] font-bold">
                   This item may have been removed or the link is incorrect.
                 </p>
                 <Link
@@ -49,11 +49,11 @@ export default function ItemDetailsPage() {
             {/* Left Column: Image */}
             <div className="w-full lg:w-[42%]">
               <MotionReveal>
-                <Link to="/browse" className="inline-flex items-center gap-2 mb-8 px-5 py-2.5 rounded-2xl bg-white/70 backdrop-blur-md border border-brand-blue/10 text-xs font-extrabold text-slate-600 shadow-soft hover:bg-brand-blue hover:text-white hover:border-brand-blue transition-all group w-fit">
+                <Link to="/browse" className="inline-flex items-center gap-2 mb-8 px-5 py-2.5 rounded-2xl bg-brand-blue/15 backdrop-blur-md border border-brand-blue/30 text-xs font-black text-[#062d78] shadow-lg hover:bg-brand-blue hover:text-white hover:border-brand-blue transition-all group w-fit">
                   <span className="transform transition-transform group-hover:-translate-x-1 text-lg leading-none">←</span>
                   <span>Back to browse</span>
                 </Link>
-                <div className="card overflow-hidden border-none shadow-xl bg-white/40 backdrop-blur-xl p-2.5">
+                <div className="card overflow-hidden border border-brand-blue/20 shadow-2xl bg-brand-blue/10 backdrop-blur-xl p-2.5">
                   <div className="aspect-[4/5] w-full rounded-[1.75rem] overflow-hidden bg-brand-blue/5">
                     {item.imageDataUrl ? (
                       <img src={item.imageDataUrl} alt={item.title} className="h-full w-full object-cover" />
@@ -87,17 +87,17 @@ export default function ItemDetailsPage() {
                   <span className="text-[10px] font-bold text-slate-400">ID: #{item.id.toString().slice(-6)}</span>
                 </div>
 
-                <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">{item.title}</h1>
-                <p className="mt-4 text-base text-slate-700 font-medium leading-relaxed">{item.description}</p>
+                <h1 className="text-4xl font-black tracking-tight text-[#062d78] sm:text-5xl">{item.title}</h1>
+                <p className="mt-4 text-base text-[#083796] font-bold leading-relaxed">{item.description}</p>
 
                 <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-[1.75rem] border border-brand-blue/5 bg-white/70 backdrop-blur-xl p-5 shadow-soft">
-                    <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Category</div>
-                    <div className="mt-1 text-lg font-extrabold text-slate-900">{item.category || 'Other'}</div>
+                  <div className="rounded-[1.75rem] border border-brand-blue/20 bg-brand-blue/10 backdrop-blur-xl p-5 shadow-lg">
+                    <div className="text-[10px] font-black text-[#01143a]/40 uppercase tracking-widest">Category</div>
+                    <div className="mt-1 text-xl font-black text-[#062d78]">{item.category || 'Other'}</div>
                   </div>
 
                   {(item.location || item.date) && (
-                    <div className="sm:col-span-2 rounded-[1.75rem] border border-brand-blue/5 bg-white/70 backdrop-blur-xl p-5 shadow-soft">
+                    <div className="sm:col-span-2 rounded-[1.75rem] border border-brand-blue/20 bg-brand-blue/10 backdrop-blur-xl p-5 shadow-lg">
                       <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-3">Extra details</div>
                       <div className="grid gap-3 sm:grid-cols-2">
                         {item.location && (
@@ -106,8 +106,8 @@ export default function ItemDetailsPage() {
                               <div className="h-2 w-2 bg-brand-blue rounded-full" />
                             </div>
                             <div className="flex flex-col">
-                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.05em]">Location</span>
-                              <span className="text-slate-800 font-bold">{item.location}</span>
+                              <span className="text-[10px] font-black text-[#01143a]/40 uppercase tracking-[0.05em]">Location</span>
+                              <span className="text-[#062d78] font-black">{item.location}</span>
                             </div>
                           </div>
                         )}
@@ -117,8 +117,8 @@ export default function ItemDetailsPage() {
                               <div className="h-2 w-2 bg-brand-orange rounded-full" />
                             </div>
                             <div className="flex flex-col">
-                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.05em]">Date</span>
-                              <span className="text-slate-800 font-bold">{item.date}</span>
+                              <span className="text-[10px] font-black text-[#01143a]/40 uppercase tracking-[0.05em]">Date</span>
+                              <span className="text-[#062d78] font-black">{item.date}</span>
                             </div>
                           </div>
                         )}
@@ -127,10 +127,10 @@ export default function ItemDetailsPage() {
                   )}
                 </div>
 
-                <div className="mt-8 p-1 rounded-[1.75rem] bg-gradient-to-r from-brand-blue to-teal-400 shadow-xl shadow-brand-blue/10 group overflow-hidden relative">
-                  <div className="bg-white/95 backdrop-blur-sm rounded-[1.5rem] p-6 transition-all group-hover:bg-transparent">
-                    <h3 className="text-base font-extrabold text-slate-900 group-hover:text-white transition-colors">Want to claim this?</h3>
-                    <p className="mt-1.5 text-xs text-slate-600 font-medium group-hover:text-white/80 transition-colors">
+                <div className="mt-8 p-1 rounded-[1.75rem] bg-gradient-to-r from-brand-blue via-brand-orange to-brand-blue shadow-2xl shadow-brand-blue/20 group overflow-hidden relative">
+                  <div className="bg-brand-blue/5 backdrop-blur-3xl rounded-[1.5rem] p-6 transition-all group-hover:bg-transparent">
+                    <h3 className="text-lg font-black text-[#062d78] group-hover:text-white transition-colors">Want to claim this?</h3>
+                    <p className="mt-1.5 text-sm text-[#083796] font-bold group-hover:text-white/90 transition-colors">
                       We’re working on a secure messaging feature. For now, please check with your school’s main office or lost & found center.
                     </p>
                   </div>

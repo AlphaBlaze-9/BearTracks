@@ -42,18 +42,18 @@ export default function SignupPage() {
         <Container>
           <div className="mx-auto max-w-[440px]">
             <MotionReveal>
-              <h1 className="text-4xl font-bold tracking-tight text-slate-900">Sign up</h1>
-              <p className="mt-3 text-base text-slate-600">
+              <h1 className="text-4xl font-black tracking-tight text-[#062d78]">Sign up</h1>
+              <p className="mt-3 text-base text-[#083796] font-bold">
                 Create an account to start tracking lost items on campus.
               </p>
             </MotionReveal>
 
             <MotionReveal delay={0.1}>
-              <div className="mt-10 card overflow-hidden border-none p-1 shadow-2xl">
-                <div className="bg-white/80 backdrop-blur-xl rounded-[22px] p-8 sm:p-10">
+              <div className="mt-10 card overflow-hidden border border-brand-blue/30 p-1 shadow-2xl bg-gradient-to-br from-brand-blue/20 via-transparent to-brand-gold/15">
+                <div className="bg-brand-blue/5 backdrop-blur-xl rounded-[22px] p-8 sm:p-10">
                   <form onSubmit={onSubmit} className="grid gap-6">
                     <div>
-                      <label className="text-sm font-semibold text-slate-700 ml-1">Name</label>
+                      <label className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">Name</label>
                       <input
                         value={name}
                         onChange={(e) => setName(e.target.value)}
@@ -64,7 +64,7 @@ export default function SignupPage() {
                     </div>
 
                     <div>
-                      <label className="text-sm font-semibold text-slate-700 ml-1">Email</label>
+                      <label className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">Email</label>
                       <input
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -76,7 +76,7 @@ export default function SignupPage() {
                     </div>
 
                     <div>
-                      <label className="text-sm font-semibold text-slate-700 ml-1">Password</label>
+                      <label className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">Password</label>
                       <input
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
