@@ -39,13 +39,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-hero pt-20">
-      <Section className="py-12 sm:py-20">
+    <div className="min-h-screen bg-hero pt-8">
+      <Section className="py-8 sm:py-12">
         <Container>
           <div className="mx-auto max-w-[440px]">
             <MotionReveal>
-              <h1 className="text-4xl font-black tracking-tight text-[#062d78]">Log in</h1>
-              <p className="mt-3 text-base text-[#083796] font-bold">
+              <h1 className="text-4xl font-black tracking-tight text-[#062d78] text-center">Log in</h1>
+              <p className="mt-3 text-base text-[#083796] font-bold text-center">
                 Welcome back to BearTracks. Please enter your credentials.
               </p>
             </MotionReveal>
@@ -106,9 +106,9 @@ export default function LoginPage() {
                       </div>
                     </div>
 
-                    <p className="text-sm text-slate-500 text-center">
+                    <p className="text-sm text-[#062d78] font-bold text-center">
                       Don’t have an account?{' '}
-                      <Link to="/signup" className="font-bold text-brand-orange hover:text-brand-orange/80 transition-colors">
+                      <Link to="/signup" className="font-bold text-[#ea580c] hover:text-[#c2410c] transition-colors duration-300">
                         Sign up
                       </Link>
                     </p>

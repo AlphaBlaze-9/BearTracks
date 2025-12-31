@@ -5,6 +5,8 @@ import Container from './Container.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import DeleteAccountModal from './DeleteAccountModal.jsx'
 
+import BearTracksLogo from '../BearTracksLogo.png'
+
 /**
  * Navbar
  * ------
@@ -84,13 +86,11 @@ export default function Navbar() {
       <Container className="py-3">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-blue text-white shadow-lg shadow-brand-blue/20">
-              🐻
-            </span>
-            <div className="leading-tight">
-              <div className="text-base font-bold text-slate-900">Bear Tracks</div>
-              <div className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Lost &amp; Found</div>
-            </div>
+            <img
+              src={BearTracksLogo}
+              alt="Bear Tracks Logo"
+              className="h-14 w-auto object-contain"
+            />
           </Link>
 
           {/* Desktop nav */}
@@ -108,7 +108,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => goHomeAndScroll('faq')}
-              className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 hover:bg-brand-gold/15 transition-all"
+              className="rounded-full px-4 py-2 text-sm font-extrabold text-[#062d78] hover:bg-brand-gold/15 transition-all"
             >
               FAQ
             </button>
@@ -117,13 +117,13 @@ export default function Navbar() {
               <div className="ml-2 flex items-center gap-2">
                 <NavLink
                   to="/login"
-                  className="rounded-full border border-brand-blue/20 bg-brand-blue/10 px-5 py-2 text-sm font-black text-[#062d78] hover:bg-brand-blue/20 transition-all shadow-sm"
+                  className="rounded-full border border-brand-orange/20 bg-brand-orange/10 px-5 py-2 text-sm font-black text-[#ea580c] hover:bg-brand-orange/20 transition-all shadow-sm"
                 >
                   Log in
                 </NavLink>
                 <NavLink
                   to="/signup"
-                  className="rounded-full bg-brand-blue px-5 py-2 text-sm font-bold text-white hover:bg-brand-blue-dark transition-all shadow-md shadow-brand-blue/10"
+                  className="rounded-full bg-brand-orange px-5 py-2 text-sm font-bold text-white hover:bg-[#ea580c] transition-all shadow-md shadow-brand-orange/20"
                 >
                   Sign up
                 </NavLink>
@@ -229,7 +229,7 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => goHomeAndScroll('faq')}
-                  className="rounded-xl px-3 py-3 text-left text-sm text-slate-700 hover:bg-brand-gold/15"
+                  className="rounded-xl px-3 py-3 text-left text-sm font-bold text-slate-700 hover:bg-brand-gold/15"
                 >
                   FAQ
                 </button>
@@ -238,13 +238,13 @@ export default function Navbar() {
                   <div className="mt-2 grid gap-2">
                     <NavLink
                       to="/login"
-                      className="rounded-xl border border-brand-blue/15 bg-white/60 px-3 py-3 text-center text-sm font-medium text-slate-900"
+                      className="rounded-xl border border-brand-orange/15 bg-white/60 px-3 py-3 text-center text-sm font-medium text-slate-900"
                     >
                       Log in
                     </NavLink>
                     <NavLink
                       to="/signup"
-                      className="rounded-xl bg-brand-blue px-3 py-3 text-center text-sm font-medium text-white"
+                      className="rounded-xl bg-brand-orange px-3 py-3 text-center text-sm font-medium text-white"
                     >
                       Sign up
                     </NavLink>

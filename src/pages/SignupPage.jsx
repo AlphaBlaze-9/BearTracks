@@ -37,13 +37,13 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-hero pt-20">
-      <Section className="py-12 sm:py-20">
+    <div className="min-h-screen bg-hero pt-8">
+      <Section className="py-8 sm:py-12">
         <Container>
           <div className="mx-auto max-w-[440px]">
             <MotionReveal>
-              <h1 className="text-4xl font-black tracking-tight text-[#062d78]">Sign up</h1>
-              <p className="mt-3 text-base text-[#083796] font-bold">
+              <h1 className="text-4xl font-black tracking-tight text-[#062d78] text-center">Sign up</h1>
+              <p className="mt-3 text-base text-[#083796] font-bold text-center">
                 Create an account to start tracking lost items on campus.
               </p>
             </MotionReveal>
@@ -113,9 +113,9 @@ export default function SignupPage() {
                       </div>
                     </div>
 
-                    <p className="text-sm text-slate-500 text-center">
+                    <p className="text-sm text-[#062d78] font-bold text-center">
                       Already have an account?{' '}
-                      <Link to="/login" className="font-bold text-brand-orange hover:text-brand-orange/80 transition-colors">
+                      <Link to="/login" className="font-bold text-[#ea580c] hover:text-[#c2410c] transition-colors duration-300">
                         Log in
                       </Link>
                     </p>

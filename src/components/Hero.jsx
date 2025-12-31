@@ -1,5 +1,4 @@
-import React from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import BearTracksLogo from '../BearTracksLogo.png'
 
 /**
  * Hero
@@ -22,6 +21,18 @@ export default function Hero() {
       <div className="relative mx-auto max-w-6xl px-4 py-20 md:px-6 md:py-28">
         <div className="grid items-center gap-10 md:grid-cols-2">
           <div>
+            <motion.div
+              initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
+              animate={prefersReducedMotion ? undefined : { opacity: 1, scale: 1 }}
+              className="mb-8"
+            >
+              <img
+                src={BearTracksLogo}
+                alt="Bear Tracks Logo"
+                className="h-24 w-auto object-contain drop-shadow-2xl"
+              />
+            </motion.div>
+
             <motion.p
               initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
               animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
