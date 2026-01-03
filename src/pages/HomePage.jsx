@@ -64,17 +64,16 @@ export default function HomePage() {
               <source src={heroVideo} type="video/quicktime" />
               <source src={heroVideo} type="video/mp4" />
             </video>
-            {/* Premium Overlay: Gradient + Noise/Blur feel */}
-            <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-transparent lg:from-white/90 lg:via-white/60" />
-            <div className="absolute inset-0 bg-brand-blue/5 backdrop-blur-[2px]" />
+            {/* Premium Overlay: Minimal tint for better video clarity */}
+            <div className="absolute inset-0 bg-brand-blue/[0.02]" />
           </motion.div>
 
           <Container className="relative z-10">
 
             <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-              <div>
+              <div className="glass-light p-8 rounded-[40px] shadow-2xl border border-white/30 backdrop-blur-2xl bg-gradient-to-br from-white/80 via-white/50 to-white/20 max-w-2xl">
                 <MotionReveal>
-                  <p className="pill inline-flex items-center gap-2 text-xs text-slate-700 font-bold">
+                  <p className="pill inline-flex items-center gap-2 text-xs text-slate-900 font-bold bg-white/60 backdrop-blur-sm border border-white/40">
                     <span className="inline-flex h-2 w-2 rounded-full bg-brand-gold animate-pulse" />
                     New: faster reporting + smarter matching
                   </p>
@@ -84,12 +83,12 @@ export default function HomePage() {
                   <h1 className="mt-5 text-4xl font-extrabold tracking-tight sm:text-6xl text-slate-900 leading-[1.1]">
                     Lost something <br />
                     <span className="text-brand-blue">at school?</span>
-                    <span className="block text-slate-700 text-3xl sm:text-4xl mt-2 font-semibold">Find it faster with Bear Tracks.</span>
+                    <span className="block text-slate-800 text-3xl sm:text-4xl mt-2 font-semibold">Find it faster with Bear Tracks.</span>
                   </h1>
                 </MotionReveal>
 
                 <MotionReveal delay={0.1}>
-                  <p className="mt-6 max-w-xl text-lg text-slate-600 leading-relaxed font-medium">
+                  <p className="mt-6 max-w-xl text-lg text-slate-800 leading-relaxed font-semibold">
                     A clean, student-friendly lost &amp; found experience.
                     Report items in seconds, browse verified posts, and get notified when matches show up.
                   </p>
@@ -105,7 +104,7 @@ export default function HomePage() {
                     </Link>
                     <Link
                       to="/browse"
-                      className="rounded-2xl border-2 border-brand-blue/10 bg-white/50 backdrop-blur px-8 py-4 text-sm font-bold text-slate-900 hover:bg-white/80 transition-all transform hover:scale-[1.02] active:scale-[0.98] text-center"
+                      className="rounded-2xl border-2 border-brand-blue/10 bg-white/80 backdrop-blur px-8 py-4 text-sm font-bold text-slate-900 hover:bg-white/90 transition-all transform hover:scale-[1.02] active:scale-[0.98] text-center"
                     >
                       Browse items
                     </Link>
@@ -113,10 +112,10 @@ export default function HomePage() {
                 </MotionReveal>
 
                 <MotionReveal delay={0.2}>
-                  <div className="mt-10 flex flex-wrap gap-3 text-xs font-bold text-slate-500 uppercase tracking-widest">
-                    <span className="pill">Public Browsing</span>
-                    <span className="pill">Mobile Optimized</span>
-                    <span className="pill">Smart Matching</span>
+                  <div className="mt-10 flex flex-wrap gap-3 text-xs font-bold text-slate-700 uppercase tracking-widest">
+                    <span className="pill bg-white/40 backdrop-blur-sm">Public Browsing</span>
+                    <span className="pill bg-white/40 backdrop-blur-sm">Mobile Optimized</span>
+                    <span className="pill bg-white/40 backdrop-blur-sm">Smart Matching</span>
                   </div>
                 </MotionReveal>
               </div>
@@ -126,10 +125,10 @@ export default function HomePage() {
                 initial={{ opacity: 0, scale: 0.95, y: 18 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: 'easeOut' }}
-                className="card overflow-hidden shadow-2xl border-none p-1 bg-gradient-to-br from-brand-blue/5 via-transparent to-brand-gold/5 animate-floaty"
+                className="card overflow-hidden shadow-2xl border-none p-1 bg-gradient-to-br from-brand-blue/10 via-transparent to-brand-gold/10 animate-floaty"
               >
 
-                <div className="bg-white/80 backdrop-blur-xl rounded-[22px] p-6 sm:p-8 h-full">
+                <div className="bg-gradient-to-br from-white/90 via-white/60 to-white/30 backdrop-blur-2xl rounded-[32px] p-6 sm:p-8 h-full border border-white/40">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-5 mb-5">
                     <div>
                       <div className="text-lg font-bold text-slate-900 leading-none">Today’s highlights</div>
