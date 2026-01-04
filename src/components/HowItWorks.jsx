@@ -11,10 +11,11 @@ export default function HowItWorks() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [direction, setDirection] = useState(1) // Always start with forward direction
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const [hasDelayPassed, setHasDelayPassed] = useState(false)
   const sectionRef = useRef(null)
 
   // amount: 0.1 ensures it starts as soon as a small portion is visible
-  const isInView = useInView(sectionRef, { amount: 0.1, once: false })
+  const isInView = useInView(sectionRef, { amount: 0.5, once: false })
 
   const steps = [
     {
@@ -44,15 +45,27 @@ export default function HowItWorks() {
   ]
 
   useEffect(() => {
+    let timer
+    if (isInView) {
+      timer = setTimeout(() => {
+        setHasDelayPassed(true)
+      }, 2000)
+    } else {
+      setHasDelayPassed(false)
+    }
+    return () => clearTimeout(timer)
+  }, [isInView])
+
+  useEffect(() => {
     let interval
-    if (isInView && isAutoPlaying) {
+    if (isInView && isAutoPlaying && hasDelayPassed) {
       interval = setInterval(() => {
         setDirection(1)
         setActiveIndex((prev) => (prev + 1) % steps.length)
       }, 4500) // Slightly longer to allow reading
     }
     return () => clearInterval(interval)
-  }, [isInView, isAutoPlaying, steps.length])
+  }, [isInView, isAutoPlaying, hasDelayPassed, steps.length])
 
   const handleStepClick = (index) => {
     if (index === activeIndex) return
@@ -159,7 +172,7 @@ export default function HowItWorks() {
                   }`}>
                   {/* Progress bar with smooth linear animation */}
                   <AnimatePresence>
-                    {activeIndex === i && isAutoPlaying && isInView && (
+                    {activeIndex === i && isAutoPlaying && isInView && hasDelayPassed && (
                       <motion.div
                         key="progress-bar"
                         initial={{ width: 0 }}
