@@ -22,8 +22,7 @@ Then open the local URL Vite prints in your terminal.
 ## Build
 
 ```bash
-npm run build
-npm run preview
+npx netlify dev
 ```
 
 ## Where to edit
