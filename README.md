@@ -13,17 +13,10 @@ This folder contains a refreshed front-end for a school **Lost & Found** site.
 ## Run locally
 
 ```bash
-npm install
-npm run dev
-```
-
-Then open the local URL Vite prints in your terminal.
-
-## Build
-
-```bash
 npx netlify dev
 ```
+
+
 
 ## Where to edit
 
