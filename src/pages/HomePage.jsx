@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import Container from '../components/Container.jsx'
@@ -307,136 +307,159 @@ export default function HomePage() {
 
 function HowItWorksSection() {
   const [activeIndex, setActiveIndex] = useState(0)
+  const timerRef = useRef(null)
 
+  /* 
+     Updated colors for better contrast and opacity. 
+     Using 'via-white/90' to ensure text is readable while keeping vibrant edges.
+  */
   const steps = [
     {
       title: 'Report',
-      body: 'Post a lost or found item with a description and location. Our smart form makes it quick.',
+      body: 'Post a lost or found item. Our smart form makes it quick.',
       icon: '✍️',
       color: 'bg-orange-100 text-orange-600',
+      gradient: 'from-orange-100 via-white to-orange-50'
     },
     {
       title: 'Verify',
-      body: 'Moderators or office staff quickly confirm the post to ensure accuracy and safety.',
+      body: 'Moderators confirm the post to ensure accuracy.',
       icon: '✅',
       color: 'bg-green-100 text-green-600',
+      gradient: 'from-green-100 via-white to-green-50'
     },
     {
       title: 'Match',
-      body: 'Our system automatically surfaces similar posts together, reducing the manual guesswork.',
+      body: 'Our system surfaces similar posts to reduce guesswork.',
       icon: '🧩',
       color: 'bg-blue-100 text-blue-600',
+      gradient: 'from-blue-100 via-white to-blue-50'
     },
     {
       title: 'Return',
-      body: 'Arrange a safe pickup through the platform and close the loop with a simple confirmation.',
+      body: 'Arrange a safe pickup and confirm the return.',
       icon: '🎒',
       color: 'bg-purple-100 text-purple-600',
+      gradient: 'from-purple-100 via-white to-purple-50'
     },
   ]
 
+  // Auto-rotation logic
+  useEffect(() => {
+    startTimer()
+    return () => clearInterval(timerRef.current)
+  }, [])
+
+  const startTimer = () => {
+    clearInterval(timerRef.current)
+    timerRef.current = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % steps.length)
+    }, 4000)
+  }
+
+  const handleCardClick = (index) => {
+    setActiveIndex(index)
+    startTimer() // Reset timer on interaction
+  }
+
+  const getCardProps = (index) => {
+    // Calculate relative position in a circular way
+    // 0 = center, 1 = right, 2 = hidden, 3 = left (logical)
+    // But we need to map actual indices to these logical positions based on activeIndex
+
+    // diff is how far 'index' is from 'activeIndex'
+    const diff = (index - activeIndex + steps.length) % steps.length
+
+    // Determine position string
+    let position = 'hidden'
+    if (diff === 0) position = 'center'
+    else if (diff === 1) position = 'right'
+    else if (diff === 3) position = 'left' // -1 equivalent
+    else position = 'hidden' // diff === 2 (back)
+
+    return position
+  }
+
+  /* Spaced out the cards more (x: 85% instead of 55%) */
+  const variants = {
+    center: { x: '0%', scale: 1, opacity: 1, zIndex: 20 },
+    left: { x: '-85%', scale: 0.8, opacity: 0.4, zIndex: 10 },
+    right: { x: '85%', scale: 0.8, opacity: 0.4, zIndex: 10 },
+    hidden: { x: '0%', scale: 0.5, opacity: 0, zIndex: 0 },
+  }
+
   return (
-    <Section id="how" className="relative overflow-hidden">
-      {/* Decorative Blobs for How It Works Section */}
-      <motion.div
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
-        }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-brand-blue/5 rounded-full blur-[120px] pointer-events-none"
-      />
-      <motion.div
-        animate={{
-          scale: [1.2, 1, 1.2],
-          opacity: [0.2, 0.4, 0.2],
-        }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-0 right-0 translate-x-1/4 w-[400px] h-[400px] bg-brand-orange/5 rounded-full blur-[100px] pointer-events-none"
-      />
+    <Section id="how" className="relative overflow-hidden py-24 bg-vibrant-mixed border-y border-brand-blue/10">
 
       <Container className="relative z-10">
+        <MotionReveal>
+          <div className="text-center max-w-2xl mx-auto mb-20">
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+              How it works
+            </h2>
+            <p className="mt-4 text-lg text-slate-600">
+              Four simple steps to get items back where they belong.
+            </p>
+          </div>
+        </MotionReveal>
 
-        <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-          <div>
-            <MotionReveal>
-              <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-                How it works
-              </h2>
-              <p className="mt-4 text-lg text-slate-600">
-                Four simple steps to get items back where they belong. Click a step to see how it works.
-              </p>
-            </MotionReveal>
+        {/* 3D Carousel Container */}
+        <div className="relative h-[450px] w-full max-w-5xl mx-auto flex items-center justify-center perspective-[1000px]">
+          <AnimatePresence mode="popLayout" initial={false}>
+            {steps.map((step, idx) => {
+              const position = getCardProps(idx)
 
-            <div className="mt-10 space-y-4">
-              {steps.map((step, idx) => (
-                <button
+              return (
+                <motion.div
                   key={step.title}
-                  onClick={() => setActiveIndex(idx)}
-                  className={`w-full text-left transition-all duration-300 ${activeIndex === idx
-                    ? 'scale-[1.02] ring-1 ring-slate-200 shadow-md'
-                    : 'opacity-60 hover:opacity-100'
-                    }`}
+                  variants={variants}
+                  initial={false}
+                  animate={position}
+                  transition={{ duration: 0.6, ease: "easeInOut" }}
+                  onClick={() => handleCardClick(idx)}
+                  className={`absolute w-[320px] sm:w-[400px] cursor-pointer`}
                 >
-                  <div className={`p-4 rounded-3xl border ${activeIndex === idx ? 'bg-white border-transparent' : 'border-slate-100'}`}>
-                    <div className="flex items-center gap-4">
-                      <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-2xl ${step.color}`}>
+                  <div className={`
+                    relative overflow-hidden rounded-[2.5rem] p-8 h-[400px] flex flex-col items-center text-center
+                    transition-all duration-300 shadow-2xl
+                    bg-gradient-to-br ${step.gradient} border border-white/60
+                    ${position === 'center' ? 'ring-4 ring-brand-blue/10 scale-100 opacity-100' : 'grayscale-[0.2] opacity-100'}
+                  `}>
+
+                    <div className="mt-8 flex-1 flex flex-col items-center justify-center">
+                      <div className={`mb-8 inline-flex h-24 w-24 items-center justify-center rounded-[2rem] text-5xl shadow-xl shadow-black/10 bg-white/60 backdrop-blur-sm ${step.color.replace('bg-', 'text-').replace('text-', 'text-opacity-100 ')}`}>
                         {step.icon}
                       </div>
-                      <div>
-                        <div className="font-bold text-slate-900">{step.title}</div>
-                        {activeIndex === idx && (
-                          <motion.p
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            className="mt-1 text-sm text-slate-600 leading-relaxed"
-                          >
-                            {step.body}
-                          </motion.p>
-                        )}
-                      </div>
+
+                      <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                        {step.title}
+                      </h3>
+                      <p className="text-slate-900 leading-relaxed font-semibold">
+                        {step.body}
+                      </p>
+                    </div>
+
+                    {/* Step Number */}
+                    <div className="absolute bottom-6 font-bold text-xs uppercase tracking-widest text-slate-900/60">
+                      Step 0{idx + 1}
                     </div>
                   </div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="relative aspect-square lg:aspect-auto lg:h-[500px]">
-            <div className="absolute inset-0 bg-brand-gold/5 rounded-[40px] -rotate-2" />
-            <div className="absolute inset-0 bg-brand-blue/5 rounded-[40px] rotate-2" />
-            <div className="relative h-full w-full glass rounded-[40px] flex items-center justify-center p-8 overflow-hidden">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeIndex}
-                  initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, y: -20 }}
-                  transition={{ duration: 0.4, ease: 'backOut' }}
-                  className="text-center"
-                >
-                  <div className={`mx-auto mb-6 flex h-32 w-32 items-center justify-center rounded-[2.5rem] text-6xl shadow-xl ${steps[activeIndex].color}`}>
-                    {steps[activeIndex].icon}
-                  </div>
-                  <h3 className="text-2xl font-bold text-slate-900">{steps[activeIndex].title}</h3>
-                  <p className="mt-4 text-lg text-slate-600 leading-relaxed max-w-sm mx-auto">
-                    {steps[activeIndex].body}
-                  </p>
-
-                  {/* Decorative element */}
-                  <div className="mt-8 flex justify-center gap-2">
-                    {[0, 1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${activeIndex === i ? 'w-8 bg-brand-blue' : 'w-2 bg-slate-200'
-                          }`}
-                      />
-                    ))}
-                  </div>
                 </motion.div>
-              </AnimatePresence>
-            </div>
-          </div>
+              )
+            })}
+          </AnimatePresence>
+        </div>
+
+        {/* Indicators */}
+        <div className="flex justify-center gap-3 mt-12">
+          {steps.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => handleCardClick(idx)}
+              className={`h-2 rounded-full transition-all duration-300 ${activeIndex === idx ? 'w-8 bg-brand-blue' : 'w-2 bg-slate-300 hover:bg-slate-400'
+                }`}
+            />
+          ))}
         </div>
       </Container>
     </Section>

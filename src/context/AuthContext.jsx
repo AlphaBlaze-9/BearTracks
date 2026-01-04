@@ -72,7 +72,7 @@ export function AuthProvider({ children }) {
     return {
       user,
       isAuthed: Boolean(user),
-      isAdmin: user?.email === 'samarthmurali19@gmail.com',
+      isAdmin: user?.email === 'samarthmurali19@gmail.com' || user?.email === 'directortracks@gmail.com',
       loading,
       signup,
       login,
