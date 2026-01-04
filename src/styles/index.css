@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Global styles:
+  - Keep this file minimal. Prefer Tailwind classes.
+  - Only put truly global rules here.
+*/
+
+:root {
+  /* Used by a few custom gradients */
+  --bg-from: 240 249 255; /* sky-50 */
+  --bg-to: 255 247 237; /* orange-50 */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Subtle, modern focus ring for keyboard users */
+:focus-visible {
+  outline: 3px solid rgba(59, 130, 246, 0.7);
+  outline-offset: 3px;
+}
+
+/* Optional: slightly nicer selection */
+::selection {
+  background: rgba(59, 130, 246, 0.25);
+}
