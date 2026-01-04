@@ -69,6 +69,9 @@ export function ItemsProvider({ children }) {
 
       if (dbError) throw dbError
 
+      // Update local state immediately
+      setItems((prev) => prev.filter((i) => i.id !== item.id))
+
       // 2. Delete from storage if image exists
       if (item.image_url) {
         try {

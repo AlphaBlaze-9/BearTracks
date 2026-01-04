@@ -49,7 +49,7 @@ export default function ItemDetailsPage() {
             {/* Left Column: Image */}
             <div className="w-full lg:w-[42%]">
               <MotionReveal>
-                <Link to="/browse" className="inline-flex items-center gap-2 mb-8 px-5 py-2.5 rounded-2xl bg-brand-blue/15 backdrop-blur-md border border-brand-blue/30 text-xs font-black text-[#062d78] shadow-lg hover:bg-brand-blue hover:text-white hover:border-brand-blue transition-all group w-fit">
+                <Link to="/browse" className="inline-flex items-center gap-2 mb-8 px-5 py-2.5 rounded-2xl bg-brand-orange border border-brand-orange text-xs font-black text-white shadow-lg shadow-brand-orange/20 hover:bg-brand-gold hover:border-brand-gold hover:text-white transition-all group w-fit">
                   <span className="transform transition-transform group-hover:-translate-x-1 text-lg leading-none">←</span>
                   <span>Back to browse</span>
                 </Link>
