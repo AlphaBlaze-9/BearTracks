@@ -45,6 +45,43 @@ export default function ItemDetailsPage() {
     <div className="min-h-screen bg-hero">
       <Section className="pt-16 sm:pt-20 pb-10">
         <Container>
+          {/* AI Match Banner - Only for "Lost" items */}
+          {item.status === 'Lost' && item.potential_matches && item.potential_matches.length > 0 && (
+            <MotionReveal>
+              <div className="mb-8 overflow-hidden rounded-[2rem] bg-gradient-to-r from-brand-blue via-brand-orange to-brand-blue p-1 shadow-2xl shadow-brand-blue/20">
+                <div className="relative bg-white/95 backdrop-blur-3xl rounded-[1.8rem] p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-brand-blue/10 text-4xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-brand-blue">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9.75 15.992c0-.01.002-.016.002-.022A3.75 3.75 0 0 0 12 12.375V6.108c0-1.523-.985-2.847-2.345-3.375M9.813 15.904c-.79 1.174-1.102 1.473-1.102 1.473S7.245 19.045 5.0 19.045c-1.5 0-2.414-.05-2.5-.124-1.666-1.667-.57-4.725 1.09-6.405L4.95 11.251M9.813 15.904h3.75a4.5 4.5 0 0 0 4.5-4.5V6.108c0-1.523-.985-2.847-2.345-3.375M14.25 15.599L14.313 15.51c0 .01-.002.016-.002.022A3.75 3.75 0 0 1 12 19.625v5.167c0 1.523.985 2.847 2.345 3.375M14.25 15.599c.79 1.174 1.102 1.473 1.102 1.473s1.468 2.072 3.718 2.072c1.5 0 2.414-.05 2.5-.124 1.666-1.667.57-4.725-1.09-6.405L19.05 11.251M14.25 15.599h-3.75a4.5 4.5 0 0 1-4.5-4.5V6.108c0-1.523.985-2.847 2.345-3.375" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
+                      <h3 className="text-xl font-black text-[#062d78]">Possible Match Detected!</h3>
+                      <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-black text-green-700 border border-green-200">
+                        {Math.round((item.potential_matches[0].score || 0) * 100)}% Match
+                      </span>
+                    </div>
+                    <p className="text-sm font-bold text-slate-600">
+                      Our Algorithm found an item that looks similar: <span className="text-[#083796]">"{item.potential_matches[0].title}"</span>
+                    </p>
+                    {item.potential_matches[0].reasons && item.potential_matches[0].reasons.length > 0 && (
+                      <p className="text-xs font-semibold text-slate-400 mt-1">
+                        Based on: {item.potential_matches[0].reasons.join(', ')}
+                      </p>
+                    )}
+                  </div>
+                  <Link
+                    to={`/items/${item.potential_matches[0].id}`}
+                    className="shrink-0 rounded-xl bg-brand-blue px-6 py-3 text-sm font-extrabold text-white shadow-lg shadow-brand-blue/20 hover:bg-brand-blue-dark transition-all transform hover:scale-105"
+                  >
+                    View Match
+                  </Link>
+                </div>
+              </div>
+            </MotionReveal>
+          )}
+
           <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
             {/* Left Column: Image */}
             <div className="w-full lg:w-[42%]">

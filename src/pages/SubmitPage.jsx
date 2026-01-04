@@ -93,7 +93,17 @@ export default function SubmitPage() {
       // 3. Refresh global items list to ensure the new item is present
       await refreshItems()
 
-      // 4. Success feedback
+      // 4. Trigger AI Matching (Async - don't await blocking the UI)
+      // We fire and forget, or we could await if we want to ensure it started.
+      // Ideally, a background trigger is better, but client-side invocation is requested.
+      if (data && data[0] && data[0].id) {
+        fetch('/.netlify/functions/match-items', {
+          method: 'POST',
+          body: JSON.stringify({ newItemId: data[0].id }),
+        }).catch(err => console.error('Matching trigger failed:', err))
+      }
+
+      // 5. Success feedback
       setSuccess(true)
       setTimeout(() => {
         navigate('/browse')

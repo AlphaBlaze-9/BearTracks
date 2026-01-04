@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import Container from './Container.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import { useItems } from '../context/ItemsContext.jsx'
 import DeleteAccountModal from './DeleteAccountModal.jsx'
 
 import BearTracksLogo from '../BearTracksLogo.png'
@@ -30,11 +31,39 @@ function useScrollShadow() {
 
 export default function Navbar() {
   const { isAuthed, user, logout, deleteAccount } = useAuth()
+  const { items } = useItems()
   const scrolled = useScrollShadow()
   const [isOpen, setIsOpen] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
+  const [isNotifOpen, setIsNotifOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [readNotifs, setReadNotifs] = useState(() => {
+    try {
+      const saved = localStorage.getItem('read_notifications')
+      return saved ? JSON.parse(saved) : []
+    } catch {
+      return []
+    }
+  })
+
+  // Calculate notifications: Lost items by this user that have matches
+  const notifications = isAuthed && user ? items.filter(it =>
+    it.user_id === user.id &&
+    it.status === 'Lost' &&
+    it.potential_matches &&
+    it.potential_matches.length > 0 &&
+    !readNotifs.includes(it.id)
+  ) : []
+
+  function handleNotificationClick(itemId) {
+    setIsNotifOpen(false)
+    if (!readNotifs.includes(itemId)) {
+      const newRead = [...readNotifs, itemId]
+      setReadNotifs(newRead)
+      localStorage.setItem('read_notifications', JSON.stringify(newRead))
+    }
+  }
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -112,6 +141,72 @@ export default function Navbar() {
             >
               FAQ
             </button>
+
+            {isAuthed && (
+              <div className="relative ml-2">
+                <button
+                  onClick={() => setIsNotifOpen(!isNotifOpen)}
+                  className="relative flex items-center justify-center h-10 w-10 rounded-full border border-brand-blue/20 bg-brand-blue/10 text-[#062d78] hover:bg-brand-blue/20 transition-all"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                  </svg>
+                  {notifications.length > 0 && (
+                    <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white border-2 border-white">
+                      {notifications.length}
+                    </span>
+                  )}
+                </button>
+
+                <AnimatePresence>
+                  {isNotifOpen && (
+                    <>
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                        className="absolute right-0 mt-2 w-72 origin-top-right overflow-hidden rounded-2xl bg-white p-2 shadow-xl ring-1 ring-black/5 z-50"
+                      >
+                        <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 border-b border-slate-100 mb-2">
+                          Notifications
+                        </div>
+                        {notifications.length === 0 ? (
+                          <div className="px-4 py-6 text-center text-sm text-slate-500 font-medium">
+                            No new alerts
+                          </div>
+                        ) : (
+                          <div className="max-h-64 overflow-y-auto flex flex-col gap-1">
+                            {notifications.map(item => (
+                              <Link
+                                key={item.id}
+                                to={`/items/${item.id}`}
+                                onClick={() => handleNotificationClick(item.id)}
+                                className="block rounded-xl bg-brand-blue/5 p-3 hover:bg-brand-blue/10 transition-colors"
+                              >
+                                <div className="flex items-start gap-3">
+                                  <div className="text-brand-blue pt-0.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                                      <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM11.38 15.023l3.6-4.5a.75.75 0 0 1 1.14.954l-4.12 5.15a.75.75 0 0 1-1.122.046L7.385 13.06a.75.75 0 1 1 1.13-1.02l2.865 3.01.001-.027Z" clipRule="evenodd" />
+                                    </svg>
+                                  </div>
+                                  <div>
+                                    <div className="text-xs font-bold text-[#062d78]">Match Found!</div>
+                                    <div className="text-xs text-slate-600 line-clamp-1">
+                                      Possible match for "{item.title}"
+                                    </div>
+                                  </div>
+                                </div>
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </motion.div>
+                      <div className="fixed inset-0 z-[-1]" onClick={() => setIsNotifOpen(false)} />
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
 
             {!isAuthed ? (
               <div className="ml-2 flex items-center gap-2">
