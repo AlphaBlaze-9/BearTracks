@@ -47,6 +47,22 @@ export default function Navbar() {
     }
   })
 
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  async function handleLogout() {
+    if (isLoggingOut) return
+    setIsLoggingOut(true)
+    try {
+      await logout()
+      navigate('/')
+    } catch (err) {
+      console.error('Logout error:', err)
+      alert('Failed to log out. Please try again.')
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
+
   // Calculate notifications: Lost items by this user that have matches
   const notifications = isAuthed && user ? items.filter(it =>
     it.user_id === user.id &&
@@ -257,10 +273,11 @@ export default function Navbar() {
                           Account
                         </div>
                         <button
-                          onClick={logout}
-                          className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                          onClick={handleLogout}
+                          disabled={isLoggingOut}
+                          className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          Log out
+                          {isLoggingOut ? 'Logging out...' : 'Log out'}
                         </button>
                         <div className="my-1 h-px bg-slate-100" />
                         <button
@@ -348,10 +365,11 @@ export default function Navbar() {
                   <div className="mt-2 grid gap-2">
                     <button
                       type="button"
-                      onClick={logout}
-                      className="rounded-xl border border-brand-blue/15 bg-white/60 px-3 py-3 text-center text-sm font-medium text-slate-900"
+                      onClick={handleLogout}
+                      disabled={isLoggingOut}
+                      className="rounded-xl border border-brand-blue/15 bg-white/60 px-3 py-3 text-center text-sm font-medium text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Log out
+                      {isLoggingOut ? 'Logging out...' : 'Log out'}
                     </button>
                     <button
                       type="button"
