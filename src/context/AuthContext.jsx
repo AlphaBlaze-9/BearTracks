@@ -54,8 +54,14 @@ export function AuthProvider({ children }) {
     }
 
     async function logout() {
-      const { error } = await supabase.auth.signOut()
-      if (error) throw error
+      try {
+        await supabase.auth.signOut()
+      } catch (error) {
+        console.error('Error signing out:', error)
+      } finally {
+        // Always clear local session
+        setUser(null)
+      }
     }
 
     async function deleteAccount() {
