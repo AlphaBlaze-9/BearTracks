@@ -98,10 +98,12 @@ export default function SubmitPage() {
       // We fire and forget, or we could await if we want to ensure it started.
       // Ideally, a background trigger is better, but client-side invocation is requested.
       if (data && data[0] && data[0].id) {
-        fetch('/.netlify/functions/match-items', {
+        const FN_URL = "/.netlify/functions/match-items"
+        fetch(FN_URL, {
           method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ newItemId: data[0].id }),
-        }).catch(err => console.error('Matching trigger failed:', err))
+        }).catch((err) => console.error('Matching trigger failed:', err))
       }
 
       // 5. Success feedback
