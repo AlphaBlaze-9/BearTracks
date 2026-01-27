@@ -133,7 +133,7 @@ export default function ItemDetailsPage() {
                     <div className="mt-1 text-xl font-black text-[#062d78]">{item.category || 'Other'}</div>
                   </div>
 
-                  {(item.location || item.date) && (
+                  {(item.location || item.date || item.submitter_name) && (
                     <div className="sm:col-span-2 rounded-[1.75rem] border border-brand-blue/20 bg-brand-blue/10 backdrop-blur-xl p-5 shadow-lg">
                       <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-3">Extra details</div>
                       <div className="grid gap-3 sm:grid-cols-2">
@@ -156,6 +156,19 @@ export default function ItemDetailsPage() {
                             <div className="flex flex-col">
                               <span className="text-[10px] font-black text-[#01143a]/40 uppercase tracking-[0.05em]">Date</span>
                               <span className="text-[#062d78] font-black">{item.date}</span>
+                            </div>
+                          </div>
+                        )}
+                        {item.submitter_name && (
+                          <div className="flex items-start gap-3 sm:col-span-2">
+                            <div className="mt-1 h-5 w-5 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-indigo-600">
+                                <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
+                              </svg>
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-[10px] font-black text-[#01143a]/40 uppercase tracking-[0.05em]">Submitted By</span>
+                              <span className="text-[#062d78] font-black">{item.submitter_name}</span>
                             </div>
                           </div>
                         )}

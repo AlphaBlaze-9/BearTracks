@@ -84,6 +84,7 @@ export default function SubmitPage() {
             date_incident: date.trim() || null,
             image_url: imageUrl,
             user_id: user.id,
+            submitter_name: user.user_metadata?.full_name || user.email,
           },
         ])
         .select()
