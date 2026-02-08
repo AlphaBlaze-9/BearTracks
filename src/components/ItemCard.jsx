@@ -23,10 +23,13 @@ function PlaceholderImage() {
 }
 
 export default function ItemCard({ item }) {
-  const { isAdmin } = useAuth()
+  const { user, isAdmin } = useAuth()
   const { deleteItem } = useItems()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+
+  const isOwner = user && user.id === item.user_id
+  const canDelete = isAdmin || isOwner
 
   async function handleDelete() {
     setIsDeleting(true)
@@ -56,14 +59,14 @@ export default function ItemCard({ item }) {
             <PlaceholderImage />
           )}
 
-          {isAdmin && (
+          {canDelete && (
             <button
               onClick={(e) => {
                 e.preventDefault()
                 setIsModalOpen(true)
               }}
               className="absolute top-4 right-4 h-10 w-10 flex items-center justify-center rounded-2xl bg-white/90 text-red-500 shadow-lg backdrop-blur hover:bg-red-500 hover:text-white transition-all transform hover:scale-110"
-              title="Delete as Admin"
+              title={isAdmin ? "Delete as Admin" : "Delete your item"}
             >
               <TrashIcon className="h-5 w-5" />
             </button>
