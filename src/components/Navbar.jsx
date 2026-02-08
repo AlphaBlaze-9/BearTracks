@@ -136,6 +136,9 @@ export default function Navbar() {
               alt="Bear Tracks Logo"
               className="h-14 w-auto object-contain"
             />
+            <span className="font-black text-xl text-[#062d78] tracking-tight hidden sm:block">
+              BearTracks
+            </span>
           </Link>
 
           {/* Desktop nav */}

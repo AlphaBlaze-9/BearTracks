@@ -5,6 +5,7 @@ import Container from '../components/Container.jsx'
 import Section from '../components/Section.jsx'
 import MotionReveal from '../components/MotionReveal.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import BearTracksLogo from '../BearTracksLogo.png'
 
 /**
  * SignupPage
@@ -42,6 +43,9 @@ export default function SignupPage() {
         <Container>
           <div className="mx-auto max-w-[440px]">
             <MotionReveal>
+              <div className="flex justify-center mb-6">
+                <img src={BearTracksLogo} alt="Bear Tracks Logo" className="h-20 w-auto" />
+              </div>
               <h1 className="text-4xl font-black tracking-tight text-[#062d78] text-center">Sign up</h1>
               <p className="mt-3 text-base text-[#083796] font-bold text-center">
                 Create an account to start tracking lost items on campus.

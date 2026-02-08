@@ -240,9 +240,9 @@ export default function HomePage() {
 
             <div className="mt-10 grid gap-4">
               {[
-                { q: "Do I need an account to browse items?", a: "Nope — browsing is open. You only need an account to submit a lost/found post." },
-                { q: "Can I add a photo?", a: "Yes. The submit form supports photos and shows a preview before you post." },
-                { q: "Is this connected to a real backend?", a: "Yes! We use Supabase for real-time updates and secure data storage." }
+                { q: "I lost an item. What should I do?", a: "Log in and submit a 'Lost' report with a description and optional photo. We'll notify you if we find a match." },
+                { q: "How do I prove an item belongs to me?", a: "Provide specific details (unique markings, serial numbers) or photos. Verification happens during the return process." },
+                { q: "Where do I drop off an item I found?", a: "Please bring found items to the main office or designated lost & found collection point on campus." }
               ].map((item, idx) => (
                 <MotionReveal key={item.q} delay={idx * 0.1} y={15}>
                   <FAQItem q={item.q}>
