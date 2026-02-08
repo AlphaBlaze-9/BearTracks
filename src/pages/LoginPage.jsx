@@ -38,6 +38,19 @@ export default function LoginPage() {
     }
   }
 
+  async function handleTestLogin(testEmail, testPassword) {
+    setError('')
+    setLoading(true)
+    try {
+      await login({ email: testEmail, password: testPassword })
+      navigate(from)
+    } catch (err) {
+      setError(err.message || 'Login failed.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-hero pt-8">
       <Section className="py-8 sm:py-12">
@@ -112,6 +125,38 @@ export default function LoginPage() {
                         Sign up
                       </Link>
                     </p>
+
+                    <div className="relative my-2">
+                      <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div className="w-full border-t border-slate-200"></div>
+                      </div>
+                      <div className="relative flex justify-center">
+                        <span className="bg-white px-2 text-xs text-slate-500 uppercase">Test Accounts</span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        type="button"
+                        onClick={() => handleTestLogin('userbeartracks@gmail.com', 'userbeartracks123')}
+                        disabled={loading}
+                        className="rounded-xl border-2 border-brand-blue/20 bg-white/50 px-4 py-2 text-xs font-bold text-[#062d78] hover:bg-brand-blue/5 hover:border-brand-blue/40 transition-all disabled:opacity-50"
+                      >
+                        Test User Login
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        type="button"
+                        onClick={() => handleTestLogin('directortracks@gmail.com', 'directorbeartracks123')}
+                        disabled={loading}
+                        className="rounded-xl border-2 border-brand-gold/20 bg-white/50 px-4 py-2 text-xs font-bold text-[#062d78] hover:bg-brand-gold/5 hover:border-brand-gold/40 transition-all disabled:opacity-50"
+                      >
+                        Test Admin Login
+                      </motion.button>
+                    </div>
                   </form>
                 </div>
               </div>
