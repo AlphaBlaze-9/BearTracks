@@ -245,9 +245,7 @@ export default function HomePage() {
                 { q: "Where do I drop off an item I found?", a: "Please bring found items to the main office or designated lost & found collection point on campus." }
               ].map((item, idx) => (
                 <MotionReveal key={item.q} delay={idx * 0.1} y={15}>
-                  <FAQItem q={item.q}>
-                    {item.a}
-                  </FAQItem>
+                  <FAQItem question={item.q} answer={item.a} />
                 </MotionReveal>
               ))}
             </div>
