@@ -53,13 +53,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-hero pt-8">
-      <Section className="py-8 sm:py-12">
+    <div className="min-h-screen bg-hero pt-4 sm:pt-6">
+      <Section className="py-4 sm:py-8">
         <Container>
           <div className="mx-auto max-w-[440px]">
             <MotionReveal>
               <div className="flex justify-center mb-6">
-                <img src={BearTracksLogo} alt="Bear Tracks Logo" className="h-20 w-auto" />
+                <img src={BearTracksLogo} alt="Bear Tracks Logo" className="h-28 w-auto" />
               </div>
               <h1 className="text-4xl font-black tracking-tight text-[#062d78] text-center">Log in</h1>
               <p className="mt-3 text-base text-[#083796] font-bold text-center">
