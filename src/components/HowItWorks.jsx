@@ -1,45 +1,33 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence, useInView } from 'framer-motion'
+import { Camera, Search, ShieldCheck, Handshake } from 'lucide-react'
 
-/**
- * HowItWorks
- * ----------
- * A dynamic, interactive slideshow that auto-plays when in view.
- * Designed to feel like a premium, automated presentation of the product flow.
- */
+// ... imports
+
 export default function HowItWorks() {
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [direction, setDirection] = useState(1) // Always start with forward direction
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
-  const [hasDelayPassed, setHasDelayPassed] = useState(false)
-  const sectionRef = useRef(null)
-
-  // amount: 0.1 ensures it starts as soon as a small portion is visible
-  const isInView = useInView(sectionRef, { amount: 0.5, once: false })
+  // ... state code ...
 
   const steps = [
     {
       title: 'Post',
       body: 'Take a quick photo, choose a category, and drop a short description.',
-      icon: '📝',
+      icon: <Camera className="w-full h-full p-4" strokeWidth={1.5} />,
       color: 'from-orange-400 to-orange-600',
     },
     {
       title: 'Match',
       body: 'Students browse and filter. Clear location tags make it easy to narrow down.',
-      icon: '🔎',
+      icon: <Search className="w-full h-full p-4" strokeWidth={1.5} />,
       color: 'from-blue-500 to-blue-700',
     },
     {
       title: 'Verify',
       body: 'The claimant answers a simple verification prompt to confirm ownership.',
-      icon: '🧾',
+      icon: <ShieldCheck className="w-full h-full p-4" strokeWidth={1.5} />,
       color: 'from-orange-500 to-red-500',
     },
     {
       title: 'Pick up',
       body: 'Pickup instructions are shown clearly (office hours, contact, drop spot).',
-      icon: '🤝',
+      icon: <Handshake className="w-full h-full p-4" strokeWidth={1.5} />,
       color: 'from-blue-400 to-indigo-600',
     },
   ]
@@ -141,13 +129,13 @@ export default function HowItWorks() {
                   }}
                   className={`flex h-full w-full flex-col items-center justify-center rounded-[3.5rem] bg-gradient-to-br ${steps[activeIndex].color} shadow-2xl p-8`}
                 >
-                  <motion.span
+                  <motion.div
                     animate={{ y: [0, -10, 0] }}
                     transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                    className="text-[160px] md:text-[220px] drop-shadow-[0_20px_40px_rgba(0,0,0,0.4)]"
+                    className="h-40 w-40 md:h-56 md:w-56 text-white drop-shadow-2xl"
                   >
                     {steps[activeIndex].icon}
-                  </motion.span>
+                  </motion.div>
 
                   {/* Mobile-only content display */}
                   <div className="mt-8 text-center text-white md:hidden">
@@ -184,7 +172,7 @@ export default function HowItWorks() {
                   </AnimatePresence>
 
                   <div className="flex items-center gap-8">
-                    <div className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-white/10 text-4xl transition-all duration-500 shadow-inner ${activeIndex === i ? 'scale-110 rotate-6 bg-white/20' : 'group-hover:rotate-3'
+                    <div className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-white/10 text-white transition-all duration-500 shadow-inner p-4 ${activeIndex === i ? 'scale-110 rotate-6 bg-white/20' : 'group-hover:rotate-3'
                       }`}>
                       {s.icon}
                     </div>

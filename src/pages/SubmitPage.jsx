@@ -34,6 +34,95 @@ export default function SubmitPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
+  // Quick submission for testing matching algorithm
+  async function submitExample(type) {
+    if (loading) return
+    setLoading(true)
+    setError('')
+
+    let itemData = {}
+
+    // Define example data
+    if (type === 'calc-lost') {
+      itemData = {
+        title: "TI-84 Plus Calculator",
+        description: "Gray TI-84 Plus calculator. Lost it in the library.",
+        category: "Electronics",
+        type: "Lost",
+        location: "Library",
+        date_incident: new Date().toISOString().split('T')[0]
+      }
+    } else if (type === 'calc-found') {
+      itemData = {
+        title: "Gray Calculator",
+        description: "Found a TI-84 calculator on a table.",
+        category: "Electronics",
+        type: "Found",
+        location: "Library",
+        date_incident: new Date().toISOString().split('T')[0]
+      }
+    } else if (type === 'hoodie-lost') {
+      itemData = {
+        title: "Black Nike Hoodie",
+        description: "Black pullover hoodie with a small tear on the sleeve.",
+        category: "Clothing",
+        type: "Lost",
+        location: "Gym",
+        date_incident: new Date().toISOString().split('T')[0]
+      }
+    } else if (type === 'hoodie-found') {
+      itemData = {
+        title: "Black Hoodie",
+        description: "Found a black hoodie in the locker room.",
+        category: "Clothing",
+        type: "Found",
+        location: "Gym",
+        date_incident: new Date().toISOString().split('T')[0]
+      }
+    }
+
+    try {
+      const { data, error: dbError } = await supabase
+        .from('lost_found_items')
+        .insert([
+          {
+            ...itemData,
+            image_url: null, // No image for examples
+            user_id: user.id || 'test-user',
+            submitter_name: user.user_metadata?.full_name || user.email || 'Test User',
+          },
+        ])
+        .select()
+
+      if (dbError) throw dbError
+
+      await refreshItems()
+
+      // Trigger matching
+      if (data && data[0] && data[0].id) {
+        const FN_URL = "/.netlify/functions/match-items"
+        fetch(FN_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ newItemId: data[0].id }),
+        }).catch((err) => console.error('Matching trigger failed:', err))
+      }
+
+      setSuccess(true)
+      setTimeout(() => {
+        navigate('/browse')
+        // Reset success state after navigation so if they come back it's clean (though it unmounts usually)
+        setSuccess(false)
+        setLoading(false)
+      }, 1500)
+
+    } catch (err) {
+      console.error('Example submission error:', err)
+      setError(err.message)
+      setLoading(false)
+    }
+  }
+
   async function uploadImage(file) {
     if (!file) return null
     const fileExt = file.name.split('.').pop()
@@ -147,6 +236,36 @@ export default function SubmitPage() {
               <p className="mt-3 text-base text-slate-700 font-medium">
                 You’re signed in as <span className="font-bold text-brand-blue">{user.user_metadata?.full_name || user.email}</span>.
               </p>
+            </MotionReveal>
+
+            {/* DEV TOOLS: Rapid Submission Buttons */}
+            <MotionReveal delay={0.05}>
+              <div className="mt-6 mb-2 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <button
+                  onClick={() => submitExample('calc-lost')}
+                  className="rounded-xl border border-dashed border-slate-300 bg-slate-50 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-800"
+                >
+                  Example: Lost Calc
+                </button>
+                <button
+                  onClick={() => submitExample('calc-found')}
+                  className="rounded-xl border border-dashed border-slate-300 bg-slate-50 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-800"
+                >
+                  Example: Found Calc
+                </button>
+                <button
+                  onClick={() => submitExample('hoodie-lost')}
+                  className="rounded-xl border border-dashed border-slate-300 bg-slate-50 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-800"
+                >
+                  Example: Lost Hoodie
+                </button>
+                <button
+                  onClick={() => submitExample('hoodie-found')}
+                  className="rounded-xl border border-dashed border-slate-300 bg-slate-50 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-800"
+                >
+                  Example: Found Hoodie
+                </button>
+              </div>
             </MotionReveal>
 
             <MotionReveal delay={0.1}>

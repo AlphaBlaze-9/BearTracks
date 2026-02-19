@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom'
+import { Search, Sparkles, Package, User } from 'lucide-react'
 import Container from '../components/Container.jsx'
 import Section from '../components/Section.jsx'
 import MotionReveal from '../components/MotionReveal.jsx'
@@ -22,7 +23,7 @@ export default function ItemDetailsPage() {
           <Container>
             <MotionReveal>
               <div className="mx-auto max-w-md card p-12 text-center bg-brand-blue/10 backdrop-blur-3xl border border-brand-blue/30 shadow-2xl rounded-[3rem]">
-                <div className="text-6xl mb-6 text-slate-300">🔎</div>
+                <Search className="w-20 h-20 text-slate-300 mx-auto mb-6" strokeWidth={1.5} />
                 <h2 className="text-3xl font-black text-[#062d78] tracking-tight">Item not found</h2>
                 <p className="mt-3 text-[#083796] font-bold">
                   This item may have been removed or the link is incorrect.
@@ -51,9 +52,7 @@ export default function ItemDetailsPage() {
               <div className="mb-8 overflow-hidden rounded-[2rem] bg-gradient-to-r from-brand-blue via-brand-orange to-brand-blue p-1 shadow-2xl shadow-brand-blue/20">
                 <div className="relative bg-white/95 backdrop-blur-3xl rounded-[1.8rem] p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
                   <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-brand-blue/10 text-4xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-brand-blue">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9.75 15.992c0-.01.002-.016.002-.022A3.75 3.75 0 0 0 12 12.375V6.108c0-1.523-.985-2.847-2.345-3.375M9.813 15.904c-.79 1.174-1.102 1.473-1.102 1.473S7.245 19.045 5.0 19.045c-1.5 0-2.414-.05-2.5-.124-1.666-1.667-.57-4.725 1.09-6.405L4.95 11.251M9.813 15.904h3.75a4.5 4.5 0 0 0 4.5-4.5V6.108c0-1.523-.985-2.847-2.345-3.375M14.25 15.599L14.313 15.51c0 .01-.002.016-.002.022A3.75 3.75 0 0 1 12 19.625v5.167c0 1.523.985 2.847 2.345 3.375M14.25 15.599c.79 1.174 1.102 1.473 1.102 1.473s1.468 2.072 3.718 2.072c1.5 0 2.414-.05 2.5-.124 1.666-1.667.57-4.725-1.09-6.405L19.05 11.251M14.25 15.599h-3.75a4.5 4.5 0 0 1-4.5-4.5V6.108c0-1.523.985-2.847 2.345-3.375" />
-                    </svg>
+                    <Sparkles className="w-8 h-8 text-brand-blue" fill="currentColor" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
@@ -97,8 +96,8 @@ export default function ItemDetailsPage() {
                     ) : (
                       <div className="flex h-full w-full items-center justify-center bg-slate-100">
                         <div className="text-center grayscale opacity-30">
-                          <div className="text-8xl">📦</div>
-                          <div className="mt-4 text-sm font-bold uppercase tracking-widest">No photo uploaded</div>
+                          <Package className="w-24 h-24 mx-auto mb-4" strokeWidth={1} />
+                          <div className="text-sm font-bold uppercase tracking-widest">No photo uploaded</div>
                         </div>
                       </div>
                     )}
@@ -162,9 +161,7 @@ export default function ItemDetailsPage() {
                         {item.submitter_name && (
                           <div className="flex items-start gap-3 sm:col-span-2">
                             <div className="mt-1 h-5 w-5 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
-                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-indigo-600">
-                                <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
-                              </svg>
+                              <User className="w-3 h-3 text-indigo-600" />
                             </div>
                             <div className="flex flex-col">
                               <span className="text-[10px] font-black text-[#01143a]/40 uppercase tracking-[0.05em]">Submitted By</span>

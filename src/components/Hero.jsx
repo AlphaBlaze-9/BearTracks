@@ -1,3 +1,5 @@
+import { motion, useReducedMotion } from 'framer-motion'
+import { ShieldCheck, Zap, MapPin, Headphones, Shirt, Key } from 'lucide-react'
 import BearTracksLogo from '../BearTracksLogo.png'
 
 /**
@@ -81,15 +83,21 @@ export default function Hero() {
 
             <div className="mt-8 flex items-center gap-6 text-xs text-white/65">
               <div className="flex items-center gap-2">
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">🔒</span>
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">
+                  <ShieldCheck className="w-4 h-4" />
+                </span>
                 Verified claims
               </div>
               <div className="flex items-center gap-2">
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">⚡</span>
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">
+                  <Zap className="w-4 h-4" />
+                </span>
                 Quick posting
               </div>
               <div className="flex items-center gap-2">
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">📍</span>
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">
+                  <MapPin className="w-4 h-4" />
+                </span>
                 Clear pickup info
               </div>
             </div>
@@ -112,9 +120,9 @@ export default function Hero() {
 
             <div className="mt-6 space-y-3">
               {[
-                { icon: '🎧', title: 'Wireless earbuds', meta: 'Found near cafeteria • 10:12 AM' },
-                { icon: '🧥', title: 'Blue hoodie', meta: 'Found in gym • 11:40 AM' },
-                { icon: '🔑', title: 'Key ring', meta: 'Found by main office • 1:05 PM' },
+                { icon: <Headphones className="w-5 h-5" />, title: 'Wireless earbuds', meta: 'Found near cafeteria • 10:12 AM' },
+                { icon: <Shirt className="w-5 h-5" />, title: 'Blue hoodie', meta: 'Found in gym • 11:40 AM' },
+                { icon: <Key className="w-5 h-5" />, title: 'Key ring', meta: 'Found by main office • 1:05 PM' },
               ].map((item, idx) => (
                 <motion.div
                   key={item.title}
@@ -123,7 +131,7 @@ export default function Hero() {
                   transition={{ delay: 0.20 + idx * 0.06 }}
                   className="flex items-center gap-3 rounded-2xl bg-white/5 p-4 hover:bg-white/10"
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-lg">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-white">
                     {item.icon}
                   </div>
                   <div className="min-w-0">

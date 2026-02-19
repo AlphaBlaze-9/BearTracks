@@ -90,7 +90,7 @@ export default function BrowsePage() {
           {filtered.length === 0 && (
             <MotionReveal delay={0.2}>
               <div className="mt-12 rounded-[2.5rem] border border-brand-blue/20 bg-brand-blue/10 backdrop-blur-xl p-12 text-center shadow-soft">
-                <div className="text-5xl mb-4 text-slate-300">🔎</div>
+                <Search className="w-16 h-16 text-brand-blue/40 mx-auto mb-4" strokeWidth={1.5} />
                 <h3 className="text-xl font-bold text-slate-900">No matches found</h3>
                 <p className="mt-2 text-slate-600 font-medium">Try a different search or filter to find what you're looking for.</p>
               </div>
