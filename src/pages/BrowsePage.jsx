@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
+import { Search } from 'lucide-react'
 import Container from '../components/Container.jsx'
 import Section from '../components/Section.jsx'
 import ItemCard from '../components/ItemCard.jsx'

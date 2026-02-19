@@ -18,6 +18,7 @@
         "npm:dotenv@^17.2.3",
         "npm:express@^5.2.1",
         "npm:framer-motion@11",
+        "npm:lucide-react@0.575",
         "npm:openai@^6.15.0",
         "npm:postcss@^8.4.47",
         "npm:react-dom@^18.3.1",
