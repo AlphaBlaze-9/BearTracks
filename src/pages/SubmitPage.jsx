@@ -8,6 +8,8 @@ import MotionReveal from '../components/MotionReveal.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useItems } from '../context/ItemsContext.jsx'
 import { supabase } from '../lib/supabase'
+import ti84Img from '../images/ti-84.jpg'
+import hoodieImg from '../images/black hoodie.webp'
 
 /**
  * SubmitPage
@@ -82,12 +84,36 @@ export default function SubmitPage() {
     }
 
     try {
+      let imageUrl = null;
+      try {
+        const imgPath = type.includes('calc') ? ti84Img : hoodieImg;
+        const res = await fetch(imgPath);
+        const blob = await res.blob();
+        const file = new File([blob], type.includes('calc') ? 'ti-84.jpg' : 'black_hoodie.webp', { type: blob.type });
+
+        // uploadImage uses user.id, let's gracefully fallback if absent
+        const fileExt = file.name.split('.').pop()
+        const fileName = `${Math.random()}.${fileExt}`
+        const filePath = `${user?.id || 'test-user'}/${fileName}`
+
+        const { error: uploadError } = await supabase.storage
+          .from('lost-found-photos')
+          .upload(filePath, file)
+
+        if (uploadError) throw uploadError
+
+        const { data: publicUrlData } = supabase.storage.from('lost-found-photos').getPublicUrl(filePath)
+        imageUrl = publicUrlData.publicUrl
+      } catch (uploadErr) {
+        console.error('Failed to upload example image:', uploadErr);
+      }
+
       const { data, error: dbError } = await supabase
         .from('lost_found_items')
         .insert([
           {
             ...itemData,
-            image_url: null, // No image for examples
+            image_url: imageUrl,
             user_id: user.id || 'test-user',
             submitter_name: user.user_metadata?.full_name || user.email || 'Test User',
           },
