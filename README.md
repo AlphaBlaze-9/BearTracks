@@ -1,75 +1,97 @@
 <div align="center">
-
   <h1>Bear Tracks | BHS FBLA</h1>
-  <p>Website Coding & Development</p>
+  <p><strong>FBLA Website Coding & Development</strong> — Bothell High School Lost & Found Platform</p>
+  <p>
+    <a href="https://bhsbeartracks.org/"><strong>Live Website Demo</strong></a>
+    ·
+    <a href="#getting-started">Local Setup</a>
+    ·
+    <a href="#features">Features</a>
+    ·
+    <a href="#technology">Technology</a>
+  </p>
 </div>
 
-## Bear Tracks: A School Lost & Found Experience
-[Live Website Demo](https://bhsbeartracks.org/)
+## Overview
+**Bear Tracks** is a modern lost & found platform created for the **Future Business Leaders of America (FBLA) Website Coding & Development** competitive event. It helps Bothell High School (BHS) students and staff quickly **report**, **browse**, and **recover** lost items through a clean, mobile-friendly interface and a streamlined claim process.
 
-A comprehensive and professional lost and found platform built specifically for the **Future Business Leaders of America (FBLA) Website Coding & Development** competitive event. Bear Tracks is designed to provide Bothell High School (BHS) students and staff with a fast, friendly, and easy-to-use experience for reporting, browsing, and recovering lost items on campus. 
+---
 
 ## Features
-- **User Authentication:** Secure, role-based authentication allowing both students and administrative staff to access the platform securely.
-- **Interactive Listings:** Browse and search through an organized database of lost and found items.
-- **Item Submission:** Effortlessly report a lost item or log a newly found item with descriptions, categories, and image uploads. 
-- **Application & Claim Management:** Administrators can manage item claims, verify ownership, and update the status of missing goods.
-- **Responsive & Accessible Design:** A seamless, intuitive, and highly responsive user interface ensuring a perfect experience across desktops, tablets, and smartphones.
+- **Role-Based Authentication:** Separate access for students and admins, with appropriate permissions for each role.
+- **Searchable Listings:** Browse lost/found posts with filtering and keyword search for faster matching.
+- **Item Submission w/ Photos:** Submit lost or found items with descriptions, categories, dates, locations, and image uploads.
+- **Claim & Status Workflow:** Admins can review claims, verify ownership, approve/deny requests, and update item status.
+- **Responsive & Accessible UI:** Designed to work smoothly across desktop, tablet, and mobile while following accessibility best practices.
 
-## Technologies Used
-- **Frontend:** React.js, Vite, TypeScript, CSS/Tailwind
-- **Backend:** Node.js, Serverless Edge Functions
-- **Database & Auth:** PostgreSQL/MongoDB (or Supabase/Firebase), JWT for secure sessions
-- **Deployment:** Netlify 
+---
+
+## Technology
+> **Note:** Replace the placeholders below with your *actual* stack (judges dislike “or” lists).
+
+- **Frontend:** React, Vite, TypeScript, Tailwind CSS  
+- **Backend:** Node.js, Serverless/Edge Functions  
+- **Database & Auth:** Supabase (PostgreSQL) + Auth *(or your actual provider)*  
+- **Deployment:** Netlify  
+
+---
 
 ## Getting Started
-To get a local copy of this FBLA project up and running, follow these simple steps.
 
 ### Prerequisites
-- Node.js installed on your machine (v18.0.0 or higher)
-- NPM or Pnpm package manager
+- **Node.js** (v18+ recommended)
+- **npm** or **pnpm**
 
 ### Installation
-1. Clone the repo:
+1. **Clone the repository**
    ```bash
    git clone https://github.com/yourusername/bhs-bear-tracks.git
-   ```
-2. Navigate to the project directory:
-   ```bash
    cd bhs-bear-tracks
    ```
-3. Install NPM packages:
+
+2. **Install dependencies**
    ```bash
    npm install
    ```
-4. Set up environment variables:
-   Create a `.env` (or `.env.local`) file in the root directory, containing the required configurations for your backend/database:
+
+3. **Set environment variables**
+   Create a `.env` (or `.env.local`) file in the project root:
    ```env
    VITE_API_URL=
    VITE_AUTH_DOMAIN=
    VITE_PROJECT_ID=
    VITE_STORAGE_BUCKET=
    ```
-   *(Replace each value with your specific configuration details)*
+   *Replace values with your project credentials.*
 
-5. Run the application locally:
+4. **Run locally**
    ```bash
    npm run dev
    ```
-6. Open your browser and navigate to `http://localhost:5173` to view the app!
+   Then open `http://localhost:5173`.
+
+## Project Structure (Quick Map)
+- `src/` — React pages, components, and UI logic
+- `src/assets/` — Images/icons
+- `netlify/` or `functions/` — Serverless/Edge functions (if used)
+- `.env(.local)` — Local environment configuration (not committed)
 
 ## Citations
+*Keep citations relevant to technologies actually used in this project. Remove anything unrelated.*
 
-“Networking · React Native.” React Native, 8 October 2025, https://reactnative.dev/docs/network. Accessed 12 November 2025. “100 Color Combinations To Influence Your Next Design.” Figma, https://www.figma.com/resource-library/color-combinations/. Accessed 12 November 2025. “React JSX.” W3Schools, https://www.w3schools.com/react/react_jsx.asp. Accessed 12 November 2025. “Using the Fetch API - Web APIs | MDN.” MDN Web Docs, 20 August 2025, https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch. Accessed 12 November 2025. “Window localStorage Property.” W3Schools, https://www.w3schools.com/jsref/prop_win_localstorage.asp. Accessed 12 November 2025. “Website Infrastructure Options | University IT.” University IT, https://uit.stanford.edu/guide/website/infrastructure-options. Accessed 12 November 2025. Erstad, Will. "The Graphic Designer's Guide to the Psychology of Color." Rasmussen University, 17 Jan. 2018, www.rasmussen.edu/degrees/design/blog/psychology-of-color/. GeeksforGeeks. "React Tutorial." 27 Sept. 2025, www.geeksforgeeks.org/reactjs/react/.
+- MDN Web Docs. “Using the Fetch API.” Accessed 12 Nov 2025. https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+- W3Schools. “React JSX.” Accessed 12 Nov 2025. https://www.w3schools.com/react/react_jsx.asp
+- W3Schools. “Window localStorage Property.” Accessed 12 Nov 2025. https://www.w3schools.com/jsref/prop_win_localstorage.asp
+- Figma Resource Library. “100 Color Combinations To Influence Your Next Design.” Accessed 12 Nov 2025. https://www.figma.com/resource-library/color-combinations/
+- Erstad, Will. “The Graphic Designer's Guide to the Psychology of Color.” Rasmussen University, 17 Jan 2018. https://www.rasmussen.edu/degrees/design/blog/psychology-of-color/
 
 ## Contributing
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request (we will review and merge promptly)
+This project was developed for an FBLA competitive event. If you’d like to suggest improvements:
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit changes (`git commit -m "Add your feature"`)
+4. Push (`git push origin feature/your-feature`)
+5. Open a Pull Request
 
 <br />
 <div align="center">
