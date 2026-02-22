@@ -28,9 +28,9 @@
 
 ## Technology
 
-- **Frontend:** React, Vite, TypeScript, Tailwind CSS  
-- **Backend:** Node.js, Serverless/Edge Functions  
-- **Database & Auth:** Supabase (PostgreSQL) + Auth *(or your actual provider)*  
+- **Frontend:** React, Vite, JavaScript, Tailwind CSS  
+- **Backend/AI:** OpenAI API (Integration)
+- **Database & Auth:** Supabase (PostgreSQL) + Auth  
 - **Deployment:** Netlify  
 
 ---
@@ -44,8 +44,8 @@
 ### Installation
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/bhs-bear-tracks.git
-   cd bhs-bear-tracks
+   git clone https://github.com/AlphaBlaze-9/BearTracks.git
+   cd BearTracks
    ```
 
 2. **Install dependencies**
@@ -56,10 +56,9 @@
 3. **Set environment variables**
    Create a `.env` (or `.env.local`) file in the project root:
    ```env
-   VITE_API_URL=
-   VITE_AUTH_DOMAIN=
-   VITE_PROJECT_ID=
-   VITE_STORAGE_BUCKET=
+   OPENAI_API_KEY=
+   SUPABASE_SERVICE_ROLE_KEY=
+   VITE_SUPABASE_URL=
    ```
    *Replace values with your project credentials.*
 
@@ -71,12 +70,12 @@
 
 ## Project Structure (Quick Map)
 - `src/` — React pages, components, and UI logic
-- `src/assets/` — Images/icons
-- `netlify/` or `functions/` — Serverless/Edge functions (if used)
-- `.env(.local)` — Local environment configuration (not committed)
+- `src/images/` — Application images and custom graphics
+- `src/lib/` — Backend and API integrations (Supabase)
+- `netlify/` — Netlify serverless functions and configuration
+- `.env` — Local environment configuration (not committed)
 
 ## Citations
-*Keep citations relevant to technologies actually used in this project. Remove anything unrelated.*
 
 - MDN Web Docs. “Using the Fetch API.” Accessed 12 Nov 2025. https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
 - W3Schools. “React JSX.” Accessed 12 Nov 2025. https://www.w3schools.com/react/react_jsx.asp
