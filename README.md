@@ -1,6 +1,6 @@
 <div align="center">
   <h1>Bear Tracks | BHS FBLA</h1>
-  <p><strong>FBLA Website Coding & Development</strong> — Bothell High School Lost & Found Platform</p>
+  <p><strong>FBLA Website Coding & Development</strong> — Bridgeland High School Lost & Found Platform</p>
   <p>
     <a href="https://bhsbeartracks.org/"><strong>Live Website Demo</strong></a>
     ·
@@ -13,7 +13,7 @@
 </div>
 
 ## Overview
-**Bear Tracks** is a modern lost & found platform created for the **Future Business Leaders of America (FBLA) Website Coding & Development** competitive event. It helps Bothell High School (BHS) students and staff quickly **report**, **browse**, and **recover** lost items through a clean, mobile-friendly interface and a streamlined claim process.
+**Bear Tracks** is a modern lost & found platform created for the **Future Business Leaders of America (FBLA) Website Coding & Development** competitive event. It helps Bridgeland High School (BHS) students and staff quickly **report**, **browse**, and **recover** lost items through a clean, mobile-friendly interface and a streamlined claim process.
 
 ---
 
