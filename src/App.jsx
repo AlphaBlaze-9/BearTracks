@@ -10,6 +10,7 @@ import SubmitPage from './pages/SubmitPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import SignupPage from './pages/SignupPage.jsx'
 import ItemDetailsPage from './pages/ItemDetailsPage.jsx'
+import AdminClaimsPage from './pages/AdminClaimsPage.jsx'
 
 /**
  * App
@@ -44,6 +45,7 @@ export default function App() {
 
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/claims" element={<AdminClaimsPage />} />
 
             {/* Fallback: if someone types an unknown URL, send them home */}
             <Route path="*" element={<HomePage />} />

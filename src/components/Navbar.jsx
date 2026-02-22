@@ -31,8 +31,8 @@ function useScrollShadow() {
 }
 
 export default function Navbar() {
-  const { isAuthed, user, logout, deleteAccount } = useAuth()
-  const { items } = useItems()
+  const { isAuthed, user, isAdmin, logout, deleteAccount } = useAuth()
+  const { items, claims } = useItems()
   const scrolled = useScrollShadow()
   const [isOpen, setIsOpen] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
@@ -64,14 +64,29 @@ export default function Navbar() {
     }
   }
 
-  // Calculate notifications: Lost items by this user that have matches
-  const notifications = isAuthed && user ? items.filter(it =>
-    it.user_id === user.id &&
-    it.status === 'Lost' &&
-    it.potential_matches &&
-    it.potential_matches.length > 0 &&
-    !readNotifs.includes(it.id)
-  ) : []
+  // Calculate notifications: Lost items matches, and Claim status updates
+  const notifications = isAuthed && user ? [
+    ...items.filter(it =>
+      it.user_id === user.id &&
+      it.status === 'Lost' &&
+      it.potential_matches &&
+      it.potential_matches.length > 0 &&
+      !readNotifs.includes(it.id)
+    ).map(item => ({ type: 'match', item })),
+
+    // User notifications (Claim Approved/Denied)
+    ...claims.filter(claim =>
+      claim.userId === user.id &&
+      claim.status !== 'Pending' &&
+      !readNotifs.includes(`claim_${claim.id}`)
+    ).map(claim => ({ type: 'claim', claim, item: items.find(i => String(i.id) === String(claim.itemId)) })),
+
+    // Admin notifications (New Pending Claims)
+    ...(isAdmin ? claims.filter(claim =>
+      claim.status === 'Pending' &&
+      !readNotifs.includes(`admin_claim_${claim.id}`)
+    ).map(claim => ({ type: 'admin_claim', claim, item: items.find(i => String(i.id) === String(claim.itemId)) })) : [])
+  ] : []
 
   function handleNotificationClick(itemId) {
     setIsNotifOpen(false)
@@ -162,6 +177,12 @@ export default function Navbar() {
               FAQ
             </button>
 
+            {isAuthed && isAdmin && (
+              <NavLink to="/claims" className={desktopLink}>
+                Claims
+              </NavLink>
+            )}
+
             {isAuthed && (
               <div className="relative ml-2">
                 <button
@@ -194,26 +215,79 @@ export default function Navbar() {
                           </div>
                         ) : (
                           <div className="max-h-64 overflow-y-auto flex flex-col gap-1">
-                            {notifications.map(item => (
-                              <Link
-                                key={item.id}
-                                to={`/items/${item.id}`}
-                                onClick={() => handleNotificationClick(item.id)}
-                                className="block rounded-xl bg-brand-blue/5 p-3 hover:bg-brand-blue/10 transition-colors"
-                              >
-                                <div className="flex items-start gap-3">
-                                  <div className="text-brand-blue pt-0.5">
-                                    <Search className="w-4 h-4" />
-                                  </div>
-                                  <div>
-                                    <div className="text-xs font-bold text-[#062d78]">Match Found!</div>
-                                    <div className="text-xs text-slate-600 line-clamp-1">
-                                      Possible match for "{item.title}"
+                            {notifications.map(notif => {
+                              if (notif.type === 'match') {
+                                const { item } = notif;
+                                return (
+                                  <Link
+                                    key={`match_${item.id}`}
+                                    to={`/items/${item.id}`}
+                                    onClick={() => handleNotificationClick(item.id)}
+                                    className="block rounded-xl bg-brand-blue/5 p-3 hover:bg-brand-blue/10 transition-colors"
+                                  >
+                                    <div className="flex items-start gap-3">
+                                      <div className="text-brand-blue pt-0.5">
+                                        <Search className="w-4 h-4" />
+                                      </div>
+                                      <div>
+                                        <div className="text-xs font-bold text-[#062d78]">Match Found!</div>
+                                        <div className="text-xs text-slate-600 line-clamp-1">
+                                          Possible match for "{item.title}"
+                                        </div>
+                                      </div>
                                     </div>
-                                  </div>
-                                </div>
-                              </Link>
-                            ))}
+                                  </Link>
+                                )
+                              }
+                              if (notif.type === 'claim') {
+                                const { claim, item } = notif;
+                                const isApproved = claim.status === 'Approved';
+                                return (
+                                  <Link
+                                    key={`claim_${claim.id}`}
+                                    to={`/items/${claim.itemId}`}
+                                    onClick={() => handleNotificationClick(`claim_${claim.id}`)}
+                                    className={`block rounded-xl p-3 transition-colors ${isApproved ? 'bg-green-50 hover:bg-green-100' : 'bg-red-50 hover:bg-red-100'}`}
+                                  >
+                                    <div className="flex items-start gap-3">
+                                      <div className={isApproved ? "text-green-600 pt-0.5" : "text-red-600 pt-0.5"}>
+                                        <Bell className="w-4 h-4" />
+                                      </div>
+                                      <div>
+                                        <div className={`text-xs font-bold ${isApproved ? 'text-green-800' : 'text-red-800'}`}>Claim {claim.status}</div>
+                                        <div className="text-xs text-slate-600 mt-0.5">
+                                          Your claim for "{item?.title || 'an item'}" was {claim.status.toLowerCase()}.
+                                          {isApproved && <span className="block mt-1 font-bold text-green-700">Please pick it up at the Front Office.</span>}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </Link>
+                                )
+                              }
+                              if (notif.type === 'admin_claim') {
+                                const { claim, item } = notif;
+                                return (
+                                  <Link
+                                    key={`admin_claim_${claim.id}`}
+                                    to="/claims"
+                                    onClick={() => handleNotificationClick(`admin_claim_${claim.id}`)}
+                                    className="block rounded-xl bg-brand-orange/5 p-3 hover:bg-brand-orange/10 transition-colors"
+                                  >
+                                    <div className="flex items-start gap-3">
+                                      <div className="text-brand-orange pt-0.5">
+                                        <Bell className="w-4 h-4" />
+                                      </div>
+                                      <div>
+                                        <div className="text-xs font-bold text-orange-800">New Claim Request!</div>
+                                        <div className="text-xs text-slate-600 mt-0.5">
+                                          {claim.name} filed a claim for "{item?.title || 'an item'}". Review it now.
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </Link>
+                                )
+                              }
+                            })}
                           </div>
                         )}
                       </motion.div>
@@ -340,6 +414,15 @@ export default function Navbar() {
                 >
                   FAQ
                 </button>
+
+                {isAuthed && isAdmin && (
+                  <NavLink
+                    to="/claims"
+                    className="rounded-xl px-3 py-3 text-sm font-bold text-brand-orange hover:bg-brand-gold/15"
+                  >
+                    Claims Dashboard
+                  </NavLink>
+                )}
 
                 {!isAuthed ? (
                   <div className="mt-2 grid gap-2">

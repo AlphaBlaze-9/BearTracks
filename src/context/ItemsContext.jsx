@@ -11,6 +11,7 @@ const ItemsContext = createContext(null)
 
 export function ItemsProvider({ children }) {
   const [items, setItems] = useState([])
+  const [claims, setClaims] = useState([])
   const [loading, setLoading] = useState(true)
 
   const fetchItems = async () => {
@@ -94,8 +95,26 @@ export function ItemsProvider({ children }) {
       return items.find((it) => String(it.id) === String(id))
     }
 
-    return { items, addItem, getItem, deleteItem, loading, refreshItems: fetchItems }
-  }, [items, loading])
+    async function addClaim(itemId, claimData) {
+      const newClaim = {
+        id: Date.now().toString(),
+        itemId,
+        ...claimData,
+        status: 'Pending',
+        createdAt: Date.now()
+      }
+      setClaims(prev => [newClaim, ...prev])
+      return newClaim
+    }
+
+    async function resolveClaim(claimId, status) {
+      setClaims(prev => prev.map(c =>
+        c.id === claimId ? { ...c, status } : c
+      ))
+    }
+
+    return { items, claims, addItem, getItem, deleteItem, addClaim, resolveClaim, loading, refreshItems: fetchItems }
+  }, [items, claims, loading])
 
   return <ItemsContext.Provider value={value}>{children}</ItemsContext.Provider>
 }
