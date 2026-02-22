@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="800" alt="Bear Tracks Banner" src="https://bhsbeartracks.org/favicon.png" />
+
   <h1>Bear Tracks | BHS FBLA</h1>
   <p>Website Coding & Development</p>
 </div>
