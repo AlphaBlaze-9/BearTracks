@@ -55,10 +55,26 @@ export function AuthProvider({ children }) {
 
     async function logout() {
       try {
-        await supabase.auth.signOut()
-      } catch (error) {
-        console.error('Error signing out:', error)
+        const { error } = await supabase.auth.signOut()
+        if (error) {
+          console.error('Error from server on signout:', error)
+          // Force local signout if server signout fails
+          await supabase.auth.signOut({ scope: 'local' })
+        }
+      } catch (err) {
+        console.error('Error signing out:', err)
+        try {
+          await supabase.auth.signOut({ scope: 'local' })
+        } catch (e) {
+          // Ignore
+        }
       } finally {
+        // Manually clear any lingering Supabase auth tokens as a strict fallback
+        for (const key of Object.keys(localStorage)) {
+          if (key.startsWith('sb-') && key.endsWith('-auth-token')) {
+            localStorage.removeItem(key)
+          }
+        }
         // Always clear local session
         setUser(null)
       }
