@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
-import { Search } from 'lucide-react'
-import Container from '../components/Container.jsx'
-import Section from '../components/Section.jsx'
-import ItemCard from '../components/ItemCard.jsx'
-import MotionReveal from '../components/MotionReveal.jsx'
-import { useItems } from '../context/ItemsContext.jsx'
+import { useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import { Search } from "lucide-react";
+import Container from "../components/Container.jsx";
+import Section from "../components/Section.jsx";
+import ItemCard from "../components/ItemCard.jsx";
+import MotionReveal from "../components/MotionReveal.jsx";
+import { useItems } from "../context/ItemsContext.jsx";
 
 /**
  * BrowsePage
@@ -14,25 +14,31 @@ import { useItems } from '../context/ItemsContext.jsx'
  */
 
 export default function BrowsePage() {
-  const { items } = useItems()
+  const { items } = useItems();
 
   // Simple filters
-  const [q, setQ] = useState('')
-  const [status, setStatus] = useState('All')
+  const [q, setQ] = useState("");
+  const [status, setStatus] = useState("All");
 
   const filtered = useMemo(() => {
-    const query = q.trim().toLowerCase()
+    const query = q.trim().toLowerCase();
     return items
-      .filter((it) => (status === 'All' ? true : it.status === status))
+      .filter((it) => (status === "All" ? true : it.status === status))
       .filter((it) => {
-        if (!query) return true
+        if (!query) return true;
         return (
-          String(it.title || '').toLowerCase().includes(query) ||
-          String(it.description || '').toLowerCase().includes(query) ||
-          String(it.category || '').toLowerCase().includes(query)
-        )
-      })
-  }, [items, q, status])
+          String(it.title || "")
+            .toLowerCase()
+            .includes(query) ||
+          String(it.description || "")
+            .toLowerCase()
+            .includes(query) ||
+          String(it.category || "")
+            .toLowerCase()
+            .includes(query)
+        );
+      });
+  }, [items, q, status]);
 
   return (
     <div className="min-h-screen bg-hero">
@@ -44,7 +50,8 @@ export default function BrowsePage() {
                 Browse <span className="text-brand-blue">items</span>
               </h1>
               <p className="mt-3 max-w-2xl text-base text-slate-700 font-medium">
-                Photos make posts easier to recognize. You can browse without an account.
+                Photos make posts easier to recognize. You can browse without an
+                account.
               </p>
             </MotionReveal>
 
@@ -91,14 +98,22 @@ export default function BrowsePage() {
           {filtered.length === 0 && (
             <MotionReveal delay={0.2}>
               <div className="mt-12 rounded-[2.5rem] border border-brand-blue/20 bg-brand-blue/10 backdrop-blur-xl p-12 text-center shadow-soft">
-                <Search className="w-16 h-16 text-brand-blue/40 mx-auto mb-4" strokeWidth={1.5} />
-                <h3 className="text-xl font-bold text-slate-900">No matches found</h3>
-                <p className="mt-2 text-slate-600 font-medium">Try a different search or filter to find what you're looking for.</p>
+                <Search
+                  className="w-16 h-16 text-brand-blue/40 mx-auto mb-4"
+                  strokeWidth={1.5}
+                />
+                <h3 className="text-xl font-bold text-slate-900">
+                  No matches found
+                </h3>
+                <p className="mt-2 text-slate-600 font-medium">
+                  Try a different search or filter to find what you're looking
+                  for.
+                </p>
               </div>
             </MotionReveal>
           )}
         </Container>
       </Section>
     </div>
-  )
+  );
 }

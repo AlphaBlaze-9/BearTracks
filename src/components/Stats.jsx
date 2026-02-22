@@ -1,7 +1,7 @@
-import React from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
-import { useInViewOnce } from '../hooks/useInViewOnce'
-import { useCountUp } from '../hooks/useCountUp'
+import React from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { useInViewOnce } from "../hooks/useInViewOnce";
+import { useCountUp } from "../hooks/useCountUp";
 
 /**
  * Stats
@@ -10,15 +10,15 @@ import { useCountUp } from '../hooks/useCountUp'
  * Each number animates ONLY once, when the section scrolls into view.
  */
 export default function Stats() {
-  const prefersReducedMotion = useReducedMotion()
-  const [ref, inView] = useInViewOnce({ threshold: 0.25 })
+  const prefersReducedMotion = useReducedMotion();
+  const [ref, inView] = useInViewOnce({ threshold: 0.25 });
 
   const stats = [
-    { label: 'Items returned', value: 1248, suffix: '+' },
-    { label: 'Avg. match time', value: 3.2, suffix: ' hrs', decimals: 1 },
-    { label: 'Active students', value: 760, suffix: '+' },
-    { label: 'Campus drop spots', value: 18, suffix: '' },
-  ]
+    { label: "Items returned", value: 1248, suffix: "+" },
+    { label: "Avg. match time", value: 3.2, suffix: " hrs", decimals: 1 },
+    { label: "Active students", value: 760, suffix: "+" },
+    { label: "Campus drop spots", value: 18, suffix: "" },
+  ];
 
   return (
     <section id="stats" className="relative" ref={ref}>
@@ -29,20 +29,29 @@ export default function Stats() {
           viewport={{ once: true, amount: 0.3 }}
           className="flex flex-col gap-3"
         >
-          <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">Numbers that feel real</h2>
+          <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+            Numbers that feel real
+          </h2>
           <p className="max-w-2xl text-sm text-white/70 md:text-base">
-            These are placeholders — swap them with your real metrics. The animation counts up and stops right on the target.
+            These are placeholders — swap them with your real metrics. The
+            animation counts up and stops right on the target.
           </p>
         </motion.div>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((s, idx) => (
-            <StatCard key={s.label} stat={s} start={inView} idx={idx} reduceMotion={prefersReducedMotion} />
+            <StatCard
+              key={s.label}
+              stat={s}
+              start={inView}
+              idx={idx}
+              reduceMotion={prefersReducedMotion}
+            />
           ))}
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 function StatCard({ stat, start, idx, reduceMotion }) {
@@ -51,7 +60,7 @@ function StatCard({ stat, start, idx, reduceMotion }) {
     start,
     durationMs: 900 + idx * 120,
     decimals: stat.decimals ?? 0,
-  })
+  });
 
   return (
     <motion.div
@@ -66,5 +75,5 @@ function StatCard({ stat, start, idx, reduceMotion }) {
       </div>
       <div className="mt-2 text-sm text-white/70">{stat.label}</div>
     </motion.div>
-  )
+  );
 }

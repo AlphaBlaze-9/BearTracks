@@ -1,11 +1,11 @@
-import { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import Container from '../components/Container.jsx'
-import Section from '../components/Section.jsx'
-import MotionReveal from '../components/MotionReveal.jsx'
-import { useAuth } from '../context/AuthContext.jsx'
-import BearTracksLogo from '../BearTracksLogo.png'
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import Container from "../components/Container.jsx";
+import Section from "../components/Section.jsx";
+import MotionReveal from "../components/MotionReveal.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
+import BearTracksLogo from "../BearTracksLogo.png";
 
 /**
  * LoginPage
@@ -14,41 +14,41 @@ import BearTracksLogo from '../BearTracksLogo.png'
  */
 
 export default function LoginPage() {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const { login } = useAuth()
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const from = location.state?.from || '/'
+  const from = location.state?.from || "/";
 
   async function onSubmit(e) {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError("");
+    setLoading(true);
     try {
-      await login({ email, password })
-      navigate(from)
+      await login({ email, password });
+      navigate(from);
     } catch (err) {
-      setError(err.message || 'Login failed.')
+      setError(err.message || "Login failed.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   async function handleTestLogin(testEmail, testPassword) {
-    setError('')
-    setLoading(true)
+    setError("");
+    setLoading(true);
     try {
-      await login({ email: testEmail, password: testPassword })
-      navigate(from)
+      await login({ email: testEmail, password: testPassword });
+      navigate(from);
     } catch (err) {
-      setError(err.message || 'Login failed.')
+      setError(err.message || "Login failed.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -59,9 +59,15 @@ export default function LoginPage() {
           <div className="mx-auto max-w-[440px]">
             <MotionReveal>
               <div className="flex justify-center mb-6">
-                <img src={BearTracksLogo} alt="Bear Tracks Logo" className="h-28 w-auto" />
+                <img
+                  src={BearTracksLogo}
+                  alt="Bear Tracks Logo"
+                  className="h-28 w-auto"
+                />
               </div>
-              <h1 className="text-4xl font-black tracking-tight text-[#062d78] text-center">Log in</h1>
+              <h1 className="text-4xl font-black tracking-tight text-[#062d78] text-center">
+                Log in
+              </h1>
               <p className="mt-3 text-base text-[#083796] font-bold text-center">
                 Welcome back to BearTracks. Please enter your credentials.
               </p>
@@ -72,7 +78,9 @@ export default function LoginPage() {
                 <div className="bg-brand-blue/5 backdrop-blur-xl rounded-[22px] p-8 sm:p-10">
                   <form onSubmit={onSubmit} className="grid gap-6">
                     <div>
-                      <label className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">Email</label>
+                      <label className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
+                        Email
+                      </label>
                       <input
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -85,7 +93,9 @@ export default function LoginPage() {
 
                     <div>
                       <div className="flex items-center justify-between ml-1">
-                        <label className="text-xs font-black text-[#062d78] uppercase tracking-widest">Password</label>
+                        <label className="text-xs font-black text-[#062d78] uppercase tracking-widest">
+                          Password
+                        </label>
                       </div>
                       <input
                         value={password}
@@ -114,28 +124,39 @@ export default function LoginPage() {
                       disabled={loading}
                       className="mt-2 rounded-2xl bg-brand-blue px-6 py-4 text-sm font-bold text-white shadow-lg shadow-brand-blue/20 hover:bg-brand-blue-dark transition-all disabled:opacity-50"
                     >
-                      {loading ? 'Logging in...' : 'Log in'}
+                      {loading ? "Logging in..." : "Log in"}
                     </motion.button>
 
                     <div className="relative my-2">
-                      <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                      <div
+                        className="absolute inset-0 flex items-center"
+                        aria-hidden="true"
+                      >
                         <div className="w-full border-t border-slate-200"></div>
                       </div>
                     </div>
 
                     <p className="text-sm text-[#062d78] font-bold text-center">
-                      Don’t have an account?{' '}
-                      <Link to="/signup" className="font-bold text-[#ea580c] hover:text-[#c2410c] transition-colors duration-300">
+                      Don’t have an account?{" "}
+                      <Link
+                        to="/signup"
+                        className="font-bold text-[#ea580c] hover:text-[#c2410c] transition-colors duration-300"
+                      >
                         Sign up
                       </Link>
                     </p>
 
                     <div className="relative my-2">
-                      <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                      <div
+                        className="absolute inset-0 flex items-center"
+                        aria-hidden="true"
+                      >
                         <div className="w-full border-t border-slate-200"></div>
                       </div>
                       <div className="relative flex justify-center">
-                        <span className="bg-white px-2 text-xs text-slate-500 uppercase">Test Accounts</span>
+                        <span className="bg-white px-2 text-xs text-slate-500 uppercase">
+                          Test Accounts
+                        </span>
                       </div>
                     </div>
 
@@ -144,7 +165,12 @@ export default function LoginPage() {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         type="button"
-                        onClick={() => handleTestLogin('userbeartracks@gmail.com', 'userbeartracks123')}
+                        onClick={() =>
+                          handleTestLogin(
+                            "userbeartracks@gmail.com",
+                            "userbeartracks123",
+                          )
+                        }
                         disabled={loading}
                         className="rounded-xl border-2 border-brand-blue/20 bg-white/50 px-4 py-2 text-xs font-bold text-[#062d78] hover:bg-brand-blue/5 hover:border-brand-blue/40 transition-all disabled:opacity-50"
                       >
@@ -154,7 +180,12 @@ export default function LoginPage() {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         type="button"
-                        onClick={() => handleTestLogin('directortracks@gmail.com', 'directorbeartracks123')}
+                        onClick={() =>
+                          handleTestLogin(
+                            "directortracks@gmail.com",
+                            "directorbeartracks123",
+                          )
+                        }
                         disabled={loading}
                         className="rounded-xl border-2 border-brand-gold/20 bg-white/50 px-4 py-2 text-xs font-bold text-[#062d78] hover:bg-brand-gold/5 hover:border-brand-gold/40 transition-all disabled:opacity-50"
                       >
@@ -169,5 +200,5 @@ export default function LoginPage() {
         </Container>
       </Section>
     </div>
-  )
+  );
 }

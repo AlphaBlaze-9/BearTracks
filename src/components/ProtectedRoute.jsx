@@ -1,5 +1,5 @@
-import { Navigate, useLocation } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext.jsx'
+import { Navigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 
 /**
  * ProtectedRoute
@@ -10,8 +10,8 @@ import { useAuth } from '../context/AuthContext.jsx'
  * remember where they were going so we can send them back after.
  */
 export default function ProtectedRoute({ children }) {
-  const { isAuthed, loading } = useAuth()
-  const location = useLocation()
+  const { isAuthed, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -23,12 +23,12 @@ export default function ProtectedRoute({ children }) {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (!isAuthed) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
 
-  return children
+  return children;
 }

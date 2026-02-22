@@ -4,12 +4,12 @@
  * Standard horizontal padding + max width.
  * Keeps spacing consistent across the whole site.
  */
-export default function Container({ children, className = '' }) {
+export default function Container({ children, className = "" }) {
   return (
-    <div className={
-      `mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 ${className}`
-    }>
+    <div
+      className={`mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 ${className}`}
+    >
       {children}
     </div>
-  )
+  );
 }

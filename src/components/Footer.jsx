@@ -1,4 +1,4 @@
-import { PawPrint } from 'lucide-react'
+import { PawPrint } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -15,9 +15,13 @@ export default function Footer() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <a className="hover:text-white" href="#how">How it works</a>
+            <a className="hover:text-white" href="#how">
+              How it works
+            </a>
             <span className="text-white/30">•</span>
-            <a className="hover:text-white" href="#cta">Report</a>
+            <a className="hover:text-white" href="#cta">
+              Report
+            </a>
           </div>
         </div>
         <div className="mt-8 text-xs">
@@ -25,5 +29,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }

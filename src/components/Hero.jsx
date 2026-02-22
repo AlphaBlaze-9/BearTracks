@@ -1,6 +1,6 @@
-import { motion, useReducedMotion } from 'framer-motion'
-import { ShieldCheck, Zap, MapPin, Headphones, Shirt, Key } from 'lucide-react'
-import BearTracksLogo from '../BearTracksLogo.png'
+import { motion, useReducedMotion } from "framer-motion";
+import { ShieldCheck, Zap, MapPin, Headphones, Shirt, Key } from "lucide-react";
+import BearTracksLogo from "../BearTracksLogo.png";
 
 /**
  * Hero
@@ -8,7 +8,7 @@ import BearTracksLogo from '../BearTracksLogo.png'
  * Big top section with a gradient background and simple "floaty" shapes.
  */
 export default function Hero() {
-  const prefersReducedMotion = useReducedMotion()
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <section className="relative overflow-hidden">
@@ -24,8 +24,12 @@ export default function Hero() {
         <div className="grid items-center gap-10 md:grid-cols-2">
           <div>
             <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
-              animate={prefersReducedMotion ? undefined : { opacity: 1, scale: 1 }}
+              initial={
+                prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }
+              }
+              animate={
+                prefersReducedMotion ? undefined : { opacity: 1, scale: 1 }
+              }
               className="mb-8"
             >
               <img
@@ -51,17 +55,20 @@ export default function Hero() {
               className="mt-5 text-4xl font-semibold tracking-tight md:text-5xl"
             >
               Find your stuff —
-              <span className="block text-white/80">or help someone else get it back.</span>
+              <span className="block text-white/80">
+                or help someone else get it back.
+              </span>
             </motion.h1>
 
             <motion.p
               initial={prefersReducedMotion ? false : { opacity: 0, y: 14 }}
               animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-              transition={{ delay: 0.10 }}
+              transition={{ delay: 0.1 }}
               className="mt-5 max-w-xl text-base leading-relaxed text-white/75 md:text-lg"
             >
-              Bear Tracks is a clean, friendly lost-and-found experience for schools.
-              Post items, browse matches, and verify claims — all in minutes.
+              Bear Tracks is a clean, friendly lost-and-found experience for
+              schools. Post items, browse matches, and verify claims — all in
+              minutes.
             </motion.p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -113,30 +120,52 @@ export default function Hero() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-sm font-semibold">Latest finds</div>
-                <div className="text-xs text-white/65">Updated in real-time</div>
+                <div className="text-xs text-white/65">
+                  Updated in real-time
+                </div>
               </div>
-              <div className="rounded-xl bg-white/10 px-3 py-2 text-xs text-white/75">Today</div>
+              <div className="rounded-xl bg-white/10 px-3 py-2 text-xs text-white/75">
+                Today
+              </div>
             </div>
 
             <div className="mt-6 space-y-3">
               {[
-                { icon: <Headphones className="w-5 h-5" />, title: 'Wireless earbuds', meta: 'Found near cafeteria • 10:12 AM' },
-                { icon: <Shirt className="w-5 h-5" />, title: 'Blue hoodie', meta: 'Found in gym • 11:40 AM' },
-                { icon: <Key className="w-5 h-5" />, title: 'Key ring', meta: 'Found by main office • 1:05 PM' },
+                {
+                  icon: <Headphones className="w-5 h-5" />,
+                  title: "Wireless earbuds",
+                  meta: "Found near cafeteria • 10:12 AM",
+                },
+                {
+                  icon: <Shirt className="w-5 h-5" />,
+                  title: "Blue hoodie",
+                  meta: "Found in gym • 11:40 AM",
+                },
+                {
+                  icon: <Key className="w-5 h-5" />,
+                  title: "Key ring",
+                  meta: "Found by main office • 1:05 PM",
+                },
               ].map((item, idx) => (
                 <motion.div
                   key={item.title}
                   initial={prefersReducedMotion ? false : { opacity: 0, x: 10 }}
-                  animate={prefersReducedMotion ? undefined : { opacity: 1, x: 0 }}
-                  transition={{ delay: 0.20 + idx * 0.06 }}
+                  animate={
+                    prefersReducedMotion ? undefined : { opacity: 1, x: 0 }
+                  }
+                  transition={{ delay: 0.2 + idx * 0.06 }}
                   className="flex items-center gap-3 rounded-2xl bg-white/5 p-4 hover:bg-white/10"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-white">
                     {item.icon}
                   </div>
                   <div className="min-w-0">
-                    <div className="truncate text-sm font-semibold">{item.title}</div>
-                    <div className="truncate text-xs text-white/65">{item.meta}</div>
+                    <div className="truncate text-sm font-semibold">
+                      {item.title}
+                    </div>
+                    <div className="truncate text-xs text-white/65">
+                      {item.meta}
+                    </div>
                   </div>
                   <div className="ml-auto text-xs text-brand-gold">Open</div>
                 </motion.div>
@@ -153,5 +182,5 @@ export default function Hero() {
         </div>
       </div>
     </section>
-  )
+  );
 }

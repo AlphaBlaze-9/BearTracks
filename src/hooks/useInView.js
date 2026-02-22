@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from "react";
 
 /**
  * useInView
@@ -9,30 +9,30 @@ import { useEffect, useRef, useState } from 'react'
  *   - start the count-up numbers when the stats section appears
  */
 export function useInView(options = { threshold: 0.25 }) {
-  const ref = useRef(null)
-  const [isInView, setIsInView] = useState(false)
+  const ref = useRef(null);
+  const [isInView, setIsInView] = useState(false);
 
   useEffect(() => {
-    const el = ref.current
-    if (!el) return
+    const el = ref.current;
+    if (!el) return;
 
     // If the browser doesn’t support IntersectionObserver, just treat it as in-view.
-    if (typeof IntersectionObserver === 'undefined') {
-      setIsInView(true)
-      return
+    if (typeof IntersectionObserver === "undefined") {
+      setIsInView(true);
+      return;
     }
 
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        setIsInView(true)
+        setIsInView(true);
         // Once visible, we stop observing — this is a one-time trigger.
-        observer.disconnect()
+        observer.disconnect();
       }
-    }, options)
+    }, options);
 
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [options])
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [options]);
 
-  return { ref, isInView }
+  return { ref, isInView };
 }

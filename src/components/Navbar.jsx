@@ -1,13 +1,21 @@
-import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { Bell, Search, ChevronDown, Menu, X, LogOut, Trash2 } from 'lucide-react'
-import Container from './Container.jsx'
-import { useAuth } from '../context/AuthContext.jsx'
-import { useItems } from '../context/ItemsContext.jsx'
-import DeleteAccountModal from './DeleteAccountModal.jsx' // Kept for potential future use or if needed by logic
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import {
+  Bell,
+  Search,
+  ChevronDown,
+  Menu,
+  X,
+  LogOut,
+  Trash2,
+} from "lucide-react";
+import Container from "./Container.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
+import { useItems } from "../context/ItemsContext.jsx";
+import DeleteAccountModal from "./DeleteAccountModal.jsx"; // Kept for potential future use or if needed by logic
 
-import BearTracksLogo from '../BearTracksLogo.png'
+import BearTracksLogo from "../BearTracksLogo.png";
 
 /**
  * Navbar
@@ -16,132 +24,161 @@ import BearTracksLogo from '../BearTracksLogo.png'
  */
 
 function cx(...parts) {
-  return parts.filter(Boolean).join(' ')
+  return parts.filter(Boolean).join(" ");
 }
 
 function useScrollShadow() {
-  const [scrolled, setScrolled] = useState(false)
+  const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-  return scrolled
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return scrolled;
 }
 
 export default function Navbar() {
-  const { isAuthed, user, isAdmin, logout, deleteAccount } = useAuth()
-  const { items, claims } = useItems()
-  const scrolled = useScrollShadow()
-  const [isOpen, setIsOpen] = useState(false)
-  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
-  const [isNotifOpen, setIsNotifOpen] = useState(false)
+  const { isAuthed, user, isAdmin, logout, deleteAccount } = useAuth();
+  const { items, claims } = useItems();
+  const scrolled = useScrollShadow();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
   // const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false) // Unused in provided code but keeping state if needed
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false);
   const [readNotifs, setReadNotifs] = useState(() => {
     try {
-      const saved = localStorage.getItem('read_notifications')
-      return saved ? JSON.parse(saved) : []
+      const saved = localStorage.getItem("read_notifications");
+      return saved ? JSON.parse(saved) : [];
     } catch {
-      return []
+      return [];
     }
-  })
+  });
 
-  const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   async function handleLogout() {
-    if (isLoggingOut) return
-    setIsLoggingOut(true)
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
     try {
-      await logout()
-      navigate('/')
+      await logout();
+      navigate("/");
     } catch (err) {
-      console.error('Logout error:', err)
-      alert('Failed to log out. Please try again.')
+      console.error("Logout error:", err);
+      alert("Failed to log out. Please try again.");
     } finally {
-      setIsLoggingOut(false)
+      setIsLoggingOut(false);
     }
   }
 
   // Calculate notifications: Lost items matches, and Claim status updates
-  const notifications = isAuthed && user ? [
-    ...items.filter(it =>
-      it.user_id === user.id &&
-      it.status === 'Lost' &&
-      it.potential_matches &&
-      it.potential_matches.length > 0 &&
-      !readNotifs.includes(it.id)
-    ).map(item => ({ type: 'match', item })),
+  const notifications =
+    isAuthed && user
+      ? [
+          ...items
+            .filter(
+              (it) =>
+                it.user_id === user.id &&
+                it.status === "Lost" &&
+                it.potential_matches &&
+                it.potential_matches.length > 0 &&
+                !readNotifs.includes(it.id),
+            )
+            .map((item) => ({ type: "match", item })),
 
-    // User notifications (Claim Approved/Denied)
-    ...claims.filter(claim =>
-      claim.userId === user.id &&
-      claim.status !== 'Pending' &&
-      !readNotifs.includes(`claim_${claim.id}`)
-    ).map(claim => ({ type: 'claim', claim, item: items.find(i => String(i.id) === String(claim.itemId)) })),
+          // User notifications (Claim Approved/Denied)
+          ...claims
+            .filter(
+              (claim) =>
+                claim.userId === user.id &&
+                claim.status !== "Pending" &&
+                !readNotifs.includes(`claim_${claim.id}`),
+            )
+            .map((claim) => ({
+              type: "claim",
+              claim,
+              item: items.find((i) => String(i.id) === String(claim.itemId)),
+            })),
 
-    // Admin notifications (New Pending Claims)
-    ...(isAdmin ? claims.filter(claim =>
-      claim.status === 'Pending' &&
-      !readNotifs.includes(`admin_claim_${claim.id}`)
-    ).map(claim => ({ type: 'admin_claim', claim, item: items.find(i => String(i.id) === String(claim.itemId)) })) : [])
-  ] : []
+          // Admin notifications (New Pending Claims)
+          ...(isAdmin
+            ? claims
+                .filter(
+                  (claim) =>
+                    claim.status === "Pending" &&
+                    !readNotifs.includes(`admin_claim_${claim.id}`),
+                )
+                .map((claim) => ({
+                  type: "admin_claim",
+                  claim,
+                  item: items.find(
+                    (i) => String(i.id) === String(claim.itemId),
+                  ),
+                }))
+            : []),
+        ]
+      : [];
 
   function handleNotificationClick(itemId) {
-    setIsNotifOpen(false)
+    setIsNotifOpen(false);
     if (!readNotifs.includes(itemId)) {
-      const newRead = [...readNotifs, itemId]
-      setReadNotifs(newRead)
-      localStorage.setItem('read_notifications', JSON.stringify(newRead))
+      const newRead = [...readNotifs, itemId];
+      setReadNotifs(newRead);
+      localStorage.setItem("read_notifications", JSON.stringify(newRead));
     }
   }
-  const location = useLocation()
-  const navigate = useNavigate()
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // Close the mobile menu when the route changes
   useEffect(() => {
-    setIsOpen(false)
-    setIsAccountMenuOpen(false)
-  }, [location.pathname])
+    setIsOpen(false);
+    setIsAccountMenuOpen(false);
+  }, [location.pathname]);
 
   function goHomeAndScroll(id) {
-    if (location.pathname === '/') {
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
-      return
+    if (location.pathname === "/") {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+      return;
     }
-    navigate('/')
-    setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 60)
+    navigate("/");
+    setTimeout(
+      () => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }),
+      60,
+    );
   }
 
   async function handleDeleteAccount() {
-    const confirmed = window.confirm('Are you sure? All your submitted items will be permanently deleted.')
-    if (!confirmed) return
+    const confirmed = window.confirm(
+      "Are you sure? All your submitted items will be permanently deleted.",
+    );
+    if (!confirmed) return;
 
-    setIsDeleting(true)
+    setIsDeleting(true);
     try {
-      await deleteAccount()
-      alert('Account deleted.')
-      navigate('/')
+      await deleteAccount();
+      alert("Account deleted.");
+      navigate("/");
     } catch (err) {
-      console.error('Delete error:', err)
-      alert(err.message || 'Failed to delete account. Please try again.')
+      console.error("Delete error:", err);
+      alert(err.message || "Failed to delete account. Please try again.");
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
   }
 
   const desktopLink = ({ isActive }) =>
     cx(
-      'rounded-full px-3 py-2 text-sm font-extrabold text-[#062d78] hover:bg-brand-gold/20 transition-colors',
-      isActive ? 'bg-brand-gold/25 text-[#062d78] shadow-sm' : ''
-    )
+      "rounded-full px-3 py-2 text-sm font-extrabold text-[#062d78] hover:bg-brand-gold/20 transition-colors",
+      isActive ? "bg-brand-gold/25 text-[#062d78] shadow-sm" : "",
+    );
 
   return (
     <header
       className={
-        'sticky top-0 z-50 border-b border-brand-blue/20 bg-brand-blue/15 backdrop-blur-lg transition-all ' +
-        (scrolled ? 'shadow-soft bg-brand-blue/25' : '')
+        "sticky top-0 z-50 border-b border-brand-blue/20 bg-brand-blue/15 backdrop-blur-lg transition-all " +
+        (scrolled ? "shadow-soft bg-brand-blue/25" : "")
       }
     >
       <Container className="py-3">
@@ -171,7 +208,7 @@ export default function Navbar() {
 
             <button
               type="button"
-              onClick={() => goHomeAndScroll('faq')}
+              onClick={() => goHomeAndScroll("faq")}
               className="rounded-full px-4 py-2 text-sm font-extrabold text-[#062d78] hover:bg-brand-gold/15 transition-all"
             >
               FAQ
@@ -215,14 +252,16 @@ export default function Navbar() {
                           </div>
                         ) : (
                           <div className="max-h-64 overflow-y-auto flex flex-col gap-1">
-                            {notifications.map(notif => {
-                              if (notif.type === 'match') {
+                            {notifications.map((notif) => {
+                              if (notif.type === "match") {
                                 const { item } = notif;
                                 return (
                                   <Link
                                     key={`match_${item.id}`}
                                     to={`/items/${item.id}`}
-                                    onClick={() => handleNotificationClick(item.id)}
+                                    onClick={() =>
+                                      handleNotificationClick(item.id)
+                                    }
                                     className="block rounded-xl bg-brand-blue/5 p-3 hover:bg-brand-blue/10 transition-colors"
                                   >
                                     <div className="flex items-start gap-3">
@@ -230,47 +269,74 @@ export default function Navbar() {
                                         <Search className="w-4 h-4" />
                                       </div>
                                       <div>
-                                        <div className="text-xs font-bold text-[#062d78]">Match Found!</div>
+                                        <div className="text-xs font-bold text-[#062d78]">
+                                          Match Found!
+                                        </div>
                                         <div className="text-xs text-slate-600 line-clamp-1">
                                           Possible match for "{item.title}"
                                         </div>
                                       </div>
                                     </div>
                                   </Link>
-                                )
+                                );
                               }
-                              if (notif.type === 'claim') {
+                              if (notif.type === "claim") {
                                 const { claim, item } = notif;
-                                const isApproved = claim.status === 'Approved';
+                                const isApproved = claim.status === "Approved";
                                 return (
                                   <Link
                                     key={`claim_${claim.id}`}
                                     to={`/items/${claim.itemId}`}
-                                    onClick={() => handleNotificationClick(`claim_${claim.id}`)}
-                                    className={`block rounded-xl p-3 transition-colors ${isApproved ? 'bg-green-50 hover:bg-green-100' : 'bg-red-50 hover:bg-red-100'}`}
+                                    onClick={() =>
+                                      handleNotificationClick(
+                                        `claim_${claim.id}`,
+                                      )
+                                    }
+                                    className={`block rounded-xl p-3 transition-colors ${isApproved ? "bg-green-50 hover:bg-green-100" : "bg-red-50 hover:bg-red-100"}`}
                                   >
                                     <div className="flex items-start gap-3">
-                                      <div className={isApproved ? "text-green-600 pt-0.5" : "text-red-600 pt-0.5"}>
+                                      <div
+                                        className={
+                                          isApproved
+                                            ? "text-green-600 pt-0.5"
+                                            : "text-red-600 pt-0.5"
+                                        }
+                                      >
                                         <Bell className="w-4 h-4" />
                                       </div>
                                       <div>
-                                        <div className={`text-xs font-bold ${isApproved ? 'text-green-800' : 'text-red-800'}`}>Claim {claim.status}</div>
+                                        <div
+                                          className={`text-xs font-bold ${isApproved ? "text-green-800" : "text-red-800"}`}
+                                        >
+                                          Claim {claim.status}
+                                        </div>
                                         <div className="text-xs text-slate-600 mt-0.5">
-                                          Your claim for "{item?.title || 'an item'}" was {claim.status.toLowerCase()}.
-                                          {isApproved && <span className="block mt-1 font-bold text-green-700">Please pick it up at the Front Office.</span>}
+                                          Your claim for "
+                                          {item?.title || "an item"}" was{" "}
+                                          {claim.status.toLowerCase()}.
+                                          {isApproved && (
+                                            <span className="block mt-1 font-bold text-green-700">
+                                              Please pick it up at the Front
+                                              Office.
+                                            </span>
+                                          )}
                                         </div>
                                       </div>
                                     </div>
                                   </Link>
-                                )
+                                );
                               }
-                              if (notif.type === 'admin_claim') {
+                              if (notif.type === "admin_claim") {
                                 const { claim, item } = notif;
                                 return (
                                   <Link
                                     key={`admin_claim_${claim.id}`}
                                     to="/claims"
-                                    onClick={() => handleNotificationClick(`admin_claim_${claim.id}`)}
+                                    onClick={() =>
+                                      handleNotificationClick(
+                                        `admin_claim_${claim.id}`,
+                                      )
+                                    }
                                     className="block rounded-xl bg-brand-orange/5 p-3 hover:bg-brand-orange/10 transition-colors"
                                   >
                                     <div className="flex items-start gap-3">
@@ -278,20 +344,27 @@ export default function Navbar() {
                                         <Bell className="w-4 h-4" />
                                       </div>
                                       <div>
-                                        <div className="text-xs font-bold text-orange-800">New Claim Request!</div>
+                                        <div className="text-xs font-bold text-orange-800">
+                                          New Claim Request!
+                                        </div>
                                         <div className="text-xs text-slate-600 mt-0.5">
-                                          {claim.name} filed a claim for "{item?.title || 'an item'}". Review it now.
+                                          {claim.name} filed a claim for "
+                                          {item?.title || "an item"}". Review it
+                                          now.
                                         </div>
                                       </div>
                                     </div>
                                   </Link>
-                                )
+                                );
                               }
                             })}
                           </div>
                         )}
                       </motion.div>
-                      <div className="fixed inset-0 z-[-1]" onClick={() => setIsNotifOpen(false)} />
+                      <div
+                        className="fixed inset-0 z-[-1]"
+                        onClick={() => setIsNotifOpen(false)}
+                      />
                     </>
                   )}
                 </AnimatePresence>
@@ -320,9 +393,12 @@ export default function Navbar() {
                   className="flex items-center gap-3 rounded-full border border-brand-blue/20 bg-brand-blue/10 px-4 py-2 text-sm font-black text-[#062d78] hover:bg-brand-blue/20 transition-all"
                 >
                   <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                  {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                  {user.user_metadata?.full_name || user.email?.split("@")[0]}
                   <ChevronDown
-                    className={cx('h-4 w-4 transition-transform', isAccountMenuOpen ? 'rotate-180' : '')}
+                    className={cx(
+                      "h-4 w-4 transition-transform",
+                      isAccountMenuOpen ? "rotate-180" : "",
+                    )}
                   />
                 </button>
 
@@ -344,13 +420,13 @@ export default function Navbar() {
                           className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <LogOut className="w-4 h-4" />
-                          {isLoggingOut ? 'Logging out...' : 'Log out'}
+                          {isLoggingOut ? "Logging out..." : "Log out"}
                         </button>
                         <div className="my-1 h-px bg-slate-100" />
                         <button
                           onClick={() => {
-                            setIsAccountMenuOpen(false)
-                            handleDeleteAccount()
+                            setIsAccountMenuOpen(false);
+                            handleDeleteAccount();
                           }}
                           className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors"
                         >
@@ -358,7 +434,10 @@ export default function Navbar() {
                           Delete Account
                         </button>
                       </motion.div>
-                      <div className="fixed inset-0 z-[-1]" onClick={() => setIsAccountMenuOpen(false)} />
+                      <div
+                        className="fixed inset-0 z-[-1]"
+                        onClick={() => setIsAccountMenuOpen(false)}
+                      />
                     </>
                   )}
                 </AnimatePresence>
@@ -374,7 +453,7 @@ export default function Navbar() {
             aria-label="Open menu"
           >
             {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            <span className="sr-only">{isOpen ? 'Close' : 'Menu'}</span>
+            <span className="sr-only">{isOpen ? "Close" : "Menu"}</span>
           </button>
         </div>
       </Container>
@@ -384,14 +463,18 @@ export default function Navbar() {
         {isOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
+            animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
             className="md:hidden overflow-hidden border-t border-brand-blue/15 bg-white/65 backdrop-blur"
           >
             <Container className="py-3">
               <div className="flex flex-col gap-1">
-                <NavLink to="/" className="rounded-xl px-3 py-3 text-sm text-slate-700 hover:bg-brand-gold/15" end>
+                <NavLink
+                  to="/"
+                  className="rounded-xl px-3 py-3 text-sm text-slate-700 hover:bg-brand-gold/15"
+                  end
+                >
                   Home
                 </NavLink>
                 <NavLink
@@ -409,7 +492,7 @@ export default function Navbar() {
 
                 <button
                   type="button"
-                  onClick={() => goHomeAndScroll('faq')}
+                  onClick={() => goHomeAndScroll("faq")}
                   className="rounded-xl px-3 py-3 text-left text-sm font-bold text-slate-700 hover:bg-brand-gold/15"
                 >
                   FAQ
@@ -447,13 +530,13 @@ export default function Navbar() {
                       disabled={isLoggingOut}
                       className="rounded-xl border border-brand-blue/15 bg-white/60 px-3 py-3 text-center text-sm font-medium text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {isLoggingOut ? 'Logging out...' : 'Log out'}
+                      {isLoggingOut ? "Logging out..." : "Log out"}
                     </button>
                     <button
                       type="button"
                       onClick={() => {
-                        setIsOpen(false)
-                        handleDeleteAccount()
+                        setIsOpen(false);
+                        handleDeleteAccount();
                       }}
                       className="rounded-xl bg-red-50 px-3 py-3 text-center text-sm font-bold text-red-500"
                     >
@@ -467,5 +550,5 @@ export default function Navbar() {
         )}
       </AnimatePresence>
     </header>
-  )
+  );
 }

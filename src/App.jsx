@@ -1,16 +1,16 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import Navbar from './components/Navbar.jsx'
-import ProtectedRoute from './components/ProtectedRoute.jsx'
-import { AuthProvider } from './context/AuthContext.jsx'
-import { ItemsProvider } from './context/ItemsContext.jsx'
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Navbar from "./components/Navbar.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import { AuthProvider } from "./context/AuthContext.jsx";
+import { ItemsProvider } from "./context/ItemsContext.jsx";
 
-import HomePage from './pages/HomePage.jsx'
-import BrowsePage from './pages/BrowsePage.jsx'
-import SubmitPage from './pages/SubmitPage.jsx'
-import LoginPage from './pages/LoginPage.jsx'
-import SignupPage from './pages/SignupPage.jsx'
-import ItemDetailsPage from './pages/ItemDetailsPage.jsx'
-import AdminClaimsPage from './pages/AdminClaimsPage.jsx'
+import HomePage from "./pages/HomePage.jsx";
+import BrowsePage from "./pages/BrowsePage.jsx";
+import SubmitPage from "./pages/SubmitPage.jsx";
+import LoginPage from "./pages/LoginPage.jsx";
+import SignupPage from "./pages/SignupPage.jsx";
+import ItemDetailsPage from "./pages/ItemDetailsPage.jsx";
+import AdminClaimsPage from "./pages/AdminClaimsPage.jsx";
 
 /**
  * App
@@ -53,5 +53,5 @@ export default function App() {
         </ItemsProvider>
       </AuthProvider>
     </BrowserRouter>
-  )
+  );
 }

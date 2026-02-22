@@ -1,5 +1,5 @@
-import { useRef } from 'react'
-import { CameraIcon } from './Icons.jsx'
+import { useRef } from "react";
+import { CameraIcon } from "./Icons.jsx";
 
 /**
  * ImagePicker
@@ -11,23 +11,23 @@ import { CameraIcon } from './Icons.jsx'
  */
 
 export default function ImagePicker({ value, onChange, onFileSelect }) {
-  const inputRef = useRef(null)
+  const inputRef = useRef(null);
 
   function handleFile(file) {
-    if (!file) return
+    if (!file) return;
 
     // 1. Pass the raw file object to the parent for Supabase upload
-    if (onFileSelect) onFileSelect(file)
+    if (onFileSelect) onFileSelect(file);
 
     // 2. Local preview using base64 (remains unchanged for UI logic)
-    const reader = new FileReader()
-    reader.onload = () => onChange(String(reader.result || ''))
-    reader.readAsDataURL(file)
+    const reader = new FileReader();
+    reader.onload = () => onChange(String(reader.result || ""));
+    reader.readAsDataURL(file);
   }
 
   function handleRemove() {
-    onChange('')
-    if (onFileSelect) onFileSelect(null)
+    onChange("");
+    if (onFileSelect) onFileSelect(null);
   }
 
   return (
@@ -41,14 +41,20 @@ export default function ImagePicker({ value, onChange, onFileSelect }) {
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
           <div className="aspect-[4/3] w-full bg-slate-100">
             {value ? (
-              <img src={value} alt="Preview" className="h-full w-full object-cover" />
+              <img
+                src={value}
+                alt="Preview"
+                className="h-full w-full object-cover"
+              />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
                 <div className="text-center">
                   <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-blue text-white">
                     <CameraIcon className="h-6 w-6" />
                   </div>
-                  <div className="mt-2 text-xs text-slate-500">No photo yet</div>
+                  <div className="mt-2 text-xs text-slate-500">
+                    No photo yet
+                  </div>
                 </div>
               </div>
             )}
@@ -84,5 +90,5 @@ export default function ImagePicker({ value, onChange, onFileSelect }) {
         </div>
       </div>
     </div>
-  )
+  );
 }

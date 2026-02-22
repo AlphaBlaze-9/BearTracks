@@ -1,4 +1,4 @@
-import { Camera, Search, ShieldCheck, Handshake } from 'lucide-react'
+import { Camera, Search, ShieldCheck, Handshake } from "lucide-react";
 
 // ... imports
 
@@ -7,60 +7,60 @@ export default function HowItWorks() {
 
   const steps = [
     {
-      title: 'Post',
-      body: 'Take a quick photo, choose a category, and drop a short description.',
+      title: "Post",
+      body: "Take a quick photo, choose a category, and drop a short description.",
       icon: <Camera className="w-full h-full p-4" strokeWidth={1.5} />,
-      color: 'from-orange-400 to-orange-600',
+      color: "from-orange-400 to-orange-600",
     },
     {
-      title: 'Match',
-      body: 'Students browse and filter. Clear location tags make it easy to narrow down.',
+      title: "Match",
+      body: "Students browse and filter. Clear location tags make it easy to narrow down.",
       icon: <Search className="w-full h-full p-4" strokeWidth={1.5} />,
-      color: 'from-blue-500 to-blue-700',
+      color: "from-blue-500 to-blue-700",
     },
     {
-      title: 'Verify',
-      body: 'The claimant answers a simple verification prompt to confirm ownership.',
+      title: "Verify",
+      body: "The claimant answers a simple verification prompt to confirm ownership.",
       icon: <ShieldCheck className="w-full h-full p-4" strokeWidth={1.5} />,
-      color: 'from-orange-500 to-red-500',
+      color: "from-orange-500 to-red-500",
     },
     {
-      title: 'Pick up',
-      body: 'Pickup instructions are shown clearly (office hours, contact, drop spot).',
+      title: "Pick up",
+      body: "Pickup instructions are shown clearly (office hours, contact, drop spot).",
       icon: <Handshake className="w-full h-full p-4" strokeWidth={1.5} />,
-      color: 'from-blue-400 to-indigo-600',
+      color: "from-blue-400 to-indigo-600",
     },
-  ]
+  ];
 
   useEffect(() => {
-    let timer
+    let timer;
     if (isInView) {
       timer = setTimeout(() => {
-        setHasDelayPassed(true)
-      }, 2000)
+        setHasDelayPassed(true);
+      }, 2000);
     } else {
-      setHasDelayPassed(false)
+      setHasDelayPassed(false);
     }
-    return () => clearTimeout(timer)
-  }, [isInView])
+    return () => clearTimeout(timer);
+  }, [isInView]);
 
   useEffect(() => {
-    let interval
+    let interval;
     if (isInView && isAutoPlaying && hasDelayPassed) {
       interval = setInterval(() => {
-        setDirection(1)
-        setActiveIndex((prev) => (prev + 1) % steps.length)
-      }, 4500) // Slightly longer to allow reading
+        setDirection(1);
+        setActiveIndex((prev) => (prev + 1) % steps.length);
+      }, 4500); // Slightly longer to allow reading
     }
-    return () => clearInterval(interval)
-  }, [isInView, isAutoPlaying, hasDelayPassed, steps.length])
+    return () => clearInterval(interval);
+  }, [isInView, isAutoPlaying, hasDelayPassed, steps.length]);
 
   const handleStepClick = (index) => {
-    if (index === activeIndex) return
-    setDirection(index > activeIndex ? 1 : -1)
-    setActiveIndex(index)
-    setIsAutoPlaying(false) // Manual control takes over
-  }
+    if (index === activeIndex) return;
+    setDirection(index > activeIndex ? 1 : -1);
+    setActiveIndex(index);
+    setIsAutoPlaying(false); // Manual control takes over
+  };
 
   const variants = {
     enter: (direction) => ({
@@ -80,13 +80,19 @@ export default function HowItWorks() {
       opacity: 0,
       scale: 1.2,
     }),
-  }
+  };
 
   return (
-    <section id="how" ref={sectionRef} className="relative overflow-hidden py-32 mt-20">
+    <section
+      id="how"
+      ref={sectionRef}
+      className="relative overflow-hidden py-32 mt-20"
+    >
       {/* Background ambient glow - significantly larger and softer */}
       <div className="absolute inset-0 pointer-events-none opacity-25 transition-all duration-1000 overflow-hidden">
-        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full blur-[160px] bg-gradient-to-r ${steps[activeIndex].color}`} />
+        <div
+          className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full blur-[160px] bg-gradient-to-r ${steps[activeIndex].color}`}
+        />
       </div>
 
       <div className="container relative mx-auto px-4 md:px-6">
@@ -125,13 +131,17 @@ export default function HowItWorks() {
                   transition={{
                     x: { type: "spring", stiffness: 260, damping: 20 },
                     opacity: { duration: 0.4 },
-                    scale: { duration: 0.5 }
+                    scale: { duration: 0.5 },
                   }}
                   className={`flex h-full w-full flex-col items-center justify-center rounded-[3.5rem] bg-gradient-to-br ${steps[activeIndex].color} shadow-2xl p-8`}
                 >
                   <motion.div
                     animate={{ y: [0, -10, 0] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
                     className="h-40 w-40 md:h-56 md:w-56 text-white drop-shadow-2xl"
                   >
                     {steps[activeIndex].icon}
@@ -139,8 +149,12 @@ export default function HowItWorks() {
 
                   {/* Mobile-only content display */}
                   <div className="mt-8 text-center text-white md:hidden">
-                    <h3 className="text-3xl font-bold">{steps[activeIndex].title}</h3>
-                    <p className="mt-3 text-lg text-white/90 leading-relaxed px-4">{steps[activeIndex].body}</p>
+                    <h3 className="text-3xl font-bold">
+                      {steps[activeIndex].title}
+                    </h3>
+                    <p className="mt-3 text-lg text-white/90 leading-relaxed px-4">
+                      {steps[activeIndex].body}
+                    </p>
                   </div>
                 </motion.div>
               </AnimatePresence>
@@ -153,31 +167,49 @@ export default function HowItWorks() {
               <button
                 key={s.title}
                 onClick={() => handleStepClick(i)}
-                className={`group relative text-left w-full transition-all duration-500 ${activeIndex === i ? 'scale-105' : 'opacity-30 hover:opacity-100'
-                  }`}
+                className={`group relative text-left w-full transition-all duration-500 ${
+                  activeIndex === i
+                    ? "scale-105"
+                    : "opacity-30 hover:opacity-100"
+                }`}
               >
-                <div className={`glass relative overflow-hidden rounded-[2.5rem] p-8 transition-all duration-500 ${activeIndex === i ? 'ring-2 ring-white/40 shadow-2xl bg-white/[0.12]' : 'border border-white/5'
-                  }`}>
+                <div
+                  className={`glass relative overflow-hidden rounded-[2.5rem] p-8 transition-all duration-500 ${
+                    activeIndex === i
+                      ? "ring-2 ring-white/40 shadow-2xl bg-white/[0.12]"
+                      : "border border-white/5"
+                  }`}
+                >
                   {/* Progress bar with smooth linear animation */}
                   <AnimatePresence>
-                    {activeIndex === i && isAutoPlaying && isInView && hasDelayPassed && (
-                      <motion.div
-                        key="progress-bar"
-                        initial={{ width: 0 }}
-                        animate={{ width: "100%" }}
-                        transition={{ duration: 4.5, ease: "linear" }}
-                        className={`absolute bottom-0 left-0 h-2 bg-gradient-to-r ${s.color}`}
-                      />
-                    )}
+                    {activeIndex === i &&
+                      isAutoPlaying &&
+                      isInView &&
+                      hasDelayPassed && (
+                        <motion.div
+                          key="progress-bar"
+                          initial={{ width: 0 }}
+                          animate={{ width: "100%" }}
+                          transition={{ duration: 4.5, ease: "linear" }}
+                          className={`absolute bottom-0 left-0 h-2 bg-gradient-to-r ${s.color}`}
+                        />
+                      )}
                   </AnimatePresence>
 
                   <div className="flex items-center gap-8">
-                    <div className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-white/10 text-white transition-all duration-500 shadow-inner p-4 ${activeIndex === i ? 'scale-110 rotate-6 bg-white/20' : 'group-hover:rotate-3'
-                      }`}>
+                    <div
+                      className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-white/10 text-white transition-all duration-500 shadow-inner p-4 ${
+                        activeIndex === i
+                          ? "scale-110 rotate-6 bg-white/20"
+                          : "group-hover:rotate-3"
+                      }`}
+                    >
                       {s.icon}
                     </div>
                     <div className="flex-1">
-                      <h3 className={`text-3xl font-extrabold transition-colors ${activeIndex === i ? 'text-white' : 'text-white/60'}`}>
+                      <h3
+                        className={`text-3xl font-extrabold transition-colors ${activeIndex === i ? "text-white" : "text-white/60"}`}
+                      >
                         {s.title}
                       </h3>
                       <AnimatePresence mode="wait">
@@ -202,5 +234,5 @@ export default function HowItWorks() {
         </div>
       </div>
     </section>
-  )
+  );
 }

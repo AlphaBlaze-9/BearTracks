@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from "react";
 
 /**
  * CountUp
@@ -23,57 +23,59 @@ export default function CountUp({
   value,
   duration = 1200,
   decimals = 0,
-  prefix = '',
-  suffix = '',
+  prefix = "",
+  suffix = "",
   start = true,
 }) {
-  const [display, setDisplay] = useState(0)
+  const [display, setDisplay] = useState(0);
 
   const formatter = useMemo(() => {
     return new Intl.NumberFormat(undefined, {
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
-    })
-  }, [decimals])
+    });
+  }, [decimals]);
 
   useEffect(() => {
-    if (!start) return
+    if (!start) return;
 
     // Respect reduced-motion: jump straight to the final value.
-    const prefersReduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
+    const prefersReduced = window.matchMedia?.(
+      "(prefers-reduced-motion: reduce)",
+    )?.matches;
     if (prefersReduced) {
-      setDisplay(value)
-      return
+      setDisplay(value);
+      return;
     }
 
-    let rafId = null
-    const startTime = performance.now()
-    const from = 0
-    const to = value
+    let rafId = null;
+    const startTime = performance.now();
+    const from = 0;
+    const to = value;
 
     const tick = (now) => {
-      const elapsed = now - startTime
-      const t = Math.min(1, elapsed / duration)
+      const elapsed = now - startTime;
+      const t = Math.min(1, elapsed / duration);
 
       // Ease-out so it feels “snappy” at the end.
-      const eased = 1 - Math.pow(1 - t, 3)
-      const next = from + (to - from) * eased
+      const eased = 1 - Math.pow(1 - t, 3);
+      const next = from + (to - from) * eased;
 
-      setDisplay(next)
+      setDisplay(next);
 
       if (t < 1) {
-        rafId = requestAnimationFrame(tick)
+        rafId = requestAnimationFrame(tick);
       } else {
-        setDisplay(to)
+        setDisplay(to);
       }
-    }
+    };
 
-    rafId = requestAnimationFrame(tick)
+    rafId = requestAnimationFrame(tick);
 
     return () => {
-      if (rafId) cancelAnimationFrame(rafId)
-    }
-  }, [start, duration, value])
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [start, duration, value]);
 
   return (
     <span>
@@ -81,5 +83,5 @@ export default function CountUp({
       {formatter.format(display)}
       {suffix}
     </span>
-  )
+  );
 }

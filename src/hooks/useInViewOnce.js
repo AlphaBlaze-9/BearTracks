@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from "react";
 
 /**
  * useInViewOnce
@@ -7,23 +7,23 @@ import { useEffect, useRef, useState } from 'react'
  * Returns [ref, isInView]. Once it becomes visible, it stays true.
  */
 export function useInViewOnce(options = { threshold: 0.2 }) {
-  const ref = useRef(null)
-  const [inView, setInView] = useState(false)
+  const ref = useRef(null);
+  const [inView, setInView] = useState(false);
 
   useEffect(() => {
-    if (!ref.current || inView) return
+    if (!ref.current || inView) return;
 
-    const obs = new IntersectionObserver(entries => {
-      const entry = entries[0]
+    const obs = new IntersectionObserver((entries) => {
+      const entry = entries[0];
       if (entry.isIntersecting) {
-        setInView(true)
-        obs.disconnect()
+        setInView(true);
+        obs.disconnect();
       }
-    }, options)
+    }, options);
 
-    obs.observe(ref.current)
-    return () => obs.disconnect()
-  }, [inView, options])
+    obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [inView, options]);
 
-  return [ref, inView]
+  return [ref, inView];
 }
