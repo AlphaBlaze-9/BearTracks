@@ -36,7 +36,7 @@ export default function AdminClaimsPage() {
                 </Container>
             </Section>
 
-            <Section className="pt-0 -mt-6 sm:-mt-10 relative z-10">
+            <Section className="pt-0 -mt-10 sm:-mt-16 relative z-10">
                 <Container>
                     <div className="flex flex-col gap-12">
 
