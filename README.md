@@ -27,7 +27,6 @@
 ---
 
 ## Technology
-> **Note:** Replace the placeholders below with your *actual* stack (judges dislike “or” lists).
 
 - **Frontend:** React, Vite, TypeScript, Tailwind CSS  
 - **Backend:** Node.js, Serverless/Edge Functions  
