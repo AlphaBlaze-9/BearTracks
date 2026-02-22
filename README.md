@@ -58,6 +58,10 @@ To get a local copy of this FBLA project up and running, follow these simple ste
    ```
 6. Open your browser and navigate to `http://localhost:5173` to view the app!
 
+## Citations
+
+“Networking · React Native.” React Native, 8 October 2025, https://reactnative.dev/docs/network. Accessed 12 November 2025. “100 Color Combinations To Influence Your Next Design.” Figma, https://www.figma.com/resource-library/color-combinations/. Accessed 12 November 2025. “React JSX.” W3Schools, https://www.w3schools.com/react/react_jsx.asp. Accessed 12 November 2025. “Using the Fetch API - Web APIs | MDN.” MDN Web Docs, 20 August 2025, https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch. Accessed 12 November 2025. “Window localStorage Property.” W3Schools, https://www.w3schools.com/jsref/prop_win_localstorage.asp. Accessed 12 November 2025. “Website Infrastructure Options | University IT.” University IT, https://uit.stanford.edu/guide/website/infrastructure-options. Accessed 12 November 2025. Erstad, Will. "The Graphic Designer's Guide to the Psychology of Color." Rasmussen University, 17 Jan. 2018, www.rasmussen.edu/degrees/design/blog/psychology-of-color/. GeeksforGeeks. "React Tutorial." 27 Sept. 2025, www.geeksforgeeks.org/reactjs/react/.
+
 ## Contributing
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
