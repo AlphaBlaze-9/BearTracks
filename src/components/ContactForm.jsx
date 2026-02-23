@@ -21,10 +21,11 @@ export default function ContactForm() {
         <form onSubmit={handleSubmit} className="mt-8 grid gap-5">
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
-              <label className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
+              <label htmlFor="contact-name" className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
                 Name
               </label>
               <input
+                id="contact-name"
                 required
                 type="text"
                 placeholder="Samarth"
@@ -32,10 +33,11 @@ export default function ContactForm() {
               />
             </div>
             <div>
-              <label className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
+              <label htmlFor="contact-email" className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
                 School Email
               </label>
               <input
+                id="contact-email"
                 required
                 type="email"
                 placeholder="you@school.edu"
@@ -45,10 +47,11 @@ export default function ContactForm() {
           </div>
 
           <div>
-            <label className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
+            <label htmlFor="contact-school" className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
               School Name
             </label>
             <input
+              id="contact-school"
               required
               type="text"
               placeholder="Bear Creek High"
@@ -57,10 +60,11 @@ export default function ContactForm() {
           </div>
 
           <div>
-            <label className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
+            <label htmlFor="contact-message" className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
               Message
             </label>
             <textarea
+              id="contact-message"
               required
               rows={4}
               placeholder="Tell us about your school"

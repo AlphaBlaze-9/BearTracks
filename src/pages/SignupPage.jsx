@@ -63,10 +63,11 @@ export default function SignupPage() {
                 <div className="bg-brand-blue/5 backdrop-blur-xl rounded-[22px] p-8 sm:p-10">
                   <form onSubmit={onSubmit} className="grid gap-6">
                     <div>
-                      <label className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
+                      <label htmlFor="signup-name" className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
                         Name
                       </label>
                       <input
+                        id="signup-name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
@@ -76,10 +77,11 @@ export default function SignupPage() {
                     </div>
 
                     <div>
-                      <label className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
+                      <label htmlFor="signup-email" className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
                         Email
                       </label>
                       <input
+                        id="signup-email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         type="email"
@@ -90,10 +92,11 @@ export default function SignupPage() {
                     </div>
 
                     <div>
-                      <label className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
+                      <label htmlFor="signup-password" className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
                         Password
                       </label>
                       <input
+                        id="signup-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         type="password"

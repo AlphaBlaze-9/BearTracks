@@ -78,10 +78,11 @@ export default function LoginPage() {
                 <div className="bg-brand-blue/5 backdrop-blur-xl rounded-[22px] p-8 sm:p-10">
                   <form onSubmit={onSubmit} className="grid gap-6">
                     <div>
-                      <label className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
+                      <label htmlFor="login-email" className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
                         Email
                       </label>
                       <input
+                        id="login-email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         type="email"
@@ -93,11 +94,12 @@ export default function LoginPage() {
 
                     <div>
                       <div className="flex items-center justify-between ml-1">
-                        <label className="text-xs font-black text-[#062d78] uppercase tracking-widest">
+                        <label htmlFor="login-password" className="text-xs font-black text-[#062d78] uppercase tracking-widest">
                           Password
                         </label>
                       </div>
                       <input
+                        id="login-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         type="password"

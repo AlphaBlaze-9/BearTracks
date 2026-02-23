@@ -57,6 +57,7 @@ export default function HomePage() {
               muted
               loop
               playsInline
+              aria-label="Background video showing students on campus using the Bear Tracks app"
               className="h-full w-full object-cover"
               onTimeUpdate={(e) => {
                 // Only play the first 10 seconds as requested
@@ -253,15 +254,15 @@ export default function HomePage() {
 
             <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {[
-                { label: "Items returned", value: 1287, suffix: "+" },
+                { label: "Items returned", value: 42, suffix: "+" },
                 {
                   label: "Avg. time to match",
-                  value: 3.2,
+                  value: 2.5,
                   decimals: 1,
                   suffix: " days",
                 },
-                { label: "Reports this week", value: 94 },
-                { label: "Matches suggested", value: 312 },
+                { label: "Reports this week", value: 12 },
+                { label: "Matches suggested", value: 18 },
               ].map((stat, idx) => (
                 <MotionReveal key={stat.label} delay={idx * 0.1} y={20}>
                   <StatCard {...stat} />
@@ -521,11 +522,10 @@ function HowItWorksSection() {
             <button
               key={idx}
               onClick={() => handleCardClick(idx)}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                activeIndex === idx
-                  ? "w-8 bg-brand-blue"
-                  : "w-2 bg-slate-300 hover:bg-slate-400"
-              }`}
+              className={`h-2 rounded-full transition-all duration-300 ${activeIndex === idx
+                ? "w-8 bg-brand-blue"
+                : "w-2 bg-slate-300 hover:bg-slate-400"
+                }`}
             />
           ))}
         </div>

@@ -343,10 +343,11 @@ export default function SubmitPage() {
                   <form className="grid gap-6" onSubmit={onSubmit}>
                     <div className="grid gap-6 sm:grid-cols-2">
                       <div className="sm:col-span-2">
-                        <label className="text-sm font-bold text-slate-700 ml-1">
+                        <label htmlFor="submit-title" className="text-sm font-bold text-slate-700 ml-1">
                           Title
                         </label>
                         <input
+                          id="submit-title"
                           value={title}
                           onChange={(e) => setTitle(e.target.value)}
                           placeholder="e.g., Calculator, AirPods case, Hoodie"
@@ -356,10 +357,11 @@ export default function SubmitPage() {
                       </div>
 
                       <div className="sm:col-span-2">
-                        <label className="text-sm font-bold text-slate-700 ml-1">
+                        <label htmlFor="submit-description" className="text-sm font-bold text-slate-700 ml-1">
                           Description
                         </label>
                         <textarea
+                          id="submit-description"
                           value={description}
                           onChange={(e) => setDescription(e.target.value)}
                           placeholder="Add identifying details (color, brand, stickers, etc.)"
@@ -370,10 +372,11 @@ export default function SubmitPage() {
                       </div>
 
                       <div>
-                        <label className="text-sm font-bold text-slate-700 ml-1">
+                        <label htmlFor="submit-category" className="text-sm font-bold text-slate-700 ml-1">
                           Category
                         </label>
                         <select
+                          id="submit-category"
                           value={category}
                           onChange={(e) => setCategory(e.target.value)}
                           className="mt-2 select-field h-[54px] font-bold text-slate-700"
@@ -387,10 +390,11 @@ export default function SubmitPage() {
                       </div>
 
                       <div>
-                        <label className="text-sm font-bold text-slate-700 ml-1">
+                        <label htmlFor="submit-location" className="text-sm font-bold text-slate-700 ml-1">
                           Location (optional)
                         </label>
                         <input
+                          id="submit-location"
                           value={location}
                           onChange={(e) => setLocation(e.target.value)}
                           placeholder="Library, Gym, Hallway…"
@@ -399,10 +403,11 @@ export default function SubmitPage() {
                       </div>
 
                       <div>
-                        <label className="text-sm font-bold text-slate-700 ml-1">
+                        <label htmlFor="submit-date" className="text-sm font-bold text-slate-700 ml-1">
                           Date (optional)
                         </label>
                         <input
+                          id="submit-date"
                           value={date}
                           onChange={(e) => setDate(e.target.value)}
                           placeholder={

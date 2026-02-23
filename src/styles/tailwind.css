@@ -213,3 +213,17 @@ body {
     scroll-behavior: auto;
   }
 }
+
+/* Accessibility Overrides */
+.high-contrast {
+  filter: contrast(125%) saturate(125%) grayscale(20%) !important;
+}
+.pause-animations * {
+  animation-play-state: paused !important;
+  transition: none !important;
+}
+.enhanced-focus *:focus-visible {
+  outline: 4px solid #f49728 !important; /* Brand gold */
+  outline-offset: 4px !important;
+  background-color: rgba(244, 151, 40, 0.1) !important;
+}
