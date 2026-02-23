@@ -124,7 +124,7 @@ export default function LoginPage() {
                       disabled={loading}
                       className="mt-2 rounded-2xl bg-brand-blue px-6 py-4 text-sm font-bold text-white shadow-lg shadow-brand-blue/20 hover:bg-brand-blue-dark transition-all disabled:opacity-50"
                     >
-                      {loading ? "Logging in..." : "Log in"}
+                      {loading ? "Logging in" : "Log in"}
                     </motion.button>
 
                     <div className="relative my-2">

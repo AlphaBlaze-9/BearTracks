@@ -14,6 +14,7 @@ import Container from "./Container.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useItems } from "../context/ItemsContext.jsx";
 import DeleteAccountModal from "./DeleteAccountModal.jsx"; // Kept for potential future use or if needed by logic
+import AccessibilityWidget from "./AccessibilityWidget.jsx";
 
 import BearTracksLogo from "../BearTracksLogo.png";
 
@@ -76,48 +77,48 @@ export default function Navbar() {
   const notifications =
     isAuthed && user
       ? [
-          ...items
-            .filter(
-              (it) =>
-                it.user_id === user.id &&
-                it.status === "Lost" &&
-                it.potential_matches &&
-                it.potential_matches.length > 0 &&
-                !readNotifs.includes(it.id),
-            )
-            .map((item) => ({ type: "match", item })),
+        ...items
+          .filter(
+            (it) =>
+              it.user_id === user.id &&
+              it.status === "Lost" &&
+              it.potential_matches &&
+              it.potential_matches.length > 0 &&
+              !readNotifs.includes(it.id),
+          )
+          .map((item) => ({ type: "match", item })),
 
-          // User notifications (Claim Approved/Denied)
-          ...claims
+        // User notifications (Claim Approved/Denied)
+        ...claims
+          .filter(
+            (claim) =>
+              claim.userId === user.id &&
+              claim.status !== "Pending" &&
+              !readNotifs.includes(`claim_${claim.id}`),
+          )
+          .map((claim) => ({
+            type: "claim",
+            claim,
+            item: items.find((i) => String(i.id) === String(claim.itemId)),
+          })),
+
+        // Admin notifications (New Pending Claims)
+        ...(isAdmin
+          ? claims
             .filter(
               (claim) =>
-                claim.userId === user.id &&
-                claim.status !== "Pending" &&
-                !readNotifs.includes(`claim_${claim.id}`),
+                claim.status === "Pending" &&
+                !readNotifs.includes(`admin_claim_${claim.id}`),
             )
             .map((claim) => ({
-              type: "claim",
+              type: "admin_claim",
               claim,
-              item: items.find((i) => String(i.id) === String(claim.itemId)),
-            })),
-
-          // Admin notifications (New Pending Claims)
-          ...(isAdmin
-            ? claims
-                .filter(
-                  (claim) =>
-                    claim.status === "Pending" &&
-                    !readNotifs.includes(`admin_claim_${claim.id}`),
-                )
-                .map((claim) => ({
-                  type: "admin_claim",
-                  claim,
-                  item: items.find(
-                    (i) => String(i.id) === String(claim.itemId),
-                  ),
-                }))
-            : []),
-        ]
+              item: items.find(
+                (i) => String(i.id) === String(claim.itemId),
+              ),
+            }))
+          : []),
+      ]
       : [];
 
   function handleNotificationClick(itemId) {
@@ -219,6 +220,8 @@ export default function Navbar() {
                 Claims
               </NavLink>
             )}
+
+            <AccessibilityWidget className="ml-2 flex items-center justify-center h-10 w-10 flex-shrink-0 flex-grow-0 rounded-full border border-brand-blue/20 bg-brand-blue/10 text-[#062d78] hover:bg-brand-blue/20 transition-all cursor-pointer shadow-sm" />
 
             {isAuthed && (
               <div className="relative ml-2">
@@ -420,7 +423,7 @@ export default function Navbar() {
                           className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <LogOut className="w-4 h-4" />
-                          {isLoggingOut ? "Logging out..." : "Log out"}
+                          {isLoggingOut ? "Logging out" : "Log out"}
                         </button>
                         <div className="my-1 h-px bg-slate-100" />
                         <button
@@ -507,6 +510,9 @@ export default function Navbar() {
                   </NavLink>
                 )}
 
+                <div className="my-1 border-t border-brand-blue/10"></div>
+                <AccessibilityWidget className="flex w-full items-center justify-center gap-2 rounded-xl border border-brand-blue/20 bg-brand-blue/5 px-3 py-3 text-sm font-bold text-[#062d78] hover:bg-brand-blue/10 transition-colors" />
+
                 {!isAuthed ? (
                   <div className="mt-2 grid gap-2">
                     <NavLink
@@ -530,7 +536,7 @@ export default function Navbar() {
                       disabled={isLoggingOut}
                       className="rounded-xl border border-brand-blue/15 bg-white/60 px-3 py-3 text-center text-sm font-medium text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {isLoggingOut ? "Logging out..." : "Log out"}
+                      {isLoggingOut ? "Logging out" : "Log out"}
                     </button>
                     <button
                       type="button"

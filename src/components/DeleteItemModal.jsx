@@ -49,7 +49,7 @@ export default function DeleteItemModal({
                     disabled={loading}
                     className="flex items-center justify-center rounded-2xl bg-red-500 px-6 py-4 text-sm font-bold text-white hover:bg-red-600 transition-all disabled:opacity-50 shadow-lg shadow-red-500/20"
                   >
-                    {loading ? "Deleting..." : "Yes, Delete Item"}
+                    {loading ? "Deleting" : "Yes, Delete Item"}
                   </button>
                   <button
                     onClick={onClose}

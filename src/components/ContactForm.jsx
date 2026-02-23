@@ -63,7 +63,7 @@ export default function ContactForm() {
             <textarea
               required
               rows={4}
-              placeholder="Tell us about your school..."
+              placeholder="Tell us about your school"
               className="mt-2 input-field resize-none"
             />
           </div>
