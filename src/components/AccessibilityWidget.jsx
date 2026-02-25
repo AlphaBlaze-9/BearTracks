@@ -5,9 +5,9 @@ import { Accessibility, VolumeX, Volume2, Eye, Pause, Keyboard, X, Play } from '
 export default function AccessibilityWidget({ className }) {
     const [isOpen, setIsOpen] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
-    const [highContrast, setHighContrast] = useState(false);
-    const [pauseAnimations, setPauseAnimations] = useState(false);
-    const [enhancedFocus, setEnhancedFocus] = useState(false);
+    const [highContrast, setHighContrast] = useState(() => localStorage.getItem('accessAid_highContrast') === 'true');
+    const [pauseAnimations, setPauseAnimations] = useState(() => localStorage.getItem('accessAid_pauseAnimations') === 'true');
+    const [enhancedFocus, setEnhancedFocus] = useState(() => localStorage.getItem('accessAid_enhancedFocus') === 'true');
     const menuRef = useRef(null);
     const location = useLocation();
 
@@ -31,17 +31,31 @@ export default function AccessibilityWidget({ className }) {
         setIsOpen(false); // also close menu on navigation
     }, [location.pathname]);
 
-    // Apply classes to body
+    // Apply classes to body and save to localStorage
     useEffect(() => {
-        if (highContrast) document.body.classList.add('high-contrast');
-        else document.body.classList.remove('high-contrast');
+        if (highContrast) {
+            document.body.classList.add('high-contrast');
+            localStorage.setItem('accessAid_highContrast', 'true');
+        } else {
+            document.body.classList.remove('high-contrast');
+            localStorage.setItem('accessAid_highContrast', 'false');
+        }
 
-        if (pauseAnimations) document.body.classList.add('pause-animations');
-        else document.body.classList.remove('pause-animations');
+        if (enhancedFocus) {
+            document.body.classList.add('enhanced-focus');
+            localStorage.setItem('accessAid_enhancedFocus', 'true');
+        } else {
+            document.body.classList.remove('enhanced-focus');
+            localStorage.setItem('accessAid_enhancedFocus', 'false');
+        }
+    }, [highContrast, enhancedFocus]);
 
-        if (enhancedFocus) document.body.classList.add('enhanced-focus');
-        else document.body.classList.remove('enhanced-focus');
-    }, [highContrast, pauseAnimations, enhancedFocus]);
+    const togglePauseAnimations = () => {
+        const newValue = !pauseAnimations;
+        setPauseAnimations(newValue);
+        localStorage.setItem('accessAid_pauseAnimations', newValue ? 'true' : 'false');
+        window.location.reload();
+    };
 
     const generateSummary = () => {
         const path = location.pathname;
@@ -155,7 +169,7 @@ export default function AccessibilityWidget({ className }) {
                         </button>
 
                         <button
-                            onClick={() => setPauseAnimations(!pauseAnimations)}
+                            onClick={togglePauseAnimations}
                             className={`w-full flex items-center justify-between p-3 rounded-xl border transition-colors ${pauseAnimations ? "bg-brand-blue/10 border-brand-blue/30 text-brand-blue" : "bg-white border-slate-100 hover:border-brand-blue/30 hover:bg-slate-50"
                                 }`}
                         >

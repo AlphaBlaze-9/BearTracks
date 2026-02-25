@@ -27,10 +27,10 @@ export default function FAQItem({ question, answer }) {
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
+            initial={localStorage.getItem('accessAid_pauseAnimations') === 'true' ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
+            exit={localStorage.getItem('accessAid_pauseAnimations') === 'true' ? { height: 0, opacity: 0 } : { height: 0, opacity: 0 }}
+            transition={{ duration: localStorage.getItem('accessAid_pauseAnimations') === 'true' ? 0 : 0.25, ease: "easeOut" }}
             className="overflow-hidden"
           >
             <p className="mt-3 text-sm text-[#083796] font-bold leading-relaxed">

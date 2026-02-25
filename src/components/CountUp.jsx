@@ -39,11 +39,12 @@ export default function CountUp({
   useEffect(() => {
     if (!start) return;
 
-    // Respect reduced-motion: jump straight to the final value.
+    // Respect reduced-motion or local storage preference: jump straight to the final value.
     const prefersReduced = window.matchMedia?.(
       "(prefers-reduced-motion: reduce)",
     )?.matches;
-    if (prefersReduced) {
+    const isAnimationsPaused = localStorage.getItem('accessAid_pauseAnimations') === 'true';
+    if (prefersReduced || isAnimationsPaused) {
       setDisplay(value);
       return;
     }

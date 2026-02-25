@@ -53,12 +53,17 @@ export default function HomePage() {
           {/* Video Background with Parallax */}
           <motion.div style={{ y, scale }} className="absolute inset-0 z-0">
             <video
-              autoPlay
+              autoPlay={localStorage.getItem('accessAid_pauseAnimations') !== 'true'}
               muted
               loop
               playsInline
               aria-label="Background video showing students on campus using the Bear Tracks app"
               className="h-full w-full object-cover"
+              onLoadedMetadata={(e) => {
+                if (localStorage.getItem('accessAid_pauseAnimations') === 'true') {
+                  e.target.currentTime = 1;
+                }
+              }}
               onTimeUpdate={(e) => {
                 // Only play the first 10 seconds as requested
                 if (e.target.currentTime > 10) {
@@ -406,7 +411,10 @@ function HowItWorksSection() {
 
   // Auto-rotation logic
   useEffect(() => {
-    startTimer();
+    const shouldPause = localStorage.getItem('accessAid_pauseAnimations') === 'true';
+    if (!shouldPause) {
+      startTimer();
+    }
     return () => clearInterval(timerRef.current);
   }, []);
 
@@ -419,7 +427,10 @@ function HowItWorksSection() {
 
   const handleCardClick = (index) => {
     setActiveIndex(index);
-    startTimer(); // Reset timer on interaction
+    const shouldPause = localStorage.getItem('accessAid_pauseAnimations') === 'true';
+    if (!shouldPause) {
+      startTimer(); // Reset timer on interaction
+    }
   };
 
   const getCardProps = (index) => {

@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { ItemsProvider } from "./context/ItemsContext.jsx";
+import { MotionConfig } from "framer-motion";
 
 import HomePage from "./pages/HomePage.jsx";
 import BrowsePage from "./pages/BrowsePage.jsx";
@@ -28,28 +29,30 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <ItemsProvider>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/browse" element={<BrowsePage />} />
-            <Route path="/items/:id" element={<ItemDetailsPage />} />
+          <MotionConfig reducedMotion={localStorage.getItem('accessAid_pauseAnimations') === 'true' ? "always" : "user"}>
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/browse" element={<BrowsePage />} />
+              <Route path="/items/:id" element={<ItemDetailsPage />} />
 
-            <Route
-              path="/submit"
-              element={
-                <ProtectedRoute>
-                  <SubmitPage />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/submit"
+                element={
+                  <ProtectedRoute>
+                    <SubmitPage />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/claims" element={<AdminClaimsPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/claims" element={<AdminClaimsPage />} />
 
-            {/* Fallback: if someone types an unknown URL, send them home */}
-            <Route path="*" element={<HomePage />} />
-          </Routes>
+              {/* Fallback: if someone types an unknown URL, send them home */}
+              <Route path="*" element={<HomePage />} />
+            </Routes>
+          </MotionConfig>
         </ItemsProvider>
       </AuthProvider>
     </BrowserRouter>
