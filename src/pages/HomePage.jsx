@@ -11,7 +11,6 @@ import Section from "../components/Section.jsx";
 import MotionReveal from "../components/MotionReveal.jsx";
 import StatCard from "../components/StatCard.jsx";
 import FAQItem from "../components/FAQItem.jsx";
-import BackToTop from "../components/BackToTop.jsx";
 import ContactForm from "../components/ContactForm.jsx";
 import { useItems } from "../context/ItemsContext.jsx";
 import heroVideo from "../FBLA Digital Video Production.mov";
@@ -43,7 +42,6 @@ export default function HomePage() {
 
   return (
     <div id="top" className="min-h-screen bg-hero">
-      <BackToTop />
       {/* HERO */}
       <main>
         <Section

@@ -7,12 +7,35 @@
   <meta name="description" content="Bear Tracks — a school lost & found experience that’s fast, friendly, and easy." />
   <link rel="icon" type="image/png" href="/favicon.png" />
   <title>Bear Tracks</title>
+  <style>
+    /* Make the Tidio chat widget shorter */
+    #tidio-chat-iframe,
+    #tidio-chat iframe,
+    #tidio iframe {
+      transform: scale(1.0, 0.8) !important;
+      transform-origin: bottom right !important;
+      max-height: 80vh !important;
+      /* Cap height to be smaller */
+    }
+
+    @media (max-width: 600px) {
+
+      #tidio-chat-iframe,
+      #tidio-chat iframe,
+      #tidio iframe {
+        transform: scale(0.9, 0.75) !important;
+        transform-origin: bottom right !important;
+        max-height: 70vh !important;
+      }
+    }
+  </style>
 </head>
 
 <body>
   <!-- Root element for the React app. -->
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
+  <script src="//code.tidio.co/kzqfgqhglf7zg8bhbk2m9vlyi6kgdyed.js" async></script>
 </body>
 
 </html>
