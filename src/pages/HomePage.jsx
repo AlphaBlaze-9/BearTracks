@@ -37,6 +37,39 @@ export default function HomePage() {
   // Scale it slightly so we don't see white space at the bottom as it moves down
   const scale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
 
+  // Video caching logic
+  const [videoSrc, setVideoSrc] = useState("");
+
+  useEffect(() => {
+    async function loadVideo() {
+      try {
+        const cacheName = "beartracks-video-cache-v1";
+        const cache = await caches.open(cacheName);
+        const cachedResponse = await cache.match(heroVideo);
+
+        if (cachedResponse) {
+          const blob = await cachedResponse.blob();
+          setVideoSrc(URL.createObjectURL(blob));
+        } else {
+          // Fetch and store in cache
+          const response = await fetch(heroVideo);
+          if (response.ok) {
+            await cache.put(heroVideo, response.clone());
+            const blob = await response.blob();
+            setVideoSrc(URL.createObjectURL(blob));
+          } else {
+            setVideoSrc(heroVideo); // Fallback to direct URL if fetch fails
+          }
+        }
+      } catch (error) {
+        console.error("Error loading cached video:", error);
+        setVideoSrc(heroVideo); // Fallback
+      }
+    }
+
+    loadVideo();
+  }, []);
+
   // Get 3 most recent items
   const highlights = (items || []).slice(0, 3);
 
@@ -50,28 +83,28 @@ export default function HomePage() {
         >
           {/* Video Background with Parallax */}
           <motion.div style={{ y, scale }} className="absolute inset-0 z-0">
-            <video
-              autoPlay={localStorage.getItem('accessAid_pauseAnimations') !== 'true'}
-              muted
-              loop
-              playsInline
-              aria-label="Background video showing students on campus using the Bear Tracks app"
-              className="h-full w-full object-cover"
-              onLoadedMetadata={(e) => {
-                if (localStorage.getItem('accessAid_pauseAnimations') === 'true') {
-                  e.target.currentTime = 1;
-                }
-              }}
-              onTimeUpdate={(e) => {
-                // Only play the first 10 seconds as requested
-                if (e.target.currentTime > 10) {
-                  e.target.currentTime = 0;
-                }
-              }}
-            >
-              <source src={heroVideo} type="video/quicktime" />
-              <source src={heroVideo} type="video/mp4" />
-            </video>
+            {videoSrc && (
+              <video
+                autoPlay={localStorage.getItem('accessAid_pauseAnimations') !== 'true'}
+                muted
+                loop
+                playsInline
+                aria-label="Background video showing students on campus using the Bear Tracks app"
+                className="h-full w-full object-cover"
+                src={videoSrc}
+                onLoadedMetadata={(e) => {
+                  if (localStorage.getItem('accessAid_pauseAnimations') === 'true') {
+                    e.target.currentTime = 1;
+                  }
+                }}
+                onTimeUpdate={(e) => {
+                  // Only play the first 10 seconds as requested
+                  if (e.target.currentTime > 10) {
+                    e.target.currentTime = 0;
+                  }
+                }}
+              />
+            )}
             {/* Premium Overlay: Minimal tint for better video clarity */}
             <div className="absolute inset-0 bg-brand-blue/[0.02]" />
           </motion.div>
