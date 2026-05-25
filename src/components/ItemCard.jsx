@@ -67,6 +67,7 @@ export default function ItemCard({ item }) {
                 e.preventDefault();
                 setIsModalOpen(true);
               }}
+              aria-label={isAdmin ? "Delete as Admin" : "Delete your item"}
               className="absolute top-4 right-4 h-10 w-10 flex items-center justify-center rounded-2xl bg-white/90 text-red-500 shadow-lg backdrop-blur hover:bg-red-500 hover:text-white transition-all transform hover:scale-110"
               title={isAdmin ? "Delete as Admin" : "Delete your item"}
             >

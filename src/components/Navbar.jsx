@@ -227,6 +227,8 @@ export default function Navbar() {
               <div className="relative ml-2">
                 <button
                   onClick={() => setIsNotifOpen(!isNotifOpen)}
+                  aria-label="Toggle notifications"
+                  aria-expanded={isNotifOpen}
                   className="relative flex items-center justify-center h-10 w-10 rounded-full border border-brand-blue/20 bg-brand-blue/10 text-[#062d78] hover:bg-brand-blue/20 transition-all"
                 >
                   <Bell className="w-5 h-5" strokeWidth={2} />
@@ -393,6 +395,8 @@ export default function Navbar() {
               <div className="relative ml-3">
                 <button
                   onClick={() => setIsAccountMenuOpen(!isAccountMenuOpen)}
+                  aria-label="User account menu"
+                  aria-expanded={isAccountMenuOpen}
                   className="flex items-center gap-3 rounded-full border border-brand-blue/20 bg-brand-blue/10 px-4 py-2 text-sm font-black text-[#062d78] hover:bg-brand-blue/20 transition-all"
                 >
                   <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />

@@ -203,6 +203,7 @@ export default function HomePage() {
                               duration: 0.4,
                             }}
                             onClick={() => navigate(`/items/${item.id}`)}
+                            aria-label={`View details for ${item.title}`}
                             className="w-full text-left group relative rounded-2xl border border-slate-100 bg-white p-4 shadow-sm hover:border-brand-blue/20 hover:shadow-md transition-all active:scale-[0.99]"
                           >
                             <div className="flex items-center justify-between">
@@ -564,6 +565,7 @@ function HowItWorksSection() {
             <button
               key={idx}
               onClick={() => handleCardClick(idx)}
+              aria-label={`Go to step ${idx + 1}`}
               className={`h-2 rounded-full transition-all duration-300 ${activeIndex === idx
                 ? "w-8 bg-brand-blue"
                 : "w-2 bg-slate-300 hover:bg-slate-400"

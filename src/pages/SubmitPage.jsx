@@ -420,11 +420,11 @@ export default function SubmitPage() {
                       </div>
                     </div>
 
-                    <div className="mt-2">
-                      <label className="text-sm font-bold text-slate-700 ml-1">
+                    <div className="mt-2" role="group" aria-label="Upload photos">
+                      <label id="submit-photos" className="text-sm font-bold text-slate-700 ml-1">
                         Photos
                       </label>
-                      <div className="mt-2">
+                      <div className="mt-2" aria-labelledby="submit-photos">
                         <ImagePicker
                           value={imageDataUrl}
                           onChange={setImageDataUrl}

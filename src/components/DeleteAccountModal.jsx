@@ -52,6 +52,7 @@ export default function DeleteAccountModal({
                   <button
                     onClick={onClose}
                     disabled={loading}
+                    aria-label="Cancel deletion"
                     className="rounded-2xl bg-white/5 px-6 py-4 text-sm font-bold text-white hover:bg-white/10 transition-all"
                   >
                     Cancel

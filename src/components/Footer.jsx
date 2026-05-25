@@ -15,11 +15,11 @@ export default function Footer() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <a className="hover:text-white" href="#how">
+            <a className="hover:text-white" href="#how" aria-label="Learn how Bear Tracks works">
               How it works
             </a>
             <span className="text-white/30">•</span>
-            <a className="hover:text-white" href="#cta">
+            <a className="hover:text-white" href="#cta" aria-label="Report a lost or found item">
               Report
             </a>
           </div>

@@ -65,6 +65,7 @@ export default function ImagePicker({ value, onChange, onFileSelect }) {
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
+            aria-label="Upload photo"
             className="rounded-2xl bg-brand-blue px-4 py-3 text-sm font-medium text-white hover:bg-brand-blue-dark"
           >
             Upload photo
@@ -74,6 +75,7 @@ export default function ImagePicker({ value, onChange, onFileSelect }) {
             <button
               type="button"
               onClick={handleRemove}
+              aria-label="Remove photo"
               className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 hover:bg-slate-50"
             >
               Remove
@@ -84,6 +86,7 @@ export default function ImagePicker({ value, onChange, onFileSelect }) {
             ref={inputRef}
             type="file"
             accept="image/*"
+            aria-label="File upload"
             className="hidden"
             onChange={(e) => handleFile(e.target.files?.[0])}
           />
