@@ -113,10 +113,15 @@ export default function HomePage() {
             <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
               <div className="glass-light p-8 rounded-[40px] shadow-2xl border border-white/30 backdrop-blur-2xl bg-gradient-to-br from-white/80 via-white/50 to-white/20 max-w-2xl">
                 <MotionReveal>
-                  <p className="pill inline-flex items-center gap-2 text-xs text-slate-900 font-bold bg-white/60 backdrop-blur-sm border border-white/40">
-                    <span className="inline-flex h-2 w-2 rounded-full bg-brand-gold animate-pulse" />
-                    New: faster reporting + smarter matching
-                  </p>
+                  <div className="flex flex-col gap-2">
+                    <p className="pill inline-flex items-center gap-2 text-xs text-slate-900 font-bold bg-white/60 backdrop-blur-sm border border-white/40 self-start">
+                      <span className="inline-flex h-2 w-2 rounded-full bg-brand-gold animate-pulse" />
+                      New: faster reporting + smarter matching
+                    </p>
+                    <p className="inline-flex items-center gap-2 self-start rounded-xl bg-brand-blue px-4 py-2 text-xs font-black text-white uppercase tracking-widest shadow-md shadow-brand-blue/30">
+                      🐻 Bridgeland High School Lost &amp; Found System
+                    </p>
+                  </div>
                 </MotionReveal>
 
                 <MotionReveal delay={0.05}>

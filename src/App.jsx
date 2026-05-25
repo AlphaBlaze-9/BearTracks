@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import BearBot from "./components/BearBot.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { ItemsProvider } from "./context/ItemsContext.jsx";
 import { MotionConfig } from "framer-motion";
@@ -31,6 +32,7 @@ export default function App() {
         <ItemsProvider>
           <MotionConfig reducedMotion={localStorage.getItem('accessAid_pauseAnimations') === 'true' ? "always" : "user"}>
             <Navbar />
+            <BearBot />
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/browse" element={<BrowsePage />} />
