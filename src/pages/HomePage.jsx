@@ -118,8 +118,8 @@ export default function HomePage() {
                       <span className="inline-flex h-2 w-2 rounded-full bg-brand-gold animate-pulse" />
                       New: faster reporting + smarter matching
                     </p>
-                    <p className="inline-flex items-center gap-2 self-start rounded-xl bg-brand-blue px-4 py-2 text-xs font-black text-white uppercase tracking-widest shadow-md shadow-brand-blue/30">
-                      🐻 Bridgeland High School Lost &amp; Found System
+                    <p className="inline-flex items-center gap-2.5 self-start rounded-xl bg-brand-blue px-5 py-2.5 text-sm font-black text-white uppercase tracking-widest shadow-md shadow-brand-blue/30">
+                      <span className="text-lg">🐻</span> Bridgeland High School Lost &amp; Found System
                     </p>
                   </div>
                 </MotionReveal>

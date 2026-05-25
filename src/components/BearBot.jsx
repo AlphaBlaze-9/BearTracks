@@ -326,14 +326,14 @@ export default function BearBot() {
         onClick={() => setIsOpen((s) => !s)}
         aria-label={isOpen ? "Close BearBot" : "Open BearBot"}
         className="
-          relative flex items-center gap-2.5
-          rounded-full bg-brand-blue px-5 py-3
-          text-sm font-black text-white
-          shadow-xl shadow-brand-blue/40
+          relative flex items-center gap-3.5
+          rounded-full bg-brand-blue px-8 py-5
+          text-lg font-black text-white
+          shadow-2xl shadow-brand-blue/60
           hover:bg-brand-blue/90 transition-colors
         "
       >
-        <span className="text-lg leading-none">{isOpen ? "✕" : "🐻"}</span>
+        <span className="text-3xl leading-none">{isOpen ? "✕" : "🐻"}</span>
         <span className={isOpen ? "hidden sm:inline" : undefined}>
           {isOpen ? "Close" : "BearBot"}
         </span>
