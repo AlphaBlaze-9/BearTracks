@@ -23,9 +23,10 @@ export default function ItemDetailsPage() {
   const [success, setSuccess] = useState(false);
 
   const { claims } = useItems();
-  const hasClaimed = claims.some(
+  const userClaim = claims.find(
     (c) => String(c.itemId) === String(item?.id) && c.userId === user?.id,
   );
+  const hasClaimed = !!userClaim;
 
   const [claimData, setClaimData] = useState({
     name: "",
@@ -252,15 +253,43 @@ export default function ItemDetailsPage() {
 
                 {isAuthed ? (
                   hasClaimed ? (
-                    <div className="mt-8 p-1 rounded-[1.75rem] border-none bg-gradient-to-r from-red-500 via-orange-500 to-red-500 shadow-2xl shadow-red-500/20 group overflow-hidden relative">
+                    <div className={`mt-8 p-1 rounded-[1.75rem] border-none shadow-2xl group overflow-hidden relative bg-gradient-to-r ${
+                      userClaim.status === "Approved" ? "from-green-500 via-emerald-500 to-green-500 shadow-green-500/20" :
+                      userClaim.status === "Denied" ? "from-red-500 via-rose-500 to-red-500 shadow-red-500/20" :
+                      "from-slate-400 via-slate-500 to-slate-400 shadow-slate-500/20"
+                    }`}>
                       <div className="bg-white rounded-[1.5rem] p-6 text-center shadow-inner">
-                        <h3 className="text-xl font-black text-red-600">
-                          Claim Already Filed
+                        <h3 className={`text-xl font-black ${
+                          userClaim.status === "Approved" ? "text-green-600" :
+                          userClaim.status === "Denied" ? "text-red-600" :
+                          "text-slate-700"
+                        }`}>
+                          Claim Status: {userClaim.status}
                         </h3>
-                        <p className="mt-2 text-sm text-slate-500 font-bold tracking-wide leading-relaxed">
-                          You have already submitted a claim for this item.
-                          Check your notifications for status updates!
-                        </p>
+                        {userClaim.status === "Pending" && (
+                          <p className="mt-2 text-sm text-slate-500 font-bold tracking-wide leading-relaxed">
+                            You have already submitted a claim for this item.
+                            Check your notifications for status updates!
+                          </p>
+                        )}
+                        {userClaim.status === "Approved" && (
+                          <p className="mt-2 text-sm text-green-600 font-bold tracking-wide leading-relaxed">
+                            Your claim was approved! Please pick up the item at the Front Office.
+                          </p>
+                        )}
+                        {userClaim.status === "Denied" && (
+                          <>
+                            <p className="mt-2 text-sm text-red-600 font-bold tracking-wide leading-relaxed">
+                              Unfortunately, your claim request was denied.
+                            </p>
+                            {userClaim.denialReason && (
+                              <div className="mt-4 bg-red-50 border border-red-100 rounded-xl p-3 text-left">
+                                <span className="block text-[10px] font-black text-red-800 uppercase tracking-widest mb-1">Reason for Denial:</span>
+                                <span className="text-sm font-bold text-red-700">{userClaim.denialReason}</span>
+                              </div>
+                            )}
+                          </>
+                        )}
                       </div>
                     </div>
                   ) : (

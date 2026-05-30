@@ -109,9 +109,9 @@ export function ItemsProvider({ children }) {
       return newClaim;
     }
 
-    async function resolveClaim(claimId, status) {
+    async function resolveClaim(claimId, status, denialReason = null) {
       setClaims((prev) =>
-        prev.map((c) => (c.id === claimId ? { ...c, status } : c)),
+        prev.map((c) => (c.id === claimId ? { ...c, status, denialReason } : c)),
       );
     }
 

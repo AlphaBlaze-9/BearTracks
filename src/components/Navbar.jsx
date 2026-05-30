@@ -325,6 +325,11 @@ export default function Navbar() {
                                               Office.
                                             </span>
                                           )}
+                                          {!isApproved && claim.denialReason && (
+                                            <span className="block mt-1 font-bold text-red-700">
+                                              Reason: {claim.denialReason}
+                                            </span>
+                                          )}
                                         </div>
                                       </div>
                                     </div>

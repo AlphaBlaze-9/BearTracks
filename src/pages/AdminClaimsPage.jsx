@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useItems } from "../context/ItemsContext.jsx";
 import Container from "../components/Container.jsx";
@@ -9,6 +10,26 @@ import { ShieldCheck, User, Search, CheckCircle, XCircle } from "lucide-react";
 export default function AdminClaimsPage() {
   const { isAuthed, isAdmin } = useAuth();
   const { claims, resolveClaim, getItem } = useItems();
+
+  const [denyModalOpen, setDenyModalOpen] = useState(false);
+  const [claimToDeny, setClaimToDeny] = useState(null);
+  const [denialReason, setDenialReason] = useState("");
+
+  const handleDenyClick = (claimId) => {
+    setClaimToDeny(claimId);
+    setDenialReason("");
+    setDenyModalOpen(true);
+  };
+
+  const submitDenial = () => {
+    if (!denialReason.trim()) {
+      alert("Please provide a reason for denial.");
+      return;
+    }
+    resolveClaim(claimToDeny, "Denied", denialReason);
+    setDenyModalOpen(false);
+    setClaimToDeny(null);
+  };
 
   // Guard: Redirect if not logged in or not admin
   if (!isAuthed || !isAdmin) {
@@ -129,7 +150,7 @@ export default function AdminClaimsPage() {
 
                           <div className="grid grid-cols-2 gap-3 mt-auto">
                             <button
-                              onClick={() => resolveClaim(claim.id, "Denied")}
+                              onClick={() => handleDenyClick(claim.id)}
                               className="w-full py-3 rounded-xl bg-slate-100 text-slate-500 font-bold hover:bg-red-50 hover:text-red-500 transition-colors"
                             >
                               Deny
@@ -189,6 +210,62 @@ export default function AdminClaimsPage() {
           </div>
         </Container>
       </Section>
+
+      {/* Deny Modal */}
+      {denyModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#01143a]/80 backdrop-blur-sm">
+          <MotionReveal>
+            <div className="bg-white rounded-[2rem] p-6 sm:p-8 w-full max-w-[28rem] shadow-[0_0_50px_rgba(6,45,120,0.5)] relative border-2 border-brand-blue/10">
+              <button
+                type="button"
+                onClick={() => setDenyModalOpen(false)}
+                className="absolute top-5 right-5 h-8 w-8 flex items-center justify-center rounded-full bg-brand-blue/5 text-[#062d78] hover:bg-brand-orange hover:text-white transition-all group cursor-pointer shadow-sm"
+              >
+                <XCircle className="w-4 h-4" strokeWidth={3} />
+              </button>
+
+              <h2 className="text-2xl font-black text-red-600 mb-1">
+                Deny Claim
+              </h2>
+              <p className="text-sm font-bold text-slate-500 mb-6">
+                Please provide a reason for denying this claim.
+              </p>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-[10px] font-black text-[#01143a]/50 uppercase tracking-[0.1em] mb-1.5 pl-1">
+                    Denial Reason
+                  </label>
+                  <textarea
+                    required
+                    rows="3"
+                    value={denialReason}
+                    onChange={(e) => setDenialReason(e.target.value)}
+                    className="w-full rounded-2xl border-2 border-red-100 bg-red-50/50 px-4 py-3 text-sm text-red-900 font-black focus:border-red-500 focus:outline-none focus:ring-4 focus:ring-red-500/10 transition-all resize-none placeholder:text-red-300"
+                    placeholder="Explain why this claim is being denied..."
+                  ></textarea>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setDenyModalOpen(false)}
+                    className="w-full sm:w-1/2 rounded-xl bg-slate-200 px-6 py-4 text-sm font-black text-slate-700 hover:bg-slate-300 transition-all cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={submitDenial}
+                    className="w-full sm:w-1/2 rounded-xl bg-red-500 px-6 py-4 text-sm font-black text-white shadow-xl shadow-red-500/20 hover:bg-red-600 transition-all cursor-pointer"
+                  >
+                    Confirm Denial
+                  </button>
+                </div>
+              </div>
+            </div>
+          </MotionReveal>
+        </div>
+      )}
     </div>
   );
 }
