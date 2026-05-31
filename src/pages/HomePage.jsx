@@ -132,11 +132,14 @@ export default function HomePage() {
                       Find it faster with Bear Tracks.
                     </span>
                   </h1>
+                  <p className="mt-3 text-lg sm:text-xl font-bold text-brand-blue">
+                    Bridgeland High School&apos;s official lost &amp; found system.
+                  </p>
                 </MotionReveal>
 
                 <MotionReveal delay={0.1}>
                   <p className="mt-6 max-w-xl text-lg text-slate-800 leading-relaxed font-semibold">
-                    A clean, student-friendly lost &amp; found experience.
+                    A clean, student-friendly experience built just for BHS.
                     Report items in seconds, browse verified posts, and get
                     notified when matches show up.
                   </p>

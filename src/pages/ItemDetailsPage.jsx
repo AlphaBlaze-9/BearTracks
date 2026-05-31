@@ -6,6 +6,7 @@ import Section from "../components/Section.jsx";
 import MotionReveal from "../components/MotionReveal.jsx";
 import { useItems } from "../context/ItemsContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import { moderateFields } from "../lib/moderation.js";
 
 /**
  * ItemDetailsPage
@@ -21,6 +22,8 @@ export default function ItemDetailsPage() {
 
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [claimError, setClaimError] = useState("");
+  const [claimSubmitting, setClaimSubmitting] = useState(false);
 
   const { claims } = useItems();
   const userClaim = claims.find(
@@ -369,14 +372,33 @@ export default function ItemDetailsPage() {
                   <form
                     onSubmit={async (e) => {
                       e.preventDefault();
+                      setClaimError("");
+                      setClaimSubmitting(true);
+
+                      // Moderate the free-text fields before saving the claim.
+                      const { flagged, reason } = await moderateFields([
+                        { label: "Name", value: claimData.name },
+                        {
+                          label: "Description",
+                          value: claimData.description,
+                        },
+                      ]);
+                      if (flagged) {
+                        setClaimError(reason);
+                        setClaimSubmitting(false);
+                        return;
+                      }
+
                       await addClaim(item.id, {
                         ...claimData,
                         userId: user?.id,
                       });
+                      setClaimSubmitting(false);
                       setSuccess(true);
                       setTimeout(() => {
                         setIsClaimModalOpen(false);
                         setSuccess(false);
+                        setClaimError("");
                         setClaimData({
                           name: "",
                           sNumber: "",
@@ -478,6 +500,15 @@ export default function ItemDetailsPage() {
                       ></textarea>
                     </div>
 
+                    {claimError && (
+                      <div
+                        role="alert"
+                        className="rounded-2xl bg-red-50 p-4 text-sm text-red-600 border border-red-100 font-bold"
+                      >
+                        {claimError}
+                      </div>
+                    )}
+
                     <div className="flex flex-col sm:flex-row gap-3 mt-6">
                       <button
                         type="button"
@@ -511,9 +542,10 @@ export default function ItemDetailsPage() {
                       </button>
                       <button
                         type="submit"
-                        className="w-full sm:w-1/2 rounded-xl bg-gradient-to-r from-brand-blue to-brand-orange px-6 py-4 text-sm font-black text-white shadow-xl shadow-brand-blue/20 hover:shadow-2xl hover:shadow-brand-blue/30 transition-all transform hover:-translate-y-1 cursor-pointer"
+                        disabled={claimSubmitting}
+                        className="w-full sm:w-1/2 rounded-xl bg-gradient-to-r from-brand-blue to-brand-orange px-6 py-4 text-sm font-black text-white shadow-xl shadow-brand-blue/20 hover:shadow-2xl hover:shadow-brand-blue/30 transition-all transform hover:-translate-y-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Submit Claim Request
+                        {claimSubmitting ? "Checking…" : "Submit Claim Request"}
                       </button>
                     </div>
                   </form>

@@ -8,6 +8,7 @@ import MotionReveal from "../components/MotionReveal.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useItems } from "../context/ItemsContext.jsx";
 import { supabase } from "../lib/supabase";
+import { moderateFields } from "../lib/moderation";
 import ti84Img from "../images/ti-84.jpg";
 import hoodieImg from "../images/black hoodie.webp";
 
@@ -192,6 +193,17 @@ export default function SubmitPage() {
     if (!description.trim()) {
       setLoading(false);
       return setError("Please add a description.");
+    }
+
+    // 0. Content moderation — check everything the user typed.
+    const { flagged, reason } = await moderateFields([
+      { label: "Title", value: title },
+      { label: "Description", value: description },
+      { label: "Location", value: location },
+    ]);
+    if (flagged) {
+      setLoading(false);
+      return setError(reason);
     }
 
     try {

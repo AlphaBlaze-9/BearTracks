@@ -55,6 +55,23 @@ export function AuthProvider({ children }) {
       return data.user;
     }
 
+    async function requestPasswordReset(email) {
+      // Sends a password-recovery email. The link returns the user to
+      // /reset-password with a temporary recovery session.
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+    }
+
+    async function updatePassword(newPassword) {
+      // Used on the reset-password page once the recovery session is active.
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+      if (error) throw error;
+    }
+
     async function logout() {
       try {
         const { error } = await supabase.auth.signOut();
@@ -104,6 +121,8 @@ export function AuthProvider({ children }) {
       login,
       logout,
       deleteAccount,
+      requestPasswordReset,
+      updatePassword,
     };
   }, [user, loading]);
 

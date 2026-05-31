@@ -87,6 +87,7 @@ export default function LoginPage() {
                         onChange={(e) => setEmail(e.target.value)}
                         type="email"
                         required
+                        autoComplete="email"
                         placeholder="you@school.edu"
                         className="mt-2 input-field"
                       />
@@ -97,6 +98,12 @@ export default function LoginPage() {
                         <label htmlFor="login-password" className="text-xs font-black text-[#062d78] uppercase tracking-widest">
                           Password
                         </label>
+                        <Link
+                          to="/forgot-password"
+                          className="text-xs font-bold text-[#ea580c] hover:text-[#c2410c] transition-colors"
+                        >
+                          Forgot password?
+                        </Link>
                       </div>
                       <input
                         id="login-password"
@@ -104,6 +111,7 @@ export default function LoginPage() {
                         onChange={(e) => setPassword(e.target.value)}
                         type="password"
                         required
+                        autoComplete="current-password"
                         placeholder="••••••••"
                         className="mt-2 input-field"
                       />

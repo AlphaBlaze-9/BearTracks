@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Accessibility, VolumeX, Volume2, Eye, Pause, Keyboard, X, Play } from 'lucide-react';
+import { Accessibility, VolumeX, Volume2, Eye, Pause, Keyboard, X, Play, Type, BookOpen, Link2 } from 'lucide-react';
 
 export default function AccessibilityWidget({ className }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -8,6 +8,9 @@ export default function AccessibilityWidget({ className }) {
     const [highContrast, setHighContrast] = useState(() => localStorage.getItem('accessAid_highContrast') === 'true');
     const [pauseAnimations, setPauseAnimations] = useState(() => localStorage.getItem('accessAid_pauseAnimations') === 'true');
     const [enhancedFocus, setEnhancedFocus] = useState(() => localStorage.getItem('accessAid_enhancedFocus') === 'true');
+    const [largerText, setLargerText] = useState(() => localStorage.getItem('accessAid_largerText') === 'true');
+    const [readableFont, setReadableFont] = useState(() => localStorage.getItem('accessAid_readableFont') === 'true');
+    const [highlightLinks, setHighlightLinks] = useState(() => localStorage.getItem('accessAid_highlightLinks') === 'true');
     const menuRef = useRef(null);
     const location = useLocation();
 
@@ -48,7 +51,31 @@ export default function AccessibilityWidget({ className }) {
             document.body.classList.remove('enhanced-focus');
             localStorage.setItem('accessAid_enhancedFocus', 'false');
         }
-    }, [highContrast, enhancedFocus]);
+
+        if (largerText) {
+            document.body.classList.add('larger-text');
+            localStorage.setItem('accessAid_largerText', 'true');
+        } else {
+            document.body.classList.remove('larger-text');
+            localStorage.setItem('accessAid_largerText', 'false');
+        }
+
+        if (readableFont) {
+            document.body.classList.add('readable-font');
+            localStorage.setItem('accessAid_readableFont', 'true');
+        } else {
+            document.body.classList.remove('readable-font');
+            localStorage.setItem('accessAid_readableFont', 'false');
+        }
+
+        if (highlightLinks) {
+            document.body.classList.add('highlight-links');
+            localStorage.setItem('accessAid_highlightLinks', 'true');
+        } else {
+            document.body.classList.remove('highlight-links');
+            localStorage.setItem('accessAid_highlightLinks', 'false');
+        }
+    }, [highContrast, enhancedFocus, largerText, readableFont, highlightLinks]);
 
     const togglePauseAnimations = () => {
         const newValue = !pauseAnimations;
@@ -62,7 +89,7 @@ export default function AccessibilityWidget({ className }) {
 
         switch (path) {
             case '/':
-                return "You are on the AccessAid Home Page. This page provides an overview of our mission to connect lost items with their owners and how the platform works.";
+                return "You are on the Bear Tracks home page, Bridgeland High School's lost and found system. This page provides an overview of how to report, find, and reclaim lost items on campus.";
             case '/browse':
                 return "You are on the Browse Page. Here you can search, filter, and view all reported lost and found items.";
             case '/submit':
@@ -73,6 +100,10 @@ export default function AccessibilityWidget({ className }) {
                 return "You are on the Login page. Please enter your email and password to access your account.";
             case '/signup':
                 return "You are on the Sign Up page. Create a new account to start reporting and claiming items.";
+            case '/forgot-password':
+                return "You are on the Reset Password page. Enter your email to receive a secure link for setting a new password.";
+            case '/reset-password':
+                return "You are on the Set New Password page. Choose and confirm a new password for your account.";
             default:
                 if (path.startsWith('/items/')) {
                     const titleEl = document.querySelector('h1.item-title') || document.querySelector('h1');
@@ -87,7 +118,7 @@ export default function AccessibilityWidget({ className }) {
 
                     return `You are viewing details for: ${titleText}. ${descText}`;
                 }
-                return "You are on AccessAid. Navigate the site using the menu.";
+                return "You are on Bear Tracks, Bridgeland High School's lost and found system. Navigate the site using the menu.";
         }
     };
 
@@ -142,6 +173,7 @@ export default function AccessibilityWidget({ className }) {
                     <div className="space-y-2 text-sm text-slate-700">
                         <button
                             onClick={toggleSpeech}
+                            aria-pressed={isSpeaking}
                             className={`w-full flex items-center justify-between p-3 rounded-xl border transition-colors ${isSpeaking ? "bg-brand-blue/10 border-brand-blue/30 text-brand-blue" : "bg-white border-slate-100 hover:border-brand-blue/30 hover:bg-slate-50"
                                 }`}
                         >
@@ -156,6 +188,7 @@ export default function AccessibilityWidget({ className }) {
 
                         <button
                             onClick={() => setHighContrast(!highContrast)}
+                            aria-pressed={highContrast}
                             className={`w-full flex items-center justify-between p-3 rounded-xl border transition-colors ${highContrast ? "bg-brand-blue/10 border-brand-blue/30 text-brand-blue" : "bg-white border-slate-100 hover:border-brand-blue/30 hover:bg-slate-50"
                                 }`}
                         >
@@ -170,6 +203,7 @@ export default function AccessibilityWidget({ className }) {
 
                         <button
                             onClick={togglePauseAnimations}
+                            aria-pressed={pauseAnimations}
                             className={`w-full flex items-center justify-between p-3 rounded-xl border transition-colors ${pauseAnimations ? "bg-brand-blue/10 border-brand-blue/30 text-brand-blue" : "bg-white border-slate-100 hover:border-brand-blue/30 hover:bg-slate-50"
                                 }`}
                         >
@@ -184,6 +218,7 @@ export default function AccessibilityWidget({ className }) {
 
                         <button
                             onClick={() => setEnhancedFocus(!enhancedFocus)}
+                            aria-pressed={enhancedFocus}
                             className={`w-full flex items-center justify-between p-3 rounded-xl border transition-colors ${enhancedFocus ? "bg-brand-blue/10 border-brand-blue/30 text-brand-blue" : "bg-white border-slate-100 hover:border-brand-blue/30 hover:bg-slate-50"
                                 }`}
                         >
@@ -193,6 +228,51 @@ export default function AccessibilityWidget({ className }) {
                             </span>
                             <span className={`text-xs font-bold px-2 py-1 rounded ${enhancedFocus ? "bg-brand-blue text-white" : "bg-slate-100 text-slate-500"}`}>
                                 {enhancedFocus ? "ON" : "OFF"}
+                            </span>
+                        </button>
+
+                        <button
+                            onClick={() => setLargerText(!largerText)}
+                            aria-pressed={largerText}
+                            className={`w-full flex items-center justify-between p-3 rounded-xl border transition-colors ${largerText ? "bg-brand-blue/10 border-brand-blue/30 text-brand-blue" : "bg-white border-slate-100 hover:border-brand-blue/30 hover:bg-slate-50"
+                                }`}
+                        >
+                            <span className="flex items-center gap-3 font-semibold">
+                                <Type className="h-5 w-5" />
+                                Larger Text
+                            </span>
+                            <span className={`text-xs font-bold px-2 py-1 rounded ${largerText ? "bg-brand-blue text-white" : "bg-slate-100 text-slate-500"}`}>
+                                {largerText ? "ON" : "OFF"}
+                            </span>
+                        </button>
+
+                        <button
+                            onClick={() => setReadableFont(!readableFont)}
+                            aria-pressed={readableFont}
+                            className={`w-full flex items-center justify-between p-3 rounded-xl border transition-colors ${readableFont ? "bg-brand-blue/10 border-brand-blue/30 text-brand-blue" : "bg-white border-slate-100 hover:border-brand-blue/30 hover:bg-slate-50"
+                                }`}
+                        >
+                            <span className="flex items-center gap-3 font-semibold">
+                                <BookOpen className="h-5 w-5" />
+                                Readable Font
+                            </span>
+                            <span className={`text-xs font-bold px-2 py-1 rounded ${readableFont ? "bg-brand-blue text-white" : "bg-slate-100 text-slate-500"}`}>
+                                {readableFont ? "ON" : "OFF"}
+                            </span>
+                        </button>
+
+                        <button
+                            onClick={() => setHighlightLinks(!highlightLinks)}
+                            aria-pressed={highlightLinks}
+                            className={`w-full flex items-center justify-between p-3 rounded-xl border transition-colors ${highlightLinks ? "bg-brand-blue/10 border-brand-blue/30 text-brand-blue" : "bg-white border-slate-100 hover:border-brand-blue/30 hover:bg-slate-50"
+                                }`}
+                        >
+                            <span className="flex items-center gap-3 font-semibold">
+                                <Link2 className="h-5 w-5" />
+                                Highlight Links
+                            </span>
+                            <span className={`text-xs font-bold px-2 py-1 rounded ${highlightLinks ? "bg-brand-blue text-white" : "bg-slate-100 text-slate-500"}`}>
+                                {highlightLinks ? "ON" : "OFF"}
                             </span>
                         </button>
                     </div>

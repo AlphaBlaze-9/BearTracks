@@ -13,6 +13,15 @@ if (localStorage.getItem('accessAid_pauseAnimations') === 'true') {
 if (localStorage.getItem('accessAid_enhancedFocus') === 'true') {
   document.body.classList.add('enhanced-focus');
 }
+if (localStorage.getItem('accessAid_largerText') === 'true') {
+  document.body.classList.add('larger-text');
+}
+if (localStorage.getItem('accessAid_readableFont') === 'true') {
+  document.body.classList.add('readable-font');
+}
+if (localStorage.getItem('accessAid_highlightLinks') === 'true') {
+  document.body.classList.add('highlight-links');
+}
 
 // Entry point: mount the React app into <div id="root">.
 ReactDOM.createRoot(document.getElementById("root")).render(

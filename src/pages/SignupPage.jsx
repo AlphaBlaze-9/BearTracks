@@ -71,6 +71,7 @@ export default function SignupPage() {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
+                        autoComplete="name"
                         placeholder="Samarth"
                         className="mt-2 input-field"
                       />
@@ -86,6 +87,7 @@ export default function SignupPage() {
                         onChange={(e) => setEmail(e.target.value)}
                         type="email"
                         required
+                        autoComplete="email"
                         placeholder="you@school.edu"
                         className="mt-2 input-field"
                       />
@@ -101,6 +103,7 @@ export default function SignupPage() {
                         onChange={(e) => setPassword(e.target.value)}
                         type="password"
                         required
+                        autoComplete="new-password"
                         placeholder="••••••••"
                         className="mt-2 input-field"
                       />

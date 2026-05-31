@@ -11,6 +11,8 @@ import BrowsePage from "./pages/BrowsePage.jsx";
 import SubmitPage from "./pages/SubmitPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
+import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 import ItemDetailsPage from "./pages/ItemDetailsPage.jsx";
 import AdminClaimsPage from "./pages/AdminClaimsPage.jsx";
 
@@ -31,8 +33,12 @@ export default function App() {
       <AuthProvider>
         <ItemsProvider>
           <MotionConfig reducedMotion={localStorage.getItem('accessAid_pauseAnimations') === 'true' ? "always" : "user"}>
+            <a href="#main-content" className="skip-link">
+              Skip to main content
+            </a>
             <Navbar />
             <BearBot />
+            <main id="main-content" tabIndex={-1}>
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/browse" element={<BrowsePage />} />
@@ -49,11 +55,14 @@ export default function App() {
 
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/claims" element={<AdminClaimsPage />} />
 
               {/* Fallback: if someone types an unknown URL, send them home */}
               <Route path="*" element={<HomePage />} />
             </Routes>
+            </main>
           </MotionConfig>
         </ItemsProvider>
       </AuthProvider>
