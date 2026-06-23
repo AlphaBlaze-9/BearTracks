@@ -2,111 +2,68 @@ import { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Send, ChevronDown } from "lucide-react";
 
-// ─── Knowledge Base ────────────────────────────────────────────────────────────
-// Each entry has `keywords` (substrings to match in the lowercased input)
-// and a `response`. The algorithm scores each entry and returns the best match.
+// ─── API Configuration & System Prompt ───────────────────────────────────────────
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
 
-const KNOWLEDGE_BASE = [
-  {
-    keywords: ["hi", "hello", "hey", "howdy", "sup", "yo", "good morning", "good afternoon", "good evening", "what's up", "whats up"],
-    response: "Hey! I'm BearBot 🐻 — Bridgeland High School's lost & found assistant. How can I help you today?\n\nYou can ask me about:\n• Reporting a lost item\n• Reporting a found item\n• Claiming an item\n• Browsing the lost & found\n• Location & hours",
-  },
-  {
-    keywords: ["lost", "missing", "lose", "i lost", "can't find", "cant find", "lost my", "dropped", "left behind", "left my"],
-    response: "Sorry you lost something! Here's what to do:\n\n1. Log in (or sign up for free)\n2. Click **Submit** in the navigation bar\n3. Choose **Lost** and describe your item\n4. Add a photo if you have one — it really helps!\n\nWe'll notify you automatically if a matching found item shows up. You can also browse current found items right now by clicking **Browse**.",
-  },
-  {
-    keywords: ["found", "found an item", "turned in", "turn in", "drop off", "i found", "picked up", "someone lost", "somebody lost"],
-    response: "Nice one for turning it in! Here's how:\n\n1. Log in or sign up for free\n2. Click **Submit** → choose **Found**\n3. Describe the item and upload a photo\n4. Drop the physical item off at the **main office**\n\nYour report helps us connect the item with its rightful owner.",
-  },
-  {
-    keywords: ["claim", "mine", "belongs to me", "my item", "pick up", "pickup", "retrieve", "get my", "how do i get", "how do i claim"],
-    response: "To claim an item:\n\n1. Click **Browse** and find your item\n2. Open it and tap **Claim this item**\n3. Describe unique details (markings, contents, serial #)\n4. Wait for admin approval\n5. Once approved, pick it up at the **Front Office** with your student ID!\n\nTip: The more specific your description, the faster you'll be verified.",
-  },
-  {
-    keywords: ["browse", "search", "look for", "find items", "see items", "view items", "show me", "whats in", "what's in", "what items"],
-    response: "You don't even need an account to browse! Just click **Browse** in the navigation bar.\n\nYou can:\n• Search by keyword\n• Filter by category (Electronics, Clothing, etc.)\n• Sort by newest or oldest\n\nSpot something that's yours? Click it to start a claim.",
-  },
-  {
-    keywords: ["submit", "report", "post item", "add item", "how do i submit", "how to submit", "how to report"],
-    response: "To submit a report:\n\n1. Log in (or sign up — it's free)\n2. Click **Submit** in the navbar\n3. Choose **Lost** or **Found**\n4. Fill in the details and optionally add a photo\n5. Hit submit!\n\nReports are reviewed by a moderator before going live to keep things accurate.",
-  },
-  {
-    keywords: ["login", "log in", "sign in", "signin", "sign up", "signup", "register", "create account", "account", "how do i login", "how to login"],
-    response: "Creating an account is free and only takes a minute!\n\nClick **Log In** or **Sign Up** in the top-right corner of the page. Having an account lets you:\n\n• Submit lost & found reports\n• Claim items\n• Get notifications when matches are found\n\nYou can browse without an account, but you'll need one to take action.",
-  },
-  {
-    keywords: ["where", "location", "office", "drop off location", "pickup location", "where is", "where do i", "where can i"],
-    response: "All physical lost & found items should be brought to the **Bridgeland High School main office**.\n\nFor pickups: head to the **Front Office** with your student ID once your claim has been approved through Bear Tracks.",
-  },
-  {
-    keywords: ["hours", "open", "when", "time", "schedule", "what time", "when is", "when can"],
-    response: "Bear Tracks is available online **24/7** — you can browse and submit reports anytime!\n\nFor physical drop-offs and pickups at the main office, visit during regular school hours:\n📅 Monday–Friday, approximately **7:00 AM – 4:00 PM** (school days only).",
-  },
-  {
-    keywords: ["how does it work", "how it works", "how does bear", "explain", "what is bear tracks", "what is beartracks", "tell me about"],
-    response: "Bear Tracks is Bridgeland High School's official lost & found system! Here's how it works:\n\n1. 📝 **Report** — Post a lost or found item with a description\n2. ✅ **Verify** — Moderators confirm the post is accurate\n3. 🧩 **Match** — Our system surfaces similar posts automatically\n4. 🎒 **Return** — Arrange a safe pickup at the Front Office\n\nSimple, fast, and student-friendly!",
-  },
-  {
-    keywords: ["contact", "email", "reach out", "talk to", "message admin", "staff", "admin", "help desk"],
-    response: "You can reach the Bear Tracks team through the **Contact form** at the bottom of the homepage — just scroll down!\n\nFor urgent matters or in-person help, visit the **main office** during school hours.",
-  },
-  {
-    keywords: ["match", "matching", "notification", "notify", "alert", "auto match", "auto-match", "how does matching"],
-    response: "Bear Tracks has smart auto-matching built in!\n\nWhen you submit a **lost** item report, our system scans existing **found** reports for similar descriptions. If a match is found, you'll see a 🔔 notification in the bell icon in the top navbar.\n\nMake sure you're logged in to receive alerts — and keep your report details specific for better matches!",
-  },
-  {
-    keywords: ["photo", "picture", "image", "upload", "add photo", "add picture"],
-    response: "Adding a photo is totally optional but **strongly recommended** — it makes matching much faster!\n\nWhen submitting a report, there's an image upload option in the form. Supported formats: JPG, PNG, WEBP. Try to get a clear shot of any unique markings or features.",
-  },
-  {
-    keywords: ["category", "categories", "type", "what types", "kinds of items"],
-    response: "Bear Tracks supports a variety of item categories including:\n\n🎒 Bags & Backpacks\n📱 Electronics\n👕 Clothing\n🔑 Keys & Keychains\n📚 Books & School Supplies\n💳 IDs & Wallets\n💧 Water Bottles\n🎵 Headphones & Earbuds\n📦 Other\n\nPick the closest category when submitting to help with matching!",
-  },
-  {
-    keywords: ["backpack", "bag", "calculator", "phone", "airpods", "earbuds", "headphones", "earphones", "jacket", "hoodie", "shoes", "keys", "keychain", "wallet", "id card", "student id", "water bottle", "hydroflask", "laptop", "chromebook", "charger", "binder", "notebook"],
-    response: "Items like that get reported here all the time! Here's what to do:\n\n1. Click **Browse** to search for your specific item\n2. Use the search bar and category filter\n3. If it's not listed yet, submit a **Lost** report so we can match it when someone turns it in\n\nSomeone might turn it in later today — it happens more than you'd think!",
-  },
-  {
-    keywords: ["approved", "denied", "rejected", "my claim", "claim status", "what happened to my claim"],
-    response: "You can check your claim status through the 🔔 notification bell in the navbar (while logged in).\n\n• **Approved** → Head to the Front Office with your student ID to pick up your item!\n• **Denied** → The details didn't match up. You can try re-submitting with more specific info.\n\nIf you think there's been a mistake, contact us through the contact form.",
-  },
-  {
-    keywords: ["thanks", "thank you", "thank", "thx", "ty", "appreciate", "cheers", "cool", "awesome", "great"],
-    response: "Happy to help! Good luck with your item 🐻 Come back anytime if you have more questions!",
-  },
-  {
-    keywords: ["bye", "goodbye", "see you", "later", "peace", "ttyl", "gotta go"],
-    response: "Take care! Hope you find what you're looking for 🐻 Bear Tracks has your back!",
-  },
-];
+const SYSTEM_PROMPT = `You are BearBot, the helpful assistant for Bridgeland High School's lost & found system (Bear Tracks).
+Your ONLY job is to assist users with the Bear Tracks website and answer questions based on the following information. Do not answer questions unrelated to the website or Bridgeland High School's lost & found.
 
-const DEFAULT_RESPONSE =
-  "Hmm, I didn't quite catch that! Try asking about:\n\n• Reporting a **lost** item\n• Reporting a **found** item\n• How to **claim** an item\n• **Browsing** the lost & found\n• **Location** and hours\n• How **matching** works\n\nOr scroll down on the homepage to see our FAQ section!";
+Knowledge Base:
+- Reporting a lost item: Log in (or sign up for free), click Submit in the navbar, choose Lost and describe the item. Add a photo if possible. We'll notify them automatically if a matching found item shows up.
+- Reporting a found item: Log in or sign up, click Submit -> choose Found, describe the item and upload a photo. Drop the physical item off at the main office.
+- Claiming an item: Click Browse and find the item, open it and tap 'Claim this item', describe unique details. Wait for admin approval. Once approved, pick it up at the Front Office with a student ID.
+- Browsing: No account needed. Click Browse in the navbar. Users can search by keyword, filter by category, and sort.
+- Submitting a report: Reports are reviewed by a moderator before going live.
+- Account/Login: Free to create. Needed to submit reports, claim items, and get notifications.
+- Location: Physical drop-offs and pickups are at the Bridgeland High School main office / Front Office.
+- Hours: Website is 24/7. Physical drop-offs/pickups are Monday-Friday, approx 7:00 AM - 4:00 PM (school days only).
+- Matching: Auto-matching scans found reports for lost items and sends a notification (bell icon) if there is a match.
+- Photos: Supported formats are JPG, PNG, WEBP.
+- Categories: Bags & Backpacks, Electronics, Clothing, Keys & Keychains, Books & School Supplies, IDs & Wallets, Water Bottles, Headphones & Earbuds, Other.
+- Claim Status: Notifications will show if a claim is Approved (pick up at Front Office) or Denied (details didn't match).
+
+Keep your answers concise, friendly, and helpful. Format your responses with markdown when appropriate (e.g., bullet points, bold text). Use emojis like 🐻 occasionally. Do NOT hallucinate information not provided here. If asked something unrelated, politely decline and steer the conversation back to Bear Tracks.`;
 
 // ─── Algorithm ─────────────────────────────────────────────────────────────────
-function getBotResponse(input) {
-  const lower = input.toLowerCase().trim();
-  if (!lower) return null;
-
-  let bestScore = 0;
-  let bestResponse = DEFAULT_RESPONSE;
-
-  for (const entry of KNOWLEDGE_BASE) {
-    let score = 0;
-    for (const kw of entry.keywords) {
-      if (lower.includes(kw)) {
-        // Longer keywords are more specific → reward them more
-        score += kw.length;
-      }
-    }
-    if (score > bestScore) {
-      bestScore = score;
-      bestResponse = entry.response;
-    }
+async function getBotResponse(messages) {
+  if (!OPENROUTER_API_KEY) {
+    return "Error: OpenRouter API key is missing. Please add VITE_OPENROUTER_API_KEY to your .env file.";
   }
 
-  return bestResponse;
+  // Format messages for OpenRouter
+  const apiMessages = [
+    { role: "system", content: SYSTEM_PROMPT },
+    ...messages.map((m) => ({
+      role: m.from === "bot" ? "assistant" : "user",
+      content: m.text,
+    })),
+  ];
+
+  try {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+        "HTTP-Referer": window.location.origin, // Optional, for including your app on openrouter.ai rankings.
+        "X-Title": "BearTracks Bot", // Optional. Shows in rankings on openrouter.ai.
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.0-flash-exp:free", // Using a stable free model
+        messages: apiMessages,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content;
+  } catch (error) {
+    console.error("OpenRouter API error:", error);
+    return `Sorry, I'm having trouble connecting to my brain right now. Detailed error: ${error.message}`;
+  }
 }
 
 // ─── Message Renderer ──────────────────────────────────────────────────────────
@@ -154,23 +111,22 @@ export default function BearBot() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  function sendMessage(text) {
+  async function sendMessage(text) {
     const trimmed = text.trim();
     if (!trimmed) return;
 
     const userMsg = { id: msgIdRef.current++, from: "user", text: trimmed };
-    setMessages((prev) => [...prev, userMsg]);
+    const updatedMessages = [...messages, userMsg];
+    setMessages(updatedMessages);
     setInput("");
     setIsTyping(true);
 
-    setTimeout(() => {
-      const response = getBotResponse(trimmed);
-      setIsTyping(false);
-      setMessages((prev) => [
-        ...prev,
-        { id: msgIdRef.current++, from: "bot", text: response },
-      ]);
-    }, 800 + Math.random() * 400);
+    const response = await getBotResponse(updatedMessages);
+    setIsTyping(false);
+    setMessages((prev) => [
+      ...prev,
+      { id: msgIdRef.current++, from: "bot", text: response },
+    ]);
   }
 
   function handleKeyDown(e) {
