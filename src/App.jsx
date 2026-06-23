@@ -17,51 +17,80 @@ import ItemDetailsPage from "./pages/ItemDetailsPage.jsx";
 import AdminClaimsPage from "./pages/AdminClaimsPage.jsx";
 
 /**
- * App
- * ---
- * Root router + providers.
- *
- * Key rules you requested:
- * - Browse is its own page: /browse
- * - Login + signup pages exist (mocked, not connected to a service yet)
- * - Only signed-in users can submit items: /submit is protected
+ * App.jsx
+ * -------
+ * The root component of the BearTracks application.
+ * 
+ * Architecture & Routing:
+ * - Utilizes `react-router-dom` for client-side routing, enabling a Single Page Application (SPA) experience.
+ * - Wraps the entire application in global state providers (`AuthProvider` and `ItemsProvider`) to manage user sessions and database records.
+ * - Integrates Framer Motion for animations, respecting user accessibility preferences for reduced motion.
+ * 
+ * FBLA Notes:
+ * This file serves as the main entry point where all major components (Navbar, Chatbot, Pages) are assembled.
+ * Protected routes ensure only authenticated users can access specific workflows like submitting items.
  */
 
 export default function App() {
   return (
+    // BrowserRouter manages the browser history and URL synchronization
     <BrowserRouter>
+      {/* AuthProvider manages global authentication state (login/signup) */}
       <AuthProvider>
+        {/* ItemsProvider handles fetching, caching, and updating lost/found items */}
         <ItemsProvider>
+          {/* 
+            MotionConfig globally controls Framer Motion animations. 
+            It checks local storage for accessibility preferences to reduce motion if requested.
+          */}
           <MotionConfig reducedMotion={localStorage.getItem('accessAid_pauseAnimations') === 'true' ? "always" : "user"}>
+            
+            {/* Accessibility skip link for keyboard navigation (WCAG compliance) */}
             <a href="#main-content" className="skip-link">
               Skip to main content
             </a>
+            
+            {/* Global Navbar rendered on every page */}
             <Navbar />
+            
+            {/* AI Assistant Chatbot rendered globally as a floating widget */}
             <BearBot />
+            
+            {/* Main content area where React Router injects the active page component */}
             <main id="main-content" tabIndex={-1}>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/browse" element={<BrowsePage />} />
-              <Route path="/items/:id" element={<ItemDetailsPage />} />
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<HomePage />} />
+                <Route path="/browse" element={<BrowsePage />} />
+                <Route path="/items/:id" element={<ItemDetailsPage />} />
+                
+                {/* 
+                  Protected Routes 
+                  The `ProtectedRoute` wrapper intercepts unauthenticated access attempts 
+                  and redirects the user to the login page.
+                */}
+                <Route
+                  path="/submit"
+                  element={
+                    <ProtectedRoute>
+                      <SubmitPage />
+                    </ProtectedRoute>
+                  }
+                />
 
-              <Route
-                path="/submit"
-                element={
-                  <ProtectedRoute>
-                    <SubmitPage />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Authentication Routes */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignupPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+                <Route path="/claims" element={<AdminClaimsPage />} />
 
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
-              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-              <Route path="/reset-password" element={<ResetPasswordPage />} />
-              <Route path="/claims" element={<AdminClaimsPage />} />
-
-              {/* Fallback: if someone types an unknown URL, send them home */}
-              <Route path="*" element={<HomePage />} />
-            </Routes>
+                {/* 
+                  Fallback Route
+                  If a user navigates to an undefined path (404), safely redirect them to the HomePage.
+                */}
+                <Route path="*" element={<HomePage />} />
+              </Routes>
             </main>
           </MotionConfig>
         </ItemsProvider>
@@ -69,3 +98,4 @@ export default function App() {
     </BrowserRouter>
   );
 }
+

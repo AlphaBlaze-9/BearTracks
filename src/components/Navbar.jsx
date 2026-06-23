@@ -81,7 +81,7 @@ export default function Navbar() {
           .filter(
             (it) =>
               it.user_id === user.id &&
-              it.status === "Lost" &&
+              (it.status === "Lost" || it.status === "Found") &&
               it.potential_matches &&
               it.potential_matches.length > 0 &&
               !readNotifs.includes(it.id),
@@ -260,10 +260,11 @@ export default function Navbar() {
                             {notifications.map((notif) => {
                               if (notif.type === "match") {
                                 const { item } = notif;
+                                const matchedItemId = item.potential_matches[0].id;
                                 return (
                                   <Link
                                     key={`match_${item.id}`}
-                                    to={`/items/${item.id}`}
+                                    to={`/items/${matchedItemId}`}
                                     onClick={() =>
                                       handleNotificationClick(item.id)
                                     }
