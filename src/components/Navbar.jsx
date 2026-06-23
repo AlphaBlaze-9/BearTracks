@@ -275,10 +275,13 @@ export default function Navbar() {
                                         <Search className="w-4 h-4" />
                                       </div>
                                       <div>
-                                        <div className="text-xs font-bold text-[#062d78]">
-                                          Match Found!
+                                        <div className="text-xs font-bold text-[#062d78] flex items-center justify-between">
+                                          <span>Match Found!</span>
+                                          <span className="bg-brand-orange text-white px-2 py-0.5 rounded-full text-[10px] ml-2">
+                                            {Math.round((item.potential_matches[0].score || 0) * 100)}%
+                                          </span>
                                         </div>
-                                        <div className="text-xs text-slate-600 line-clamp-1">
+                                        <div className="text-xs text-slate-600 line-clamp-1 mt-0.5">
                                           Possible match for "{item.title}"
                                         </div>
                                       </div>
