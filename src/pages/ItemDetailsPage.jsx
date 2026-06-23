@@ -81,7 +81,9 @@ export default function ItemDetailsPage() {
           {/* AI Match Banner - Only for "Lost" items */}
           {item.status === "Lost" &&
             item.potential_matches &&
-            item.potential_matches.length > 0 && (
+            item.potential_matches.length > 0 &&
+            user &&
+            (user.id === item.user_id || user.id === item.potential_matches[0].user_id) && (
               <MotionReveal>
                 <div className="mb-8 overflow-hidden rounded-[2rem] bg-gradient-to-r from-brand-blue via-brand-orange to-brand-blue p-1 shadow-2xl shadow-brand-blue/20">
                   <div className="relative bg-white/95 backdrop-blur-3xl rounded-[1.8rem] p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
@@ -335,24 +337,26 @@ export default function ItemDetailsPage() {
                 )}
 
                 {/* Ask a Question Button */}
-                <button
-                  onClick={() => setIsInquiryModalOpen(true)}
-                  className="w-full text-left mt-4 p-1 rounded-[1.75rem] border-2 border-brand-blue/10 bg-white shadow-xl shadow-brand-blue/5 group overflow-hidden relative cursor-pointer hover:border-brand-blue/30 transition-all transform hover:-translate-y-1"
-                >
-                  <div className="rounded-[1.5rem] p-5 flex items-center justify-center gap-4 text-center">
-                    <div className="h-12 w-12 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors">
-                      <MessageCircle className="w-6 h-6" />
+                {isAuthed && (
+                  <button
+                    onClick={() => setIsInquiryModalOpen(true)}
+                    className="w-full text-left mt-4 p-1 rounded-[1.75rem] border-2 border-brand-blue/10 bg-white shadow-xl shadow-brand-blue/5 group overflow-hidden relative cursor-pointer hover:border-brand-blue/30 transition-all transform hover:-translate-y-1"
+                  >
+                    <div className="rounded-[1.5rem] p-5 flex items-center justify-center gap-4 text-center">
+                      <div className="h-12 w-12 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors">
+                        <MessageCircle className="w-6 h-6" />
+                      </div>
+                      <div className="text-left flex-1">
+                        <h3 className="text-lg font-black text-[#062d78]">
+                          Have a Question?
+                        </h3>
+                        <p className="text-xs text-slate-500 font-bold mt-0.5">
+                          Ask us for more details about this item.
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-left flex-1">
-                      <h3 className="text-lg font-black text-[#062d78]">
-                        Have a Question?
-                      </h3>
-                      <p className="text-xs text-slate-500 font-bold mt-0.5">
-                        Ask us for more details about this item.
-                      </p>
-                    </div>
-                  </div>
-                </button>
+                  </button>
+                )}
               </MotionReveal>
             </div>
           </div>
