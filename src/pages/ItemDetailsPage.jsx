@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Search, Sparkles, Package, User, X } from "lucide-react";
+import { Search, Sparkles, Package, User, X, MessageCircle } from "lucide-react";
 import Container from "../components/Container.jsx";
 import Section from "../components/Section.jsx";
 import MotionReveal from "../components/MotionReveal.jsx";
@@ -24,6 +24,11 @@ export default function ItemDetailsPage() {
   const [success, setSuccess] = useState(false);
   const [claimError, setClaimError] = useState("");
   const [claimSubmitting, setClaimSubmitting] = useState(false);
+
+  const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
+  const [inquirySuccess, setInquirySuccess] = useState(false);
+  const [inquiryText, setInquiryText] = useState("");
+  const [inquirySubmitting, setInquirySubmitting] = useState(false);
 
   const { claims } = useItems();
   const userClaim = claims.find(
@@ -328,11 +333,114 @@ export default function ItemDetailsPage() {
                     </div>
                   </div>
                 )}
+
+                {/* Ask a Question Button */}
+                <button
+                  onClick={() => setIsInquiryModalOpen(true)}
+                  className="w-full text-left mt-4 p-1 rounded-[1.75rem] border-2 border-brand-blue/10 bg-white shadow-xl shadow-brand-blue/5 group overflow-hidden relative cursor-pointer hover:border-brand-blue/30 transition-all transform hover:-translate-y-1"
+                >
+                  <div className="rounded-[1.5rem] p-5 flex items-center justify-center gap-4 text-center">
+                    <div className="h-12 w-12 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors">
+                      <MessageCircle className="w-6 h-6" />
+                    </div>
+                    <div className="text-left flex-1">
+                      <h3 className="text-lg font-black text-[#062d78]">
+                        Have a Question?
+                      </h3>
+                      <p className="text-xs text-slate-500 font-bold mt-0.5">
+                        Ask us for more details about this item.
+                      </p>
+                    </div>
+                  </div>
+                </button>
               </MotionReveal>
             </div>
           </div>
         </Container>
       </Section>
+
+      {/* Inquiry Modal */}
+      {isInquiryModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#01143a]/80 backdrop-blur-sm">
+          <MotionReveal>
+            <div className="bg-white rounded-[2rem] p-6 sm:p-8 w-full max-w-[28rem] shadow-[0_0_50px_rgba(6,45,120,0.5)] relative border-2 border-brand-blue/10">
+              <button
+                type="button"
+                onClick={() => setIsInquiryModalOpen(false)}
+                className="absolute top-5 right-5 h-8 w-8 flex items-center justify-center rounded-full bg-brand-blue/5 text-[#062d78] hover:bg-brand-orange hover:text-white transition-all group cursor-pointer shadow-sm"
+              >
+                <X className="w-4 h-4" strokeWidth={3} />
+              </button>
+
+              {inquirySuccess ? (
+                <div className="text-center py-8">
+                  <div className="inline-flex h-20 w-20 items-center justify-center rounded-[2rem] bg-brand-blue text-white mb-6 shadow-xl shadow-brand-blue/30">
+                    <MessageCircle className="w-10 h-10" />
+                  </div>
+                  <h2 className="text-3xl font-extrabold text-[#062d78] mb-2 tracking-tight">
+                    Question Sent!
+                  </h2>
+                  <p className="text-sm text-slate-500 font-bold px-4">
+                    We'll get back to you with an answer soon.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <h2 className="text-2xl font-black text-[#062d78] mb-1">
+                    Ask a Question
+                  </h2>
+                  <p className="text-sm font-bold text-slate-500 mb-6">
+                    What would you like to know about this item?
+                  </p>
+
+                  <form
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      setInquirySubmitting(true);
+
+                      // Simulate API call
+                      await new Promise((resolve) => setTimeout(resolve, 800));
+                      
+                      setInquirySubmitting(false);
+                      setInquirySuccess(true);
+                      setTimeout(() => {
+                        setIsInquiryModalOpen(false);
+                        setInquirySuccess(false);
+                        setInquiryText("");
+                      }, 3000);
+                    }}
+                    className="space-y-4"
+                  >
+                    <div>
+                      <label className="block text-[10px] font-black text-[#01143a]/50 uppercase tracking-[0.1em] mb-1.5 pl-1">
+                        Your Question
+                      </label>
+                      <textarea
+                        required
+                        rows="4"
+                        value={inquiryText}
+                        onChange={(e) => setInquiryText(e.target.value)}
+                        className="w-full rounded-2xl border-2 border-brand-blue/10 bg-brand-blue/5 px-4 py-3 text-sm text-[#062d78] font-black focus:border-brand-blue focus:outline-none focus:ring-4 focus:ring-brand-blue/10 transition-all resize-none placeholder:text-slate-400/70"
+                        placeholder="e.g. Is there a name written on the back?"
+                      ></textarea>
+                    </div>
+
+                    <div className="mt-6">
+                      <button
+                        type="submit"
+                        disabled={inquirySubmitting || !inquiryText.trim()}
+                        className="w-full rounded-xl bg-gradient-to-r from-brand-blue to-brand-orange px-6 py-4 text-sm font-black text-white shadow-xl shadow-brand-blue/20 hover:shadow-2xl hover:shadow-brand-blue/30 transition-all transform hover:-translate-y-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {inquirySubmitting ? "Sending…" : "Send Question"}
+                      </button>
+                    </div>
+                  </form>
+                </>
+              )}
+            </div>
+          </MotionReveal>
+        </div>
+      )}
 
       {/* Claim Modal */}
       {isClaimModalOpen && (
