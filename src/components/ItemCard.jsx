@@ -86,7 +86,7 @@ export default function ItemCard({ item }) {
             >
               {item.status}
             </span>
-            {item.status === "Lost" && item.potential_matches && item.potential_matches.length > 0 && (
+            {item.status === "Lost" && item.potential_matches && item.potential_matches.length > 0 && isOwner && (
               <span className="rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider shadow-sm bg-brand-orange text-white">
                 {Math.round((item.potential_matches[0].score || 0) * 100)}% Match
               </span>

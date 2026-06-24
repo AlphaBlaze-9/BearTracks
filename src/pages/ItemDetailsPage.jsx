@@ -83,7 +83,7 @@ export default function ItemDetailsPage() {
             item.potential_matches &&
             item.potential_matches.length > 0 &&
             user &&
-            (user.id === item.user_id || user.id === item.potential_matches[0].user_id) && (
+            user.id === item.user_id && (
               <MotionReveal>
                 <div className="mb-8 overflow-hidden rounded-[2rem] bg-gradient-to-r from-brand-blue via-brand-orange to-brand-blue p-1 shadow-2xl shadow-brand-blue/20">
                   <div className="relative bg-white/95 backdrop-blur-3xl rounded-[1.8rem] p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
@@ -186,6 +186,11 @@ export default function ItemDetailsPage() {
                   <span className="text-[10px] font-bold text-slate-400">
                     ID: #{item.id.toString().slice(-6)}
                   </span>
+                  {item.status === "Lost" && item.potential_matches && item.potential_matches.length > 0 && user && user.id === item.user_id && (
+                    <span className="rounded-full px-3 py-1 text-[9px] font-extrabold uppercase tracking-[0.1em] shadow-sm bg-brand-orange text-white shadow-brand-orange/20">
+                      {Math.round((item.potential_matches[0].score || 0) * 100)}% Match
+                    </span>
+                  )}
                 </div>
 
                 <h1 className="text-4xl font-black tracking-tight text-[#062d78] sm:text-5xl">
