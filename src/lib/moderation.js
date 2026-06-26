@@ -7,13 +7,13 @@
  *   1. localProfanityCheck — instant, offline, catches obvious words so the
  *      user gets immediate feedback (and we stay safe even if the API is down).
  *   2. moderateText — calls the /moderate-content Netlify function, which adds
- *      OpenAI's moderation model for nuanced hate/harassment/sexual/threat text.
+ *      Google Gemini's AI model for nuanced hate/harassment/sexual/threat text.
  */
 
 const FUNCTION_URL = "/.netlify/functions/moderate-content";
 
 // Small, obvious blocklist for instant client feedback. The serverless layer
-// (OpenAI) does the heavier lifting for subtler cases.
+// (Google Gemini AI) does the heavier lifting for subtler cases.
 const LOCAL_BLOCKLIST = [
   "fuck",
   "shit",

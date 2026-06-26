@@ -6,16 +6,15 @@
  *
  * It runs two layers:
  *   1. A fast local keyword blocklist (catches obvious slurs/profanity even if
- *      the OpenRouter AI network call is unavailable).
- *   2. OpenRouter free content safety model (nvidia/nemotron-3.5-content-safety:free)
- *      with auto-fallback models array for nuanced cases like hate, harassment,
- *      sexual content, threats, and self-harm.
+ *      the Google Gemini AI network call is unavailable).
+ *   2. Google Gemini AI models (gemini-2.5-flash-lite) for nuanced cases
+ *      like hate, harassment, sexual content, threats, and self-harm.
  *
  * Response: { flagged: boolean, reason: string, categories: string[] }
  */
 
 // Lightweight server-side blocklist. Kept intentionally small + obvious; the
-// OpenRouter AI layer handles the harder cases. Matches whole words only.
+// Google Gemini AI layer handles the harder cases. Matches whole words only.
 const BLOCKLIST = [
     'fuck', 'shit', 'bitch', 'asshole', 'bastard', 'dick', 'piss',
     'cunt', 'slut', 'whore', 'nigger', 'nigga', 'faggot', 'fag',
@@ -55,55 +54,53 @@ export const handler = async (event) => {
             }
         }
 
-        // Layer 2: OpenRouter moderation (best-effort — never block submission on an
+        // Layer 2: Google Gemini moderation (best-effort — never block submission on an
         // API/network error, since layer 1 already caught the obvious stuff).
         try {
-            const apiKey = process.env.OPENROUTER_API_KEY || process.env.VITE_OPENROUTER_API_KEY
+            const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY
             if (apiKey) {
-                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${apiKey}`,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        model: "nvidia/nemotron-3.5-content-safety:free",
-                        models: [
-                            "nvidia/nemotron-3.5-content-safety:free",
-                            "google/gemma-4-31b-it:free",
-                            "meta-llama/llama-3.3-70b-instruct:free"
-                        ],
-                        messages: [
-                            { role: "system", content: "You are a content safety moderation AI. Evaluate if user input contains hate speech, harassment, sexual content, violence, threats, or self-harm. If safe, reply 'User Safety: safe'. If unsafe, reply 'User Safety: unsafe' followed by the violated categories." },
-                            { role: "user", content: text }
-                        ]
-                    })
-                })
+                const prompt = `You are a content safety moderation AI. Evaluate if the following user input contains hate speech, harassment, sexual violence, threats, self-harm, or severe profanity. If safe, reply 'User Safety: safe'. If unsafe, reply 'User Safety: unsafe' followed by 'Categories: category1, category2'.\n\nUser Input: "${text}"`
 
-                if (response.ok) {
-                    const data = await response.json()
-                    const aiReply = data.choices?.[0]?.message?.content || ""
-                    if (aiReply.toLowerCase().includes("unsafe")) {
-                        const lines = aiReply.split("\n")
-                        const catLine = lines.find(l => l.toLowerCase().includes("categories:")) || ""
-                        const categories = catLine ? catLine.split(":")[1]?.split(",").map(c => c.trim()).filter(Boolean) || ["safety violation"] : ["safety violation"]
-
-                        return {
-                            statusCode: 200,
+                const models = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-flash-lite-latest']
+                for (const model of models) {
+                    try {
+                        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
-                                flagged: true,
-                                reason:
-                                    'This text was flagged as inappropriate (' +
-                                    categories.join(', ') +
-                                    '). Please reword it.',
-                                categories,
-                            }),
+                                contents: [{ role: "user", parts: [{ text: prompt }] }]
+                            })
+                        })
+
+                        if (response.ok) {
+                            const data = await response.json()
+                            const aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || ""
+                            if (aiReply.toLowerCase().includes("unsafe")) {
+                                const lines = aiReply.split("\n")
+                                const catLine = lines.find(l => l.toLowerCase().includes("categories:")) || ""
+                                const categories = catLine ? catLine.split(":")[1]?.split(",").map(c => c.trim()).filter(Boolean) || ["safety violation"] : ["safety violation"]
+
+                                return {
+                                    statusCode: 200,
+                                    body: JSON.stringify({
+                                        flagged: true,
+                                        reason:
+                                            'This text was flagged as inappropriate (' +
+                                            categories.join(', ') +
+                                            '). Please reword it.',
+                                        categories,
+                                    }),
+                                }
+                            }
+                            break // Success, didn't flag
                         }
+                    } catch (mErr) {
+                        console.warn(`[Moderation] Model ${model} failed, trying next fallback:`, mErr.message)
                     }
                 }
             }
         } catch (aiErr) {
-            console.error('[Moderation] OpenRouter call failed, relying on blocklist:', aiErr.message)
+            console.error('[Moderation] Google Gemini call failed, relying on blocklist:', aiErr.message)
         }
 
         return {

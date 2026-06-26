@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X, Send, ChevronDown } from "lucide-react";
 
 // ─── API Configuration & System Prompt ───────────────────────────────────────────
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 const SYSTEM_PROMPT = `You are BearBot, the helpful assistant for Bridgeland High School's lost & found system (Bear Tracks).
 Your ONLY job is to assist users with the Bear Tracks website and answer questions based on the following information. Do not answer questions unrelated to the website or Bridgeland High School's lost & found.
@@ -26,50 +26,48 @@ Keep your answers concise, friendly, and helpful. Format your responses with mar
 
 // ─── Algorithm ─────────────────────────────────────────────────────────────────
 async function getBotResponse(messages) {
-  if (!OPENROUTER_API_KEY) {
-    return "Error: OpenRouter API key is missing. Please add VITE_OPENROUTER_API_KEY to your .env file.";
+  if (!GEMINI_API_KEY) {
+    return "Error: Google Gemini API key is missing. Please add VITE_GEMINI_API_KEY to your .env file.";
   }
 
-  // Format messages for OpenRouter
-  const apiMessages = [
-    { role: "system", content: SYSTEM_PROMPT },
+  // Format messages for Google Gemini API
+  const geminiContents = [
+    {
+      role: "user",
+      parts: [{ text: `System Instructions for BearBot:\n${SYSTEM_PROMPT}` }]
+    },
+    {
+      role: "model",
+      parts: [{ text: "Understood! I am BearBot 🐻 ready to help with Bridgeland High School's lost & found." }]
+    },
     ...messages.map((m) => ({
-      role: m.from === "bot" ? "assistant" : "user",
-      content: m.text,
-    })),
+      role: m.from === "bot" ? "model" : "user",
+      parts: [{ text: m.text }]
+    }))
   ];
 
-  try {
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-        "HTTP-Referer": window.location.origin, // Optional, for including your app on openrouter.ai rankings.
-        "X-Title": "BearTracks Bot", // Optional. Shows in rankings on openrouter.ai.
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemma-4-31b-it:free", // Primary stable free model
-        models: [
-          "google/gemma-4-31b-it:free",
-          "openai/gpt-oss-20b:free",
-          "meta-llama/llama-3.3-70b-instruct:free",
-          "qwen/qwen3-coder:free"
-        ], // Auto-fallback array to guarantee 24/7 uptime if any free endpoint is rate-limited
-        messages: apiMessages,
-      }),
-    });
+  // Try models in sequence with fallback
+  const fallbackModels = ["gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-flash-lite-latest", "gemini-flash-latest"];
 
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
+  for (const model of fallbackModels) {
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: geminiContents })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (reply) return reply;
+      }
+    } catch (err) {
+      console.warn(`[BearBot] Model ${model} failed, trying next fallback:`, err.message);
     }
-
-    const data = await response.json();
-    return data.choices[0].message.content;
-  } catch (error) {
-    console.error("OpenRouter API error:", error);
-    return `Sorry, I'm having trouble connecting to my brain right now. Detailed error: ${error.message}`;
   }
+
+  return "Sorry, I'm having trouble connecting to Google Gemini right now. Please try again in a few moments.";
 }
 
 // ─── Message Renderer ──────────────────────────────────────────────────────────

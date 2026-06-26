@@ -1,11 +1,4 @@
 import { createClient } from '@supabase/supabase-js'
-import OpenAI from 'openai'
-
-// Initialize OpenAI SDK configured for OpenRouter API
-const openai = new OpenAI({
-    baseURL: 'https://openrouter.ai/api/v1',
-    apiKey: process.env.OPENROUTER_API_KEY || process.env.VITE_OPENROUTER_API_KEY,
-})
 
 // Initialize Supabase with Service Role Key for admin access
 const supabase = createClient(
@@ -64,11 +57,20 @@ export const handler = async (event) => {
 
         let embedding = null
         try {
-            const embeddingResponse = await openai.embeddings.create({
-                model: 'text-embedding-3-small',
-                input: textToEmbed,
-            })
-            embedding = embeddingResponse.data[0]?.embedding
+            const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY
+            if (apiKey) {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: { parts: [{ text: textToEmbed }] }
+                    })
+                })
+                if (res.ok) {
+                    const data = await res.json()
+                    embedding = data.embedding?.values || null
+                }
+            }
 
             if (embedding) {
                 // 3. Save embedding to the new item
@@ -78,7 +80,7 @@ export const handler = async (event) => {
                     .eq('id', newItemId)
             }
         } catch (embErr) {
-            console.warn('[Match-Items] OpenRouter vector embedding call unavailable or unfree, falling back to free category/keyword matching:', embErr.message)
+            console.warn('[Match-Items] Google Gemini embedding call unavailable, falling back to free category/keyword matching:', embErr.message)
         }
 
         // 4. Find potential matches
