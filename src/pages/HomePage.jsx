@@ -394,7 +394,13 @@ export default function HomePage() {
                 <span className="h-2 w-2 rounded-full bg-brand-blue" />©{" "}
                 {new Date().getFullYear()} Bear Tracks
               </div>
-              <div className="flex gap-8">
+              <div className="flex gap-6 sm:gap-8 items-center">
+                <Link
+                  className="hover:text-brand-blue transition-colors uppercase tracking-widest text-[10px]"
+                  to="/citations"
+                >
+                  Works Cited
+                </Link>
                 <a
                   className="hover:text-brand-blue transition-colors uppercase tracking-widest text-[10px]"
                   href="#top"

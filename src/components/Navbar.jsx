@@ -206,6 +206,9 @@ export default function Navbar() {
             <NavLink to="/submit" className={desktopLink}>
               Submit
             </NavLink>
+            <NavLink to="/citations" className={desktopLink}>
+              Citations
+            </NavLink>
 
             <button
               type="button"
@@ -504,6 +507,12 @@ export default function Navbar() {
                   className="rounded-xl px-3 py-3 text-sm text-slate-700 hover:bg-brand-gold/15"
                 >
                   Submit
+                </NavLink>
+                <NavLink
+                  to="/citations"
+                  className="rounded-xl px-3 py-3 text-sm text-slate-700 hover:bg-brand-gold/15"
+                >
+                  Citations
                 </NavLink>
 
                 <button

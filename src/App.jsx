@@ -15,6 +15,7 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 import ItemDetailsPage from "./pages/ItemDetailsPage.jsx";
 import AdminClaimsPage from "./pages/AdminClaimsPage.jsx";
+import CitationsPage from "./pages/CitationsPage.jsx";
 
 /**
  * App.jsx
@@ -63,6 +64,7 @@ export default function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/browse" element={<BrowsePage />} />
                 <Route path="/items/:id" element={<ItemDetailsPage />} />
+                <Route path="/citations" element={<CitationsPage />} />
                 
                 {/* 
                   Protected Routes 
