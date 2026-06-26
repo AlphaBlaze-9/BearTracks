@@ -29,7 +29,7 @@
 ## Technology
 
 - **Frontend:** React, Vite, JavaScript, Tailwind CSS  
-- **Backend/AI:** OpenAI API (Integration)
+- **Backend/AI:** OpenRouter API (Free Tier AI Models)
 - **Database & Auth:** Supabase (PostgreSQL) + Auth  
 - **Deployment:** Netlify  
 
@@ -56,7 +56,8 @@
 3. **Set environment variables**
    Create a `.env` (or `.env.local`) file in the project root:
    ```env
-   OPENAI_API_KEY=
+   OPENROUTER_API_KEY=
+   VITE_OPENROUTER_API_KEY=
    SUPABASE_SERVICE_ROLE_KEY=
    VITE_SUPABASE_URL=
    ```

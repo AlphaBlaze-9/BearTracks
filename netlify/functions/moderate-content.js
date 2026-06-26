@@ -1,27 +1,21 @@
-import OpenAI from 'openai'
-
-// Initialize OpenAI (same key used by the matching function)
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-})
-
 /**
- * moderate-content
- * ----------------
+ * moderate-content.js
+ * -------------------
  * Checks arbitrary user-submitted text for inappropriate content before it is
  * saved (item submissions, claim reasons, etc.).
  *
  * It runs two layers:
  *   1. A fast local keyword blocklist (catches obvious slurs/profanity even if
- *      the OpenAI call is unavailable).
- *   2. OpenAI's moderation model (omni-moderation-latest) for nuanced cases
- *      like hate, harassment, sexual content, threats, and self-harm.
+ *      the OpenRouter AI network call is unavailable).
+ *   2. OpenRouter free content safety model (nvidia/nemotron-3.5-content-safety:free)
+ *      with auto-fallback models array for nuanced cases like hate, harassment,
+ *      sexual content, threats, and self-harm.
  *
  * Response: { flagged: boolean, reason: string, categories: string[] }
  */
 
 // Lightweight server-side blocklist. Kept intentionally small + obvious; the
-// OpenAI layer handles the harder cases. Matches whole words only.
+// OpenRouter AI layer handles the harder cases. Matches whole words only.
 const BLOCKLIST = [
     'fuck', 'shit', 'bitch', 'asshole', 'bastard', 'dick', 'piss',
     'cunt', 'slut', 'whore', 'nigger', 'nigga', 'faggot', 'fag',
@@ -61,34 +55,55 @@ export const handler = async (event) => {
             }
         }
 
-        // Layer 2: OpenAI moderation (best-effort — never block submission on an
+        // Layer 2: OpenRouter moderation (best-effort — never block submission on an
         // API/network error, since layer 1 already caught the obvious stuff).
         try {
-            const result = await openai.moderations.create({
-                model: 'omni-moderation-latest',
-                input: text,
-            })
-
-            const r = result.results?.[0]
-            if (r && r.flagged) {
-                const categories = Object.entries(r.categories || {})
-                    .filter(([, v]) => v)
-                    .map(([k]) => k)
-
-                return {
-                    statusCode: 200,
+            const apiKey = process.env.OPENROUTER_API_KEY || process.env.VITE_OPENROUTER_API_KEY
+            if (apiKey) {
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${apiKey}`,
+                        "Content-Type": "application/json",
+                    },
                     body: JSON.stringify({
-                        flagged: true,
-                        reason:
-                            'This text was flagged as inappropriate (' +
-                            categories.join(', ') +
-                            '). Please reword it.',
-                        categories,
-                    }),
+                        model: "nvidia/nemotron-3.5-content-safety:free",
+                        models: [
+                            "nvidia/nemotron-3.5-content-safety:free",
+                            "google/gemma-4-31b-it:free",
+                            "meta-llama/llama-3.3-70b-instruct:free"
+                        ],
+                        messages: [
+                            { role: "system", content: "You are a content safety moderation AI. Evaluate if user input contains hate speech, harassment, sexual content, violence, threats, or self-harm. If safe, reply 'User Safety: safe'. If unsafe, reply 'User Safety: unsafe' followed by the violated categories." },
+                            { role: "user", content: text }
+                        ]
+                    })
+                })
+
+                if (response.ok) {
+                    const data = await response.json()
+                    const aiReply = data.choices?.[0]?.message?.content || ""
+                    if (aiReply.toLowerCase().includes("unsafe")) {
+                        const lines = aiReply.split("\n")
+                        const catLine = lines.find(l => l.toLowerCase().includes("categories:")) || ""
+                        const categories = catLine ? catLine.split(":")[1]?.split(",").map(c => c.trim()).filter(Boolean) || ["safety violation"] : ["safety violation"]
+
+                        return {
+                            statusCode: 200,
+                            body: JSON.stringify({
+                                flagged: true,
+                                reason:
+                                    'This text was flagged as inappropriate (' +
+                                    categories.join(', ') +
+                                    '). Please reword it.',
+                                categories,
+                            }),
+                        }
+                    }
                 }
             }
         } catch (aiErr) {
-            console.error('[Moderation] OpenAI call failed, relying on blocklist:', aiErr.message)
+            console.error('[Moderation] OpenRouter call failed, relying on blocklist:', aiErr.message)
         }
 
         return {

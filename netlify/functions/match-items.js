@@ -1,9 +1,10 @@
 import { createClient } from '@supabase/supabase-js'
 import OpenAI from 'openai'
 
-// Initialize OpenAI
+// Initialize OpenAI SDK configured for OpenRouter API
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+    baseURL: 'https://openrouter.ai/api/v1',
+    apiKey: process.env.OPENROUTER_API_KEY || process.env.VITE_OPENROUTER_API_KEY,
 })
 
 // Initialize Supabase with Service Role Key for admin access
@@ -61,37 +62,53 @@ export const handler = async (event) => {
       Category: ${newItem.category}
     `.trim().replace(/\s+/g, ' ')
 
-        const embeddingResponse = await openai.embeddings.create({
-            model: 'text-embedding-3-small',
-            input: textToEmbed,
-        })
-        const embedding = embeddingResponse.data[0].embedding
+        let embedding = null
+        try {
+            const embeddingResponse = await openai.embeddings.create({
+                model: 'text-embedding-3-small',
+                input: textToEmbed,
+            })
+            embedding = embeddingResponse.data[0]?.embedding
 
-        // 3. Save embedding to the new item
-        await supabase
-            .from('lost_found_items')
-            .update({ embedding })
-            .eq('id', newItemId)
+            if (embedding) {
+                // 3. Save embedding to the new item
+                await supabase
+                    .from('lost_found_items')
+                    .update({ embedding })
+                    .eq('id', newItemId)
+            }
+        } catch (embErr) {
+            console.warn('[Match-Items] OpenRouter vector embedding call unavailable or unfree, falling back to free category/keyword matching:', embErr.message)
+        }
 
         // 4. Find potential matches
         // Only look for items of the OPPOSITE type (Lost <-> Found)
         const targetType = newItem.type === 'Lost' ? 'Found' : 'Lost'
 
-        // Fetch candidate items that have embeddings
-        // Note: In a real prod app with millions of rows, use pgvector's dot product operator.
-        // For now, we fetch all potential candidates and compute similarity in JS (good for small scale).
-        const { data: candidates, error: candidateError } = await supabase
+        // Fetch candidate items
+        let query = supabase
             .from('lost_found_items')
-            .select('id, title, embedding, location, date_incident, category')
+            .select('id, title, embedding, location, date_incident, category, description')
             .eq('type', targetType)
-            .not('embedding', 'is', null) // Only fetch items with embeddings
+
+        if (embedding) {
+            query = query.not('embedding', 'is', null)
+        }
+
+        const { data: candidates, error: candidateError } = await query
 
         if (candidateError) throw candidateError
 
         const matches = []
 
         for (const candidate of candidates) {
-            const sim = cosineSimilarity(embedding, candidate.embedding)
+            let sim = 0.0
+            if (embedding && candidate.embedding) {
+                sim = cosineSimilarity(embedding, candidate.embedding)
+            } else {
+                // Free heuristic baseline similarity fallback
+                if (newItem.category === candidate.category) sim += 0.78
+            }
             let score = sim
             const boosts = []
 
