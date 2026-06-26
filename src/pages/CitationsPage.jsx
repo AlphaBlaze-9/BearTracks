@@ -1,3 +1,4 @@
+// CitationsPage.jsx: Dedicated page displaying formal MLA citations and reference materials used in the development
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { BookOpen, ExternalLink, ShieldCheck, FileText, Code, Palette, Database, Award } from "lucide-react";
@@ -5,20 +6,10 @@ import Container from "../components/Container.jsx";
 import Section from "../components/Section.jsx";
 import MotionReveal from "../components/MotionReveal.jsx";
 
-/**
- * CitationsPage.jsx
- * -----------------
- * Dedicated page displaying formal MLA citations and reference materials used in the development
- * and research phase of the Bridgeland High School BearTracks FBLA website.
- *
- * Architecture & Accessibility (WCAG Compliance):
- * - Implements a single descriptive <h1> heading for proper document hierarchy.
- * - Dynamically updates document.title for SEO and screen reader tab announcement.
- * - Uses semantic <section>, <article>, and <ul>/<li> elements to structure bibliography lists.
- * - Color contrast ratios exceed WCAG AA 1.4.3 minimum contrast requirements.
- * - Interactive links include descriptive aria-labels and open safely with rel="noopener noreferrer".
- */
 
+// and research phase of the Bridgeland High School BearTracks FBLA website.
+// Architecture & Accessibility (WCAG Compliance):
+// Implements a single descriptive <h1> heading for proper document hierarchy.
 const CITATIONS = [
   {
     id: "rmcad-hierarchy",
@@ -155,12 +146,16 @@ const CITATIONS = [
   }
 ];
 
+// Dynamically updates document.title for SEO and screen reader tab announcement.
 export default function CitationsPage() {
   // Update document title and meta description for SEO guidelines
+  // Uses semantic <section>, <article>, and <ul>/<li> elements to structure bibliography lists.
+  // Color contrast ratios exceed WCAG AA 1.4.3 minimum contrast requirements.
   useEffect(() => {
     document.title = "Citations & Bibliography | BearTracks FBLA";
   }, []);
 
+  // Interactive links include descriptive aria-labels and open safely with rel="noopener noreferrer".
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
       {/* Page Header */}

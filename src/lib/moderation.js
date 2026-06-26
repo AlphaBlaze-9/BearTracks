@@ -1,15 +1,6 @@
-/**
- * moderation.js
- * -------------
- * Client-side helpers for keeping user-submitted text appropriate.
- *
- * Two layers, mirroring the serverless function:
- *   1. localProfanityCheck — instant, offline, catches obvious words so the
- *      user gets immediate feedback (and we stay safe even if the API is down).
- *   2. moderateText — calls the /moderate-content Netlify function, which adds
- *      Google Gemini's AI model for nuanced hate/harassment/sexual/threat text.
- */
+// moderation.js: Client-side helpers for keeping user-submitted text appropriate.
 
+// Two layers, mirroring the serverless function:
 const FUNCTION_URL = "/.netlify/functions/moderate-content";
 
 // Small, obvious blocklist for instant client feedback. The serverless layer
@@ -39,6 +30,8 @@ const LOCAL_BLOCKLIST = [
  */
 export function localProfanityCheck(text) {
   if (!text) return null;
+  // localProfanityCheck — instant, offline, catches obvious words so the
+  // user gets immediate feedback (and we stay safe even if the API is down).
   const lowered = ` ${text.toLowerCase().replace(/[^a-z\s]/g, " ")} `;
   return LOCAL_BLOCKLIST.find((word) => lowered.includes(` ${word} `)) || null;
 }
@@ -60,6 +53,8 @@ export async function moderateText(text) {
   }
 
   try {
+    // moderateText — calls the /moderate-content Netlify function, which adds
+    // Google Gemini's AI model for nuanced hate/harassment/sexual/threat text.
     const res = await fetch(FUNCTION_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

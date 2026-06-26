@@ -1,12 +1,8 @@
+// CTA.jsx: A fake "report" form to show layout/spacing.
 import React, { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
-/**
- * CTA
- * ---
- * A fake "report" form to show layout/spacing.
- * Replace the onSubmit handler with your real logic (Firebase, backend, etc.).
- */
+// Replace the onSubmit handler with your real logic (Firebase, backend, etc.).
 export default function CTA() {
   const reduce = useReducedMotion();
   const [status, setStatus] = useState("idle");

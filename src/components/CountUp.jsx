@@ -1,24 +1,7 @@
+// CountUp.jsx: Animates from 0 -> target number and then stops.
 import { useEffect, useMemo, useState } from "react";
 
-/**
- * CountUp
- * -------
- * Animates from 0 -> target number and then stops.
- *
- * Why not CSS?
- *  - numbers need to increment with proper rounding
- *  - we want to start counting when the user sees the stat
- *
- * Usage:
- *  <CountUp value={1200} duration={1200} />
- *
- * Props:
- *  - value: number (target)
- *  - duration: number (ms) how long the animation runs
- *  - decimals: number, number of decimal places (default: 0)
- *  - suffix / prefix: strings you want around the number
- *  - start: boolean, when true the animation begins
- */
+// Why not CSS?
 export default function CountUp({
   value,
   duration = 1200,
@@ -27,6 +10,7 @@ export default function CountUp({
   suffix = "",
   start = true,
 }) {
+  // numbers need to increment with proper rounding
   const [display, setDisplay] = useState(0);
 
   const formatter = useMemo(() => {
@@ -36,22 +20,28 @@ export default function CountUp({
     });
   }, [decimals]);
 
+  // we want to start counting when the user sees the stat
   useEffect(() => {
     if (!start) return;
 
     // Respect reduced-motion or local storage preference: jump straight to the final value.
+    // Usage: <CountUp value={1200} duration={1200} />
     const prefersReduced = window.matchMedia?.(
       "(prefers-reduced-motion: reduce)",
     )?.matches;
+    // Prop: value: number (target)
     const isAnimationsPaused = localStorage.getItem('accessAid_pauseAnimations') === 'true';
     if (prefersReduced || isAnimationsPaused) {
       setDisplay(value);
       return;
     }
 
+    // Prop: duration: number (ms) how long the animation runs
     let rafId = null;
     const startTime = performance.now();
+    // Prop: decimals: number, number of decimal places (default: 0)
     const from = 0;
+    // Prop: suffix / prefix: strings you want around the number
     const to = value;
 
     const tick = (now) => {
@@ -73,6 +63,7 @@ export default function CountUp({
 
     rafId = requestAnimationFrame(tick);
 
+    // Prop: start: boolean, when true the animation begins
     return () => {
       if (rafId) cancelAnimationFrame(rafId);
     };

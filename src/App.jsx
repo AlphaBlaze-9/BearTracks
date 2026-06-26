@@ -1,3 +1,4 @@
+// App.jsx: The root component of the BearTracks application.
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
@@ -17,22 +18,13 @@ import ItemDetailsPage from "./pages/ItemDetailsPage.jsx";
 import AdminClaimsPage from "./pages/AdminClaimsPage.jsx";
 import CitationsPage from "./pages/CitationsPage.jsx";
 
-/**
- * App.jsx
- * -------
- * The root component of the BearTracks application.
- * 
- * Architecture & Routing:
- * - Utilizes `react-router-dom` for client-side routing, enabling a Single Page Application (SPA) experience.
- * - Wraps the entire application in global state providers (`AuthProvider` and `ItemsProvider`) to manage user sessions and database records.
- * - Integrates Framer Motion for animations, respecting user accessibility preferences for reduced motion.
- * 
- * FBLA Notes:
- * This file serves as the main entry point where all major components (Navbar, Chatbot, Pages) are assembled.
- * Protected routes ensure only authenticated users can access specific workflows like submitting items.
- */
 
+// Architecture: Utilizes `react-router-dom` for client-side routing, enabling a Single Page Application (SPA) experience.
+// Architecture: Wraps the entire application in global state providers (`AuthProvider` and `ItemsProvider`) to manage user sessions and database records.
 export default function App() {
+  // Architecture: Integrates Framer Motion for animations, respecting user accessibility preferences for reduced motion.
+  // Note: This file serves as the main entry point where all major components (Navbar, Chatbot, Pages) are assembled.
+  // Note: Protected routes ensure only authenticated users can access specific workflows like submitting items.
   return (
     // BrowserRouter manages the browser history and URL synchronization
     <BrowserRouter>

@@ -1,22 +1,11 @@
+// AuthContext.jsx: Manages global authentication state using Supabase.
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
 
-/**
- * AuthContext.jsx
- * ---------------
- * Manages global authentication state using Supabase.
- * 
- * Purpose:
- * Provides a React Context that wraps the application and supplies authentication
- * data (user profile, login state, admin status) to all descendant components.
- * This prevents "prop drilling" and makes checking auth status easy from anywhere.
- * 
- * FBLA Judges Note:
- * We implemented secure authentication using Supabase. Passwords are cryptographically 
- * hashed by Supabase, meaning they are never stored in plain text. We also utilize
- * Row Level Security (RLS) in our database to ensure users can only modify their own items.
- */
 
+// Purpose: Provides a React Context that wraps the application and supplies authentication
+// Purpose: data (user profile, login state, admin status) to all descendant components.
+// Purpose: This prevents "prop drilling" and makes checking auth status easy from anywhere.
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
@@ -43,6 +32,9 @@ export function AuthProvider({ children }) {
   }, []);
 
   const value = useMemo(() => {
+    // Note: We implemented secure authentication using Supabase. Passwords are cryptographically
+    // Note: hashed by Supabase, meaning they are never stored in plain text. We also utilize
+    // Note: Row Level Security (RLS) in our database to ensure users can only modify their own items.
     async function signup({ email, password, name }) {
       const { data, error } = await supabase.auth.signUp({
         email,

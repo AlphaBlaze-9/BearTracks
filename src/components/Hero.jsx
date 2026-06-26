@@ -1,12 +1,8 @@
+// Hero.jsx: Big top section with a gradient background and simple "floaty" shapes.
 import { motion, useReducedMotion } from "framer-motion";
 import { ShieldCheck, Zap, MapPin, Headphones, Shirt, Key } from "lucide-react";
 import BearTracksLogo from "../BearTracksLogo.png";
 
-/**
- * Hero
- * ----
- * Big top section with a gradient background and simple "floaty" shapes.
- */
 export default function Hero() {
   const prefersReducedMotion = useReducedMotion();
 

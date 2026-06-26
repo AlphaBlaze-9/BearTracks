@@ -1,9 +1,5 @@
-/**
- * Container
- * ---------
- * Standard horizontal padding + max width.
- * Keeps spacing consistent across the whole site.
- */
+// Container.jsx: Standard horizontal padding + max width.
+// Keeps spacing consistent across the whole site.
 export default function Container({ children, className = "" }) {
   return (
     <div

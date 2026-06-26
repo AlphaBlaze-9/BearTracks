@@ -156,6 +156,7 @@ export default function BearBot() {
               bg-white border border-brand-blue/20
             "
             style={{ height: "min(520px, 70vh)" }}
+            id="bearbot-window"
             role="dialog"
             aria-label="BearBot chat window"
           >
@@ -247,6 +248,7 @@ export default function BearBot() {
                 <button
                   key={suggestion}
                   onClick={() => sendMessage(suggestion)}
+                  aria-label={`Ask BearBot: ${suggestion}`}
                   className="shrink-0 rounded-full border border-brand-blue/30 bg-brand-blue/5 px-3 py-1.5 text-xs font-bold text-brand-blue hover:bg-brand-blue hover:text-white transition-colors"
                 >
                   {suggestion}
@@ -263,6 +265,7 @@ export default function BearBot() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Type a message..."
+                aria-label="Type your message to BearBot"
                 maxLength={300}
                 className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-blue/50 focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:bg-white transition-all"
               />
@@ -284,7 +287,9 @@ export default function BearBot() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen((s) => !s)}
-        aria-label={isOpen ? "Close BearBot" : "Open BearBot"}
+        aria-label={isOpen ? "Close BearBot assistant" : "Open BearBot assistant"}
+        aria-expanded={isOpen}
+        aria-controls="bearbot-window"
         className="
           relative flex items-center gap-3.5
           rounded-full bg-brand-blue px-8 py-5

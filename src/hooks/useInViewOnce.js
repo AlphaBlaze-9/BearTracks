@@ -1,11 +1,7 @@
+// useInViewOnce.js: Tiny helper around IntersectionObserver.
 import { useEffect, useRef, useState } from "react";
 
-/**
- * useInViewOnce
- * ------------
- * Tiny helper around IntersectionObserver.
- * Returns [ref, isInView]. Once it becomes visible, it stays true.
- */
+// Returns [ref, isInView]. Once it becomes visible, it stays true.
 export function useInViewOnce(options = { threshold: 0.2 }) {
   const ref = useRef(null);
   const [inView, setInView] = useState(false);

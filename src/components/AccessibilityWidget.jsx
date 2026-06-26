@@ -152,6 +152,8 @@ export default function AccessibilityWidget({ className }) {
                 onClick={() => setIsOpen(!isOpen)}
                 className={className || defaultBtnClass}
                 aria-label="Accessibility Menu"
+                aria-haspopup="true"
+                aria-controls="accessibility-options"
                 aria-expanded={isOpen}
             >
                 <Accessibility className={className ? "h-5 w-5" : "h-6 w-6"} />
@@ -159,13 +161,13 @@ export default function AccessibilityWidget({ className }) {
             </button>
 
             {isOpen && (
-                <div className={`absolute ${isFullWidth ? "left-0 bottom-full mb-2" : "right-0 top-full mt-2"} w-[280px] sm:w-[320px] bg-white rounded-2xl shadow-2xl border border-slate-100 z-[9999] p-4 font-sans text-left`}>
+                <div id="accessibility-options" role="region" aria-label="Accessibility Options Panel" className={`absolute ${isFullWidth ? "left-0 bottom-full mb-2" : "right-0 top-full mt-2"} w-[280px] sm:w-[320px] bg-white rounded-2xl shadow-2xl border border-slate-100 z-[9999] p-4 font-sans text-left`}>
                     <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
                         <h3 className="font-bold text-slate-900 flex items-center gap-2">
                             <Accessibility className="h-5 w-5 text-brand-blue" />
                             Accessibility
                         </h3>
-                        <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-slate-600 rounded-full p-1 hover:bg-slate-100">
+                        <button onClick={() => setIsOpen(false)} aria-label="Close accessibility options" className="text-slate-400 hover:text-slate-600 rounded-full p-1 hover:bg-slate-100">
                             <X className="h-5 w-5" />
                         </button>
                     </div>

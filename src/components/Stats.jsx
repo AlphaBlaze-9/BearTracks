@@ -1,14 +1,10 @@
+// Stats.jsx: This section demonstrates the "counting" animation you requested.
 import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useInViewOnce } from "../hooks/useInViewOnce";
 import { useCountUp } from "../hooks/useCountUp";
 
-/**
- * Stats
- * -----
- * This section demonstrates the "counting" animation you requested.
- * Each number animates ONLY once, when the section scrolls into view.
- */
+// Each number animates ONLY once, when the section scrolls into view.
 export default function Stats() {
   const prefersReducedMotion = useReducedMotion();
   const [ref, inView] = useInViewOnce({ threshold: 0.25 });

@@ -1,13 +1,8 @@
+// FAQItem.jsx: Expand/collapse row with a small animation.
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-/**
- * FAQItem
- * -------
- * Expand/collapse row with a small animation.
- *
- * Tip: For accessibility, we use a <button> so it works with keyboards.
- */
+// Tip: For accessibility, we use a <button> so it works with keyboards.
 export default function FAQItem({ question, answer }) {
   const [open, setOpen] = useState(false);
 
@@ -17,6 +12,7 @@ export default function FAQItem({ question, answer }) {
         className="w-full text-left flex items-center justify-between gap-4 group"
         onClick={() => setOpen((s) => !s)}
         aria-expanded={open}
+        aria-label={`${question} (${open ? "Expanded" : "Collapsed"})`}
       >
         <span className="text-sm font-black text-[#062d78] group-hover:text-brand-blue transition-colors">
           {question}

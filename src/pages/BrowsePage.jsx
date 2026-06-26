@@ -1,3 +1,4 @@
+// BrowsePage.jsx: A dedicated page for browsing items.
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
@@ -7,11 +8,6 @@ import ItemCard from "../components/ItemCard.jsx";
 import MotionReveal from "../components/MotionReveal.jsx";
 import { useItems } from "../context/ItemsContext.jsx";
 
-/**
- * BrowsePage
- * ----------
- * A dedicated page for browsing items.
- */
 
 export default function BrowsePage() {
   const { items } = useItems();

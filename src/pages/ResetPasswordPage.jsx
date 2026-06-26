@@ -1,3 +1,4 @@
+// ResetPasswordPage.jsx: Reached from the password-reset email link. Supabase establishes a
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -8,13 +9,8 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { supabase } from "../lib/supabase";
 import BearTracksLogo from "../BearTracksLogo.png";
 
-/**
- * ResetPasswordPage
- * -----------------
- * Reached from the password-reset email link. Supabase establishes a
- * temporary recovery session, then the user picks a new password here.
- */
 
+// temporary recovery session, then the user picks a new password here.
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
   const { updatePassword } = useAuth();

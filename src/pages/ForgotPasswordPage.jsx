@@ -1,3 +1,4 @@
+// ForgotPasswordPage.jsx: Lets a user request a password-reset email via Supabase.
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -7,11 +8,6 @@ import MotionReveal from "../components/MotionReveal.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import BearTracksLogo from "../BearTracksLogo.png";
 
-/**
- * ForgotPasswordPage
- * ------------------
- * Lets a user request a password-reset email via Supabase.
- */
 
 export default function ForgotPasswordPage() {
   const { requestPasswordReset } = useAuth();

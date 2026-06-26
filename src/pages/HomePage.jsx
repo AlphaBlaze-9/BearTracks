@@ -1,3 +1,4 @@
+// HomePage.jsx: Your original landing page lives here now.
 import { useState, useRef, useEffect } from "react";
 import {
   motion,
@@ -15,11 +16,6 @@ import ContactForm from "../components/ContactForm.jsx";
 import { useItems } from "../context/ItemsContext.jsx";
 import heroVideo from "../FBLA Digital Video Production.mov";
 
-/**
- * HomePage
- * --------
- * Your original landing page lives here now.
- */
 
 export default function HomePage() {
   const { items } = useItems();
@@ -149,12 +145,14 @@ export default function HomePage() {
                   <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
                     <Link
                       to="/submit"
+                      aria-label="Report a lost or found item"
                       className="rounded-2xl bg-brand-blue px-8 py-4 text-sm font-bold text-white shadow-lg shadow-brand-blue/20 hover:bg-brand-blue-dark transition-all transform hover:scale-[1.02] active:scale-[0.98] text-center"
                     >
                       Report an item
                     </Link>
                     <Link
                       to="/browse"
+                      aria-label="Browse lost and found item listings"
                       className="rounded-2xl border-2 border-brand-blue/10 bg-white/80 backdrop-blur px-8 py-4 text-sm font-bold text-slate-900 hover:bg-white/90 transition-all transform hover:scale-[1.02] active:scale-[0.98] text-center"
                     >
                       Browse items
@@ -387,7 +385,7 @@ export default function HomePage() {
           </Container>
         </Section>
 
-        <footer className="py-12 border-t border-slate-100">
+        <footer className="py-12 border-t border-slate-100" role="contentinfo" aria-label="Site Footer">
           <Container>
             <div className="flex flex-col items-center justify-between gap-6 text-sm font-bold text-slate-400 sm:flex-row">
               <div className="flex items-center gap-2">
@@ -398,12 +396,14 @@ export default function HomePage() {
                 <Link
                   className="hover:text-brand-blue transition-colors uppercase tracking-widest text-[10px]"
                   to="/citations"
+                  aria-label="View works cited and citations"
                 >
                   Works Cited
                 </Link>
                 <a
                   className="hover:text-brand-blue transition-colors uppercase tracking-widest text-[10px]"
                   href="#top"
+                  aria-label="Scroll back to top of page"
                 >
                   Scroll To Top
                 </a>
@@ -524,7 +524,7 @@ function HowItWorksSection() {
         </MotionReveal>
 
         {/* 3D Carousel Container */}
-        <div className="relative h-[450px] w-full max-w-5xl mx-auto flex items-center justify-center perspective-[1000px]">
+        <div className="relative h-[450px] w-full max-w-5xl mx-auto flex items-center justify-center perspective-[1000px]" role="region" aria-label="How it works interactive guide" aria-roledescription="carousel">
           <AnimatePresence mode="popLayout" initial={false}>
             {steps.map((step, idx) => {
               const position = getCardProps(idx);
@@ -537,6 +537,10 @@ function HowItWorksSection() {
                   animate={position}
                   transition={{ duration: 0.6, ease: "easeInOut" }}
                   onClick={() => handleCardClick(idx)}
+                  role="group"
+                  aria-roledescription="slide"
+                  aria-label={`Step ${idx + 1} of ${steps.length}: ${step.title}`}
+                  aria-hidden={position === "hidden"}
                   className={`absolute w-[320px] sm:w-[400px] cursor-pointer`}
                 >
                   <div
@@ -574,12 +578,14 @@ function HowItWorksSection() {
         </div>
 
         {/* Indicators */}
-        <div className="flex justify-center gap-3 mt-12">
-          {steps.map((_, idx) => (
+        <div className="flex justify-center gap-3 mt-12" role="tablist" aria-label="Carousel slide selectors">
+          {steps.map((step, idx) => (
             <button
               key={idx}
               onClick={() => handleCardClick(idx)}
-              aria-label={`Go to step ${idx + 1}`}
+              role="tab"
+              aria-selected={activeIndex === idx}
+              aria-label={`Step ${idx + 1}: ${step.title}`}
               className={`h-2 rounded-full transition-all duration-300 ${activeIndex === idx
                 ? "w-8 bg-brand-blue"
                 : "w-2 bg-slate-300 hover:bg-slate-400"

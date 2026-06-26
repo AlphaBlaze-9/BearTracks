@@ -1,15 +1,9 @@
-/**
- * storage.js
- * ----------
- * Tiny helpers around localStorage.
- *
- * Why?
- * - Keeps JSON parsing/stringifying in one place.
- * - Makes it easy to swap localStorage with a real backend later.
- */
+// storage.js: Tiny helpers around localStorage.
 
+// Why?
 export function readJSON(key, fallback) {
   try {
+    // Keeps JSON parsing/stringifying in one place.
     const raw = localStorage.getItem(key);
     if (!raw) return fallback;
     return JSON.parse(raw);
@@ -18,6 +12,7 @@ export function readJSON(key, fallback) {
   }
 }
 
+// Makes it easy to swap localStorage with a real backend later.
 export function writeJSON(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
 }

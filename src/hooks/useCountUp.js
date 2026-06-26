@@ -1,14 +1,7 @@
+// useCountUp.js: Smoothly animates a number from 0 -> target, then stops.
 import { useEffect, useMemo, useState } from "react";
 
-/**
- * useCountUp
- * ----------
- * Smoothly animates a number from 0 -> target, then stops.
- *
- * Notes:
- * - We only run this when `start` becomes true (e.g., when the stats section is in view).
- * - Uses requestAnimationFrame for silky motion.
- */
+// Note: We only run this when `start` becomes true (e.g., when the stats section is in view).
 export function useCountUp({ target, start, durationMs = 1200, decimals = 0 }) {
   const [value, setValue] = useState(0);
 
@@ -19,6 +12,7 @@ export function useCountUp({ target, start, durationMs = 1200, decimals = 0 }) {
   }, [target, decimals]);
 
   useEffect(() => {
+    // Note: Uses requestAnimationFrame for silky motion.
     if (!start) return;
 
     let rafId = 0;

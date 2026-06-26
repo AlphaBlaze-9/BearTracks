@@ -1,31 +1,24 @@
-/**
- * moderate-content.js
- * -------------------
- * Checks arbitrary user-submitted text for inappropriate content before it is
- * saved (item submissions, claim reasons, etc.).
- *
- * It runs two layers:
- *   1. A fast local keyword blocklist (catches obvious slurs/profanity even if
- *      the Google Gemini AI network call is unavailable).
- *   2. Google Gemini AI models (gemini-2.5-flash-lite) for nuanced cases
- *      like hate, harassment, sexual content, threats, and self-harm.
- *
- * Response: { flagged: boolean, reason: string, categories: string[] }
- */
+// moderate-content.js: Checks arbitrary user-submitted text for inappropriate content before it is
 
 // Lightweight server-side blocklist. Kept intentionally small + obvious; the
 // Google Gemini AI layer handles the harder cases. Matches whole words only.
+// saved (item submissions, claim reasons, etc.).
 const BLOCKLIST = [
     'fuck', 'shit', 'bitch', 'asshole', 'bastard', 'dick', 'piss',
     'cunt', 'slut', 'whore', 'nigger', 'nigga', 'faggot', 'fag',
     'retard', 'rape', 'kys', 'kill yourself',
 ]
 
+// It runs two layers: A fast local keyword blocklist (catches obvious slurs/profanity even if
+// It runs two layers: the Google Gemini AI network call is unavailable).
 function localProfanityHit(text) {
     const lowered = ` ${text.toLowerCase().replace(/[^a-z\s]/g, ' ')} `
     return BLOCKLIST.find((word) => lowered.includes(` ${word} `))
 }
 
+// It runs two layers: Google Gemini AI models (gemini-2.5-flash-lite) for nuanced cases
+// It runs two layers: like hate, harassment, sexual content, threats, and self-harm.
+// It runs two layers: Response: { flagged: boolean, reason: string, categories: string[] }
 export const handler = async (event) => {
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: 'Method Not Allowed' }

@@ -1,15 +1,9 @@
+// MotionReveal.jsx: A thin wrapper around framer-motion to make scroll-in animations consistent.
 import { motion } from "framer-motion";
 
-/**
- * MotionReveal
- * -----------
- * A thin wrapper around framer-motion to make scroll-in animations consistent.
- *
- * Why this exists:
- *  - without a wrapper, every section repeats the same motion props
- *  - this keeps the site feeling cohesive and makes future edits easier
- */
+// Why this exists: without a wrapper, every section repeats the same motion props
 export default function MotionReveal({ children, delay = 0, y = 14, ...rest }) {
+  // Why this exists: this keeps the site feeling cohesive and makes future edits easier
   return (
     <motion.div
       initial={{ opacity: 0, y }}

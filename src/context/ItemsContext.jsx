@@ -1,23 +1,11 @@
+// ItemsContext.jsx: Manages the global state for "Lost and Found" items and claims.
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
 
-/**
- * ItemsContext.jsx
- * ----------------
- * Manages the global state for "Lost and Found" items and claims.
- * 
- * Purpose:
- * Connects directly to the Supabase PostgreSQL database to fetch, create, and delete items.
- * It provides these items via React Context to any component that needs them,
- * acting as the single source of truth for the application's data.
- * 
- * FBLA Judges Note:
- * This file demonstrates real-time database capabilities. We use Supabase subscriptions
- * (`postgres_changes`) to instantly update the UI when a new item is added or deleted
- * by another user, without requiring a page refresh. This ensures data consistency
- * across all active clients.
- */
 
+// Purpose: Connects directly to the Supabase PostgreSQL database to fetch, create, and delete items.
+// Purpose: It provides these items via React Context to any component that needs them,
+// Purpose: acting as the single source of truth for the application's data.
 const ItemsContext = createContext(null);
 
 export function ItemsProvider({ children }) {
@@ -73,6 +61,10 @@ export function ItemsProvider({ children }) {
       .subscribe();
 
     // Cleanup subscription to prevent memory leaks when component unmounts
+    // Note: This file demonstrates real-time database capabilities. We use Supabase subscriptions
+    // Note: (`postgres_changes`) to instantly update the UI when a new item is added or deleted
+    // Note: by another user, without requiring a page refresh. This ensures data consistency
+    // Note: across all active clients.
     return () => {
       supabase.removeChannel(subscription);
     };

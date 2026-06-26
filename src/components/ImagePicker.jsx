@@ -1,15 +1,10 @@
+// ImagePicker.jsx: Handles image upload + preview.
 import { useRef } from "react";
 import { CameraIcon } from "./Icons.jsx";
 
-/**
- * ImagePicker
- * -----------
- * Handles image upload + preview.
- *
- * We store the image as a data URL (base64) so the app can remain backend-free.
- * Later you can swap this to upload to S3/Cloudinary/etc.
- */
 
+// We store the image as a data URL (base64) so the app can remain backend-free.
+// Later you can swap this to upload to S3/Cloudinary/etc.
 export default function ImagePicker({ value, onChange, onFileSelect }) {
   const inputRef = useRef(null);
 

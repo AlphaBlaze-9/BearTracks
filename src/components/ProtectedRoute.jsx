@@ -1,14 +1,9 @@
+// ProtectedRoute.jsx: Wrap any route that should require login.
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
-/**
- * ProtectedRoute
- * --------------
- * Wrap any route that should require login.
- *
- * If the user is not logged in, we redirect to /login and
- * remember where they were going so we can send them back after.
- */
+// If the user is not logged in, we redirect to /login and
+// remember where they were going so we can send them back after.
 export default function ProtectedRoute({ children }) {
   const { isAuthed, loading } = useAuth();
   const location = useLocation();

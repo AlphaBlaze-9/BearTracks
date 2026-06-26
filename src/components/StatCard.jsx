@@ -1,15 +1,9 @@
+// StatCard.jsx: A single stat tile.
 import CountUp from "./CountUp.jsx";
 import { useInView } from "../hooks/useInView.js";
 
-/**
- * StatCard
- * --------
- * A single stat tile.
- *
- * Important detail:
- *  - The number animates ONLY when the tile scrolls into view.
- *    This avoids “counting in the background” before the user sees it.
- */
+// Important detail: The number animates ONLY when the tile scrolls into view.
+// Important detail: This avoids “counting in the background” before the user sees it.
 export default function StatCard({
   label,
   value,
@@ -22,6 +16,8 @@ export default function StatCard({
   return (
     <div
       ref={ref}
+      role="region"
+      aria-label={`${label}: ${prefix}${value}${suffix}`}
       className="card p-6 border-brand-orange/30 bg-brand-orange/10 backdrop-blur-md shadow-xl transition-all hover:scale-[1.05]"
     >
       <div className="text-4xl font-black tracking-tighter text-[#5d3000]">

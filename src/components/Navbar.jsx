@@ -1,3 +1,4 @@
+// Navbar.jsx: Updated for multi-page routing.
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
@@ -18,11 +19,6 @@ import AccessibilityWidget from "./AccessibilityWidget.jsx";
 
 import BearTracksLogo from "../BearTracksLogo.png";
 
-/**
- * Navbar
- * ------
- * Updated for multi-page routing.
- */
 
 function cx(...parts) {
   return parts.filter(Boolean).join(" ");
@@ -184,7 +180,7 @@ export default function Navbar() {
     >
       <Container className="py-3">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2" aria-label="BearTracks Home">
             <img
               src={BearTracksLogo}
               alt="Bear Tracks Logo"
@@ -196,7 +192,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden items-center gap-2 md:flex">
+          <nav className="hidden items-center gap-2 md:flex" aria-label="Main Navigation">
             <NavLink to="/" className={desktopLink} end>
               Home
             </NavLink>
@@ -213,6 +209,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => goHomeAndScroll("faq")}
+              aria-label="Frequently Asked Questions"
               className="rounded-full px-4 py-2 text-sm font-extrabold text-[#062d78] hover:bg-brand-gold/15 transition-all"
             >
               FAQ
@@ -230,7 +227,7 @@ export default function Navbar() {
               <div className="relative ml-2">
                 <button
                   onClick={() => setIsNotifOpen(!isNotifOpen)}
-                  aria-label="Toggle notifications"
+                  aria-label={notifications.length > 0 ? `Notifications (${notifications.length} unread)` : "Notifications"}
                   aria-expanded={isNotifOpen}
                   className="relative flex items-center justify-center h-10 w-10 rounded-full border border-brand-blue/20 bg-brand-blue/10 text-[#062d78] hover:bg-brand-blue/20 transition-all"
                 >
@@ -250,6 +247,8 @@ export default function Navbar() {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 10 }}
                         className="absolute right-0 mt-2 w-72 origin-top-right overflow-hidden rounded-2xl bg-white p-2 shadow-xl ring-1 ring-black/5 z-50"
+                        role="region"
+                        aria-label="Notifications Panel"
                       >
                         <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 border-b border-slate-100 mb-2">
                           Notifications
@@ -271,6 +270,7 @@ export default function Navbar() {
                                     onClick={() =>
                                       handleNotificationClick(item.id)
                                     }
+                                    aria-label={`Match found (${Math.round((item.potential_matches[0].score || 0) * 100)}%): Possible match for "${item.title}"`}
                                     className="block rounded-xl bg-brand-blue/5 p-3 hover:bg-brand-blue/10 transition-colors"
                                   >
                                     <div className="flex items-start gap-3">
@@ -304,6 +304,7 @@ export default function Navbar() {
                                         `claim_${claim.id}`,
                                       )
                                     }
+                                    aria-label={`Claim ${claim.status}: Your claim for "${item?.title || "an item"}" was ${claim.status.toLowerCase()}`}
                                     className={`block rounded-xl p-3 transition-colors ${isApproved ? "bg-green-50 hover:bg-green-100" : "bg-red-50 hover:bg-red-100"}`}
                                   >
                                     <div className="flex items-start gap-3">
@@ -354,6 +355,7 @@ export default function Navbar() {
                                         `admin_claim_${claim.id}`,
                                       )
                                     }
+                                    aria-label={`New Claim Request: ${claim.name} filed a claim for "${item?.title || "an item"}"`}
                                     className="block rounded-xl bg-brand-orange/5 p-3 hover:bg-brand-orange/10 transition-colors"
                                   >
                                     <div className="flex items-start gap-3">
@@ -408,6 +410,7 @@ export default function Navbar() {
                 <button
                   onClick={() => setIsAccountMenuOpen(!isAccountMenuOpen)}
                   aria-label="User account menu"
+                  aria-haspopup="true"
                   aria-expanded={isAccountMenuOpen}
                   className="flex items-center gap-3 rounded-full border border-brand-blue/20 bg-brand-blue/10 px-4 py-2 text-sm font-black text-[#062d78] hover:bg-brand-blue/20 transition-all"
                 >
@@ -429,6 +432,8 @@ export default function Navbar() {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 10 }}
                         className="absolute right-0 mt-2 w-56 origin-top-right overflow-hidden rounded-2xl bg-white p-2 shadow-xl ring-1 ring-black/5"
+                        role="menu"
+                        aria-label="User Account Menu"
                       >
                         <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                           Account
@@ -436,6 +441,8 @@ export default function Navbar() {
                         <button
                           onClick={handleLogout}
                           disabled={isLoggingOut}
+                          role="menuitem"
+                          aria-label="Log out of account"
                           className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <LogOut className="w-4 h-4" />
@@ -447,6 +454,8 @@ export default function Navbar() {
                             setIsAccountMenuOpen(false);
                             handleDeleteAccount();
                           }}
+                          role="menuitem"
+                          aria-label="Permanently delete account"
                           className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -469,7 +478,8 @@ export default function Navbar() {
             className="md:hidden rounded-xl border border-brand-blue/20 bg-brand-blue/10 px-3 py-2 text-sm font-black text-[#062d78] flex items-center gap-2"
             onClick={() => setIsOpen((s) => !s)}
             aria-expanded={isOpen}
-            aria-label="Open menu"
+            aria-controls="mobile-navigation"
+            aria-label={isOpen ? "Close main menu" : "Open main menu"}
           >
             {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             <span className="sr-only">{isOpen ? "Close" : "Menu"}</span>
@@ -485,6 +495,9 @@ export default function Navbar() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
+            id="mobile-navigation"
+            role="navigation"
+            aria-label="Mobile Navigation"
             className="md:hidden overflow-hidden border-t border-brand-blue/15 bg-white/65 backdrop-blur"
           >
             <Container className="py-3">
@@ -518,6 +531,7 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => goHomeAndScroll("faq")}
+                  aria-label="Frequently Asked Questions"
                   className="rounded-xl px-3 py-3 text-left text-sm font-bold text-slate-700 hover:bg-brand-gold/15"
                 >
                   FAQ
@@ -556,6 +570,7 @@ export default function Navbar() {
                       type="button"
                       onClick={handleLogout}
                       disabled={isLoggingOut}
+                      aria-label="Log out of account"
                       className="rounded-xl border border-brand-blue/15 bg-white/60 px-3 py-3 text-center text-sm font-medium text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isLoggingOut ? "Logging out" : "Log out"}
@@ -566,6 +581,7 @@ export default function Navbar() {
                         setIsOpen(false);
                         handleDeleteAccount();
                       }}
+                      aria-label="Permanently delete account"
                       className="rounded-xl bg-red-50 px-3 py-3 text-center text-sm font-bold text-red-500"
                     >
                       Delete Account

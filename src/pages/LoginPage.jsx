@@ -1,3 +1,4 @@
+// LoginPage.jsx: Supabase authentication login.
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -7,11 +8,6 @@ import MotionReveal from "../components/MotionReveal.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import BearTracksLogo from "../BearTracksLogo.png";
 
-/**
- * LoginPage
- * ---------
- * Supabase authentication login.
- */
 
 export default function LoginPage() {
   const navigate = useNavigate();

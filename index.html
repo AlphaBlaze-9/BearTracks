@@ -1,16 +1,31 @@
 <!doctype html>
+<!-- BearTracks | Bridgeland High School Lost & Found System
+     Entry HTML file for the Vite + React SPA.
+     React mounts into <div id="root"> — all routing and rendering happens client-side. -->
 <html lang="en">
 
 <head>
+  <!-- Character encoding: must appear first so the browser reads the rest of the document correctly -->
   <meta charset="UTF-8" />
+
+  <!-- Responsive viewport: prevents mobile browsers from scaling down the layout -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO description: shown in search engine result snippets -->
   <meta name="description" content="Bridgeland High School Lost &amp; Found System — Bear Tracks makes it fast and easy to report, find, and reclaim lost items on campus." />
+
+  <!-- Favicon: displayed in the browser tab -->
   <link rel="icon" type="image/png" href="/favicon.png" />
+
+  <!-- Page title: shown in the browser tab and bookmarks -->
   <title>Bear Tracks | Bridgeland High School Lost &amp; Found</title>
 </head>
 
 <body>
+  <!-- React root mount point: the entire SPA renders inside this div -->
   <div id="root"></div>
+
+  <!-- Main application entry point (type="module" enables ES module imports via Vite) -->
   <script type="module" src="/src/main.jsx"></script>
 </body>
 

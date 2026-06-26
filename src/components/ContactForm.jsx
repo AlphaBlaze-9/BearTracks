@@ -18,7 +18,7 @@ export default function ContactForm() {
           Partner with us to bring smart lost and found to your school.
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-8 grid gap-5">
+        <form onSubmit={handleSubmit} aria-label="School partnership inquiry form" className="mt-8 grid gap-5">
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
               <label htmlFor="contact-name" className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
@@ -77,6 +77,7 @@ export default function ContactForm() {
             whileTap={{ scale: 0.99 }}
             type="submit"
             disabled={status === "sent"}
+            aria-label={status === "sent" ? "Message sent successfully" : "Send inquiry message"}
             className="mt-2 rounded-2xl bg-brand-blue px-6 py-4 text-sm font-bold text-white shadow-lg shadow-brand-blue/20 hover:bg-brand-blue-dark transition-all disabled:opacity-50"
           >
             {status === "sent" ? "Message Sent! ✓" : "Send Message"}

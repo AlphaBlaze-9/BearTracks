@@ -1,3 +1,4 @@
+// ItemCard.jsx: The "browse" card style (based on the reference screenshot).
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { EyeIcon, TagIcon, TrashIcon } from "./Icons.jsx";
@@ -5,11 +6,6 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { useItems } from "../context/ItemsContext.jsx";
 import DeleteItemModal from "./DeleteItemModal.jsx";
 
-/**
- * ItemCard
- * --------
- * The "browse" card style (based on the reference screenshot).
- */
 
 function PlaceholderImage() {
   return (

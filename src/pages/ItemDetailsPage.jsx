@@ -1,3 +1,4 @@
+// ItemDetailsPage.jsx: One item, bigger photo, and the full details.
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Search, Sparkles, Package, User, X, MessageCircle } from "lucide-react";
@@ -8,11 +9,6 @@ import { useItems } from "../context/ItemsContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { moderateFields } from "../lib/moderation.js";
 
-/**
- * ItemDetailsPage
- * ---------------
- * One item, bigger photo, and the full details.
- */
 
 export default function ItemDetailsPage() {
   const { id } = useParams();

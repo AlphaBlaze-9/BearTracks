@@ -1,3 +1,4 @@
+// SubmitPage.jsx: Login-gated page for submitting lost/found items.
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -12,11 +13,6 @@ import { moderateFields } from "../lib/moderation";
 import ti84Img from "../images/ti-84.jpg";
 import hoodieImg from "../images/black hoodie.webp";
 
-/**
- * SubmitPage
- * ----------
- * Login-gated page for submitting lost/found items.
- */
 
 const CATEGORIES = [
   "Electronics",

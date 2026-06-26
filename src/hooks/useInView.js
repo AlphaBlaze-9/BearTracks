@@ -1,18 +1,13 @@
+// useInView.js: A small hook that tells you when an element scrolls into view.
 import { useEffect, useRef, useState } from "react";
 
-/**
- * useInView
- * ---------
- * A small hook that tells you when an element scrolls into view.
- * We use this to:
- *   - trigger animations only when the user reaches a section
- *   - start the count-up numbers when the stats section appears
- */
+// We use this to: trigger animations only when the user reaches a section
 export function useInView(options = { threshold: 0.25 }) {
   const ref = useRef(null);
   const [isInView, setIsInView] = useState(false);
 
   useEffect(() => {
+    // We use this to: start the count-up numbers when the stats section appears
     const el = ref.current;
     if (!el) return;
 
