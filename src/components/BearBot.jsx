@@ -49,7 +49,13 @@ async function getBotResponse(messages) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.0-flash-exp:free", // Using a stable free model
+        model: "google/gemma-4-31b-it:free", // Primary stable free model
+        models: [
+          "google/gemma-4-31b-it:free",
+          "openai/gpt-oss-20b:free",
+          "meta-llama/llama-3.3-70b-instruct:free",
+          "qwen/qwen3-coder:free"
+        ], // Auto-fallback array to guarantee 24/7 uptime if any free endpoint is rate-limited
         messages: apiMessages,
       }),
     });
