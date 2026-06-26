@@ -10,14 +10,18 @@ const supabase = createClient(
  * Calculate Cosine Similarity between two vectors
  */
 function cosineSimilarity(vecA, vecB) {
+    if (!vecA || !vecB || !Array.isArray(vecA) || !Array.isArray(vecB)) return 0.0
+    const len = Math.min(vecA.length, vecB.length)
+    if (len === 0) return 0.0
     let dotProduct = 0.0
     let normA = 0.0
     let normB = 0.0
-    for (let i = 0; i < vecA.length; i++) {
+    for (let i = 0; i < len; i++) {
         dotProduct += vecA[i] * vecB[i]
         normA += vecA[i] * vecA[i]
         normB += vecB[i] * vecB[i]
     }
+    if (normA === 0 || normB === 0) return 0.0
     return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB))
 }
 
@@ -87,17 +91,11 @@ export const handler = async (event) => {
         // Only look for items of the OPPOSITE type (Lost <-> Found)
         const targetType = newItem.type === 'Lost' ? 'Found' : 'Lost'
 
-        // Fetch candidate items
-        let query = supabase
+        // Fetch candidate items (scan all target items regardless of embedding model)
+        const { data: candidates, error: candidateError } = await supabase
             .from('lost_found_items')
             .select('id, title, embedding, location, date_incident, category, description')
             .eq('type', targetType)
-
-        if (embedding) {
-            query = query.not('embedding', 'is', null)
-        }
-
-        const { data: candidates, error: candidateError } = await query
 
         if (candidateError) throw candidateError
 
@@ -105,11 +103,19 @@ export const handler = async (event) => {
 
         for (const candidate of candidates) {
             let sim = 0.0
-            if (embedding && candidate.embedding) {
+            // Compare vectors ONLY if both exist and have matching dimensions (e.g. both 3072 from Gemini)
+            if (embedding && candidate.embedding && Array.isArray(candidate.embedding) && embedding.length === candidate.embedding.length) {
                 sim = cosineSimilarity(embedding, candidate.embedding)
             } else {
-                // Free heuristic baseline similarity fallback
-                if (newItem.category === candidate.category) sim += 0.78
+                // Heuristic text similarity baseline (handles legacy OpenAI vectors or missing embeddings)
+                if (newItem.category === candidate.category) sim += 0.68
+                
+                const getWords = (str) => (str || '').toLowerCase().split(/\W+/).filter(w => w.length > 2)
+                const newWords = new Set([...getWords(newItem.title), ...getWords(newItem.description)])
+                const candWords = [...getWords(candidate.title), ...getWords(candidate.description)]
+                const sharedCount = candWords.filter(w => newWords.has(w)).length
+                
+                sim += Math.min(0.20, sharedCount * 0.06)
             }
             let score = sim
             const boosts = []
