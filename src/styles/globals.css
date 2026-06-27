@@ -1,34 +1,49 @@
+/*
+ * globals.css — BearTracks base layer resets and sensible defaults.
+ * Processed by Vite as a Tailwind CSS entrypoint. Keep this file minimal:
+ * component-level styles belong in tailwind.css (the main stylesheet) or
+ * as Tailwind utility classes applied directly in JSX.
+ *
+ * Load order: main.jsx → tailwind.css (primary) → globals.css (optional resets)
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/*
-  GLOBAL STYLES
-  - Keep this file small.
-  - Prefer Tailwind classes in components.
-*/
-
+/* ── Document Defaults ──────────────────────────────────────────────────────────
+   Force light color scheme so browser chrome (scrollbars, form controls)
+   renders in light mode even on devices set to dark OS preference. */
 :root {
   color-scheme: light;
 }
 
+/* Smooth anchor scrolling for the Navbar's hash-link navigation */
 html {
   scroll-behavior: smooth;
 }
 
-/* Better default selection */
+/* ── Selection Color ────────────────────────────────────────────────────────────
+   Use a translucent brand-blue tint so highlighted text stays readable
+   regardless of the underlying background color. */
 ::selection {
   background: rgba(59, 130, 246, 0.25);
 }
 
-/* Respect users who prefer reduced motion */
+/* ── Reduced Motion Override ────────────────────────────────────────────────────
+   For users with vestibular disorders or motion sensitivity, CSS animations and
+   transitions are collapsed to near-zero duration. Framer Motion respects this
+   via the `reducedMotion="user"` prop on MotionConfig in App.jsx. */
 @media (prefers-reduced-motion: reduce) {
   html {
+    /* Disable smooth scrolling — instant scroll is safer for motion-sensitive users */
     scroll-behavior: auto;
   }
   *,
   *::before,
   *::after {
+    /* Collapse all CSS animation and transition durations to imperceptible values.
+       Using !important ensures third-party stylesheets don't override this. */
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;

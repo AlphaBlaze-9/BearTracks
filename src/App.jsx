@@ -1,4 +1,8 @@
-// App.jsx: The root component of the BearTracks application.
+// App.jsx: Root component of BearTracks — assembles all global providers and routes.
+// The component tree is deliberately layered: BrowserRouter manages URL state,
+// AuthProvider sits above ItemsProvider so auth is always resolved first,
+// and MotionConfig wraps everything so Framer Motion respects accessibility prefs.
+
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
@@ -7,6 +11,8 @@ import { AuthProvider } from "./context/AuthContext.jsx";
 import { ItemsProvider } from "./context/ItemsContext.jsx";
 import { MotionConfig } from "framer-motion";
 
+// ── Page Imports ─────────────────────────────────────────────────────────────
+// Each page is a lazily-renderable route segment; only the active route renders.
 import HomePage from "./pages/HomePage.jsx";
 import BrowsePage from "./pages/BrowsePage.jsx";
 import SubmitPage from "./pages/SubmitPage.jsx";
@@ -19,49 +25,62 @@ import AdminClaimsPage from "./pages/AdminClaimsPage.jsx";
 import CitationsPage from "./pages/CitationsPage.jsx";
 
 
-// Architecture: Utilizes `react-router-dom` for client-side routing, enabling a Single Page Application (SPA) experience.
-// Architecture: Wraps the entire application in global state providers (`AuthProvider` and `ItemsProvider`) to manage user sessions and database records.
 export default function App() {
-  // Architecture: Integrates Framer Motion for animations, respecting user accessibility preferences for reduced motion.
-  // Note: This file serves as the main entry point where all major components (Navbar, Chatbot, Pages) are assembled.
-  // Note: Protected routes ensure only authenticated users can access specific workflows like submitting items.
   return (
-    // BrowserRouter manages the browser history and URL synchronization
+    // ── BrowserRouter ────────────────────────────────────────────────────────
+    // Enables client-side routing via the HTML5 History API, giving BearTracks
+    // the feel of a native multi-page app without full-page reloads.
     <BrowserRouter>
-      {/* AuthProvider manages global authentication state (login/signup) */}
+
+      {/* AuthProvider: supplies user session, isAdmin flag, and auth helpers
+          (login, signup, logout, deleteAccount) to every descendant via context */}
       <AuthProvider>
-        {/* ItemsProvider handles fetching, caching, and updating lost/found items */}
+
+        {/* ItemsProvider: fetches lost/found items from Supabase on mount,
+            sets up a real-time postgres_changes subscription, and exposes
+            addItem / deleteItem / getItem / addClaim / resolveClaim helpers */}
         <ItemsProvider>
-          {/* 
-            MotionConfig globally controls Framer Motion animations. 
-            It checks local storage for accessibility preferences to reduce motion if requested.
+
+          {/*
+            MotionConfig: global Framer Motion override.
+            If the user has enabled "Pause Animations" in the Accessibility Widget,
+            reducedMotion is set to "always" so every animation is skipped entirely.
+            Otherwise it falls back to "user" (respects the OS prefers-reduced-motion setting).
           */}
           <MotionConfig reducedMotion={localStorage.getItem('accessAid_pauseAnimations') === 'true' ? "always" : "user"}>
-            
-            {/* Accessibility skip link for keyboard navigation (WCAG compliance) */}
+
+            {/* Skip-to-content link: hidden off-screen until focused by keyboard Tab.
+                Allows screen-reader / keyboard-only users to jump past the Navbar
+                directly to the page content. Required for WCAG 2.2 AA compliance. */}
             <a href="#main-content" className="skip-link">
               Skip to main content
             </a>
-            
-            {/* Global Navbar rendered on every page */}
+
+            {/* Navbar renders on every route — contains logo, nav links,
+                notification bell, accessibility widget, and account menu */}
             <Navbar />
-            
-            {/* AI Assistant Chatbot rendered globally as a floating widget */}
+
+            {/* BearBot: floating AI assistant widget (Google Gemini-powered).
+                Rendered globally so chat state persists across route changes. */}
             <BearBot />
-            
-            {/* Main content area where React Router injects the active page component */}
+
+            {/* main: React Router injects the active page component here.
+                tabIndex={-1} allows it to receive programmatic focus from the skip link. */}
             <main id="main-content" tabIndex={-1}>
               <Routes>
-                {/* Public Routes */}
+
+                {/* ── Public Routes ──────────────────────────────────────── */}
                 <Route path="/" element={<HomePage />} />
                 <Route path="/browse" element={<BrowsePage />} />
                 <Route path="/items/:id" element={<ItemDetailsPage />} />
                 <Route path="/citations" element={<CitationsPage />} />
-                
-                {/* 
-                  Protected Routes 
-                  The `ProtectedRoute` wrapper intercepts unauthenticated access attempts 
-                  and redirects the user to the login page.
+
+                {/*
+                  ── Protected Routes ───────────────────────────────────────
+                  ProtectedRoute checks isAuthed from AuthContext.
+                  Unauthenticated users are redirected to /login with the
+                  original destination saved in location.state.from so they
+                  can be returned here after a successful login.
                 */}
                 <Route
                   path="/submit"
@@ -72,18 +91,23 @@ export default function App() {
                   }
                 />
 
-                {/* Authentication Routes */}
+                {/* ── Authentication Routes ───────────────────────────────── */}
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+                {/* Admin-only claims workspace — AdminClaimsPage enforces its own
+                    auth guard internally and redirects non-admins to the home page */}
                 <Route path="/claims" element={<AdminClaimsPage />} />
 
-                {/* 
-                  Fallback Route
-                  If a user navigates to an undefined path (404), safely redirect them to the HomePage.
+                {/*
+                  ── 404 Fallback ──────────────────────────────────────────
+                  Any unrecognized path falls through to HomePage rather than
+                  showing a broken empty shell — keeps the UX clean.
                 */}
                 <Route path="*" element={<HomePage />} />
+
               </Routes>
             </main>
           </MotionConfig>
@@ -92,4 +116,3 @@ export default function App() {
     </BrowserRouter>
   );
 }
-

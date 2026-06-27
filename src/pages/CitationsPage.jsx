@@ -1,4 +1,7 @@
-// CitationsPage.jsx: Dedicated page displaying formal MLA citations and reference materials used in the development
+// CitationsPage.jsx: Dedicated bibliography page listing all MLA-formatted citations used
+// in the research, design, and development of the Bridgeland High School BearTracks platform.
+// Required for FBLA competitive event academic integrity and fair use compliance.
+
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { BookOpen, ExternalLink, ShieldCheck, FileText, Code, Palette, Database, Award } from "lucide-react";
@@ -7,9 +10,12 @@ import Section from "../components/Section.jsx";
 import MotionReveal from "../components/MotionReveal.jsx";
 
 
-// and research phase of the Bridgeland High School BearTracks FBLA website.
-// Architecture & Accessibility (WCAG Compliance):
-// Implements a single descriptive <h1> heading for proper document hierarchy.
+// ─────────────────────────────────────────────────────────────
+//  CITATIONS DATA ARRAY
+//  Each entry contains all metadata needed to render a full MLA citation card.
+//  Fields: id (anchor target), title, author (optional), publisher, url,
+//  displayUrl (short version for display), accessDate, category, icon, fullText.
+// ─────────────────────────────────────────────────────────────
 const CITATIONS = [
   {
     id: "rmcad-hierarchy",
@@ -146,29 +152,38 @@ const CITATIONS = [
   }
 ];
 
-// Dynamically updates document.title for SEO and screen reader tab announcement.
+// ─────────────────────────────────────────────────────────────
+//  CitationsPage Component
+//  Accessibility notes:
+//   - Updates document.title for correct screen reader tab announcements.
+//   - Uses semantic <article> elements inside a role="list" grid for proper bibliography structure.
+//   - All external links include rel="noopener noreferrer" and descriptive aria-labels.
+//   - Color contrast ratios exceed WCAG 2.2 AA Success Criterion 1.4.3.
+// ─────────────────────────────────────────────────────────────
 export default function CitationsPage() {
-  // Update document title and meta description for SEO guidelines
-  // Uses semantic <section>, <article>, and <ul>/<li> elements to structure bibliography lists.
-  // Color contrast ratios exceed WCAG AA 1.4.3 minimum contrast requirements.
   useEffect(() => {
+    // Update the browser tab title when this page mounts for better SEO and screen reader clarity
     document.title = "Citations & Bibliography | BearTracks FBLA";
   }, []);
 
-  // Interactive links include descriptive aria-labels and open safely with rel="noopener noreferrer".
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
-      {/* Page Header */}
+
+      {/* ── Page Header Banner ── */}
+      {/* Full-width brand-blue section with decorative background glows and the page title */}
       <Section className="relative overflow-hidden bg-brand-blue pt-12 pb-16 text-white sm:pt-20 sm:pb-24 shadow-lg">
-        {/* Decorative background glow */}
+        {/* Decorative gold glow blob in the top-left */}
         <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-brand-gold/15 blur-3xl pointer-events-none" />
+        {/* Decorative blue glow blob in the bottom-right */}
         <div className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-blue-400/20 blur-3xl pointer-events-none" />
 
         <Container className="relative z-10">
           <MotionReveal>
+            {/* FBLA project badge — identifies this page as part of the competitive event submission */}
             <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-brand-gold backdrop-blur-md mb-4">
               <BookOpen className="h-3.5 w-3.5" /> FBLA Project Bibliography
             </div>
+            {/* Page heading with a gradient text effect on "Cited" */}
             <h1 className="text-3xl font-black tracking-tight text-white sm:text-5xl md:text-6xl">
               Works <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-amber-200 to-white">Cited</span>
             </h1>
@@ -179,13 +194,17 @@ export default function CitationsPage() {
         </Container>
       </Section>
 
-      {/* Bibliography Content Section */}
+      {/* ── Bibliography Content Section ── */}
+      {/* Overlaps the header by -8 (negative top margin) for a layered card effect */}
       <Section className="-mt-8 relative z-20">
         <Container>
-          {/* Summary Stats Banner */}
+
+          {/* ── Summary Stats Banner ── */}
+          {/* Shows a count of sources and the WCAG verification badge for credibility */}
           <MotionReveal delay={0.1}>
             <div className="rounded-3xl border border-brand-blue/15 bg-white p-6 sm:p-8 shadow-xl backdrop-blur-xl mb-10 flex flex-col sm:flex-row items-center justify-between gap-6">
               <div className="flex items-center gap-4">
+                {/* Books emoji badge to visually reinforce the bibliography context */}
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-blue/10 text-brand-blue shrink-0 font-black text-2xl">
                   📚
                 </div>
@@ -196,55 +215,67 @@ export default function CitationsPage() {
                   </p>
                 </div>
               </div>
+              {/* WCAG compliance badge — confirms the site meets accessibility contrast standards */}
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold tracking-wider uppercase shrink-0">
                 <ShieldCheck className="w-4 h-4 text-green-600" /> WCAG 2.2 AA Verified
               </div>
             </div>
           </MotionReveal>
 
-          {/* Citations Grid */}
+          {/* ── Citations Grid ── */}
+          {/* Two-column responsive grid — each citation is a <motion.article> for semantic correctness */}
           <div className="grid gap-6 md:grid-cols-2" role="list" aria-label="List of works cited">
             {CITATIONS.map((cite, index) => {
+              // Resolve the icon component for this citation (falls back to FileText if unset)
               const IconComponent = cite.icon || FileText;
               return (
                 <motion.article
                   key={cite.id}
-                  id={cite.id}
+                  id={cite.id}             // Allows deep-linking to individual citation cards
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
+                  // Stagger each card's entrance animation by 50ms per index
                   transition={{ duration: 0.35, delay: index * 0.05 }}
                   className="group relative flex flex-col justify-between rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-sm hover:shadow-xl hover:border-brand-blue/30 transition-all duration-300"
                   role="listitem"
                 >
                   <div>
-                    {/* Category Tag & Icon */}
+                    {/* ── Citation Header: Category Tag + Access Date ── */}
                     <div className="flex items-center justify-between gap-2 mb-4">
+                      {/* Category chip — displays the icon and category name for quick scanning */}
                       <span className="inline-flex items-center gap-1.5 rounded-lg bg-brand-blue/5 px-3 py-1 text-xs font-bold text-brand-blue border border-brand-blue/10">
                         <IconComponent className="w-3.5 h-3.5" />
                         {cite.category}
                       </span>
+                      {/* Access date — required field for web-based MLA citations */}
                       <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                         Accessed {cite.accessDate}
                       </span>
                     </div>
 
-                    {/* MLA Citation Box */}
+                    {/* ── MLA Citation Box ── */}
+                    {/* Monospaced, selectable block so the judge can copy the citation directly */}
                     <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100 font-mono text-xs sm:text-sm text-slate-800 leading-relaxed pl-6 pl-indent">
+                      {/* Hanging indent applied via negative text-indent for proper MLA formatting */}
                       <p className="indent-[-1.5rem] select-all">
+                        {/* Optional author field — present for articles, absent for organizational sources */}
                         {cite.author && <span className="font-semibold">{cite.author}. </span>}
                         <span className="italic sm:not-italic font-bold text-slate-900">{cite.title} </span>
                         <span>{cite.publisher}, </span>
+                        {/* URL displayed in brand blue to signal it's a hyperlink when printed */}
                         <span className="text-brand-blue underline break-all">{cite.displayUrl}</span>
                         <span>. Accessed {cite.accessDate}.</span>
                       </p>
                     </div>
                   </div>
 
-                  {/* Action Link Footer */}
+                  {/* ── Card Footer: Publisher Name + External Link Button ── */}
                   <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between gap-4">
+                    {/* Truncated publisher name for compact display */}
                     <span className="text-xs font-semibold text-slate-500 line-clamp-1">
                       {cite.publisher}
                     </span>
+                    {/* External link opens the source URL in a new tab with security attributes */}
                     <a
                       href={cite.url}
                       target="_blank"
@@ -260,17 +291,20 @@ export default function CitationsPage() {
             })}
           </div>
 
-          {/* FBLA Compliance Notice Card */}
+          {/* ── FBLA Compliance Notice ── */}
+          {/* Dark card at the bottom confirming academic integrity for the judging panel */}
           <MotionReveal delay={0.3}>
             <div className="mt-12 rounded-3xl bg-gradient-to-r from-slate-900 to-[#062d78] p-8 text-white shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-white/10">
               <div className="space-y-2 max-w-2xl">
                 <h3 className="text-lg font-black text-brand-gold uppercase tracking-wider">
                   Academic Integrity & Fair Use Statement
                 </h3>
+                {/* Statement confirms all assets and libraries are credited per FBLA guidelines */}
                 <p className="text-sm text-slate-300 leading-relaxed font-medium">
                   All external libraries, graphic assets, design frameworks, and technical documentation referenced in this project are credited in accordance with Future Business Leaders of America (FBLA) competitive event guidelines and MLA citation standards.
                 </p>
               </div>
+              {/* External link to the official FBLA website for judge reference */}
               <a
                 href="https://www.fbla.org"
                 target="_blank"

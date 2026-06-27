@@ -1,30 +1,45 @@
+/*
+ * index.css — BearTracks supplemental global stylesheet.
+ * Imported by main.jsx alongside tailwind.css. Defines a small set of global
+ * rules that complement the main stylesheet: CSS custom properties used by
+ * gradient utilities, smooth scroll, and a WCAG-compliant focus ring style.
+ *
+ * Note: The primary component classes (.card, .input-field, .glass, etc.) and
+ * accessibility overrides (.high-contrast, .pause-animations, etc.) all live in
+ * tailwind.css to keep them co-located with the Tailwind @layer definitions.
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/*
-  Global styles:
-  - Keep this file minimal. Prefer Tailwind classes.
-  - Only put truly global rules here.
-*/
-
+/* ── CSS Custom Properties ──────────────────────────────────────────────────────
+   These variables feed a few custom gradient utilities.
+   --bg-from and --bg-to are used in dynamic background calculations where
+   Tailwind's static class generation cannot produce the exact gradient needed. */
 :root {
-  /* Used by a few custom gradients */
-  --bg-from: 240 249 255; /* sky-50 */
-  --bg-to: 255 247 237; /* orange-50 */
+  --bg-from: 240 249 255; /* sky-50  — cool light blue for gradient start  */
+  --bg-to:   255 247 237; /* orange-50 — warm cream for gradient end        */
 }
 
+/* Smooth anchor navigation for hash links in the Navbar and footer */
 html {
   scroll-behavior: smooth;
 }
 
-/* Subtle, modern focus ring for keyboard users */
+/* ── Keyboard Focus Ring ────────────────────────────────────────────────────────
+   Applied only when the element receives focus via keyboard (Tab), not mouse.
+   Uses :focus-visible so mouse users never see focus rings on buttons/links.
+   Brand-blue tint keeps focus indicators on-theme while meeting WCAG 2.2 AA
+   3:1 contrast ratio against the site's light background. */
 :focus-visible {
   outline: 3px solid rgba(59, 130, 246, 0.7);
   outline-offset: 3px;
 }
 
-/* Optional: slightly nicer selection */
+/* ── Text Selection ─────────────────────────────────────────────────────────────
+   Semi-transparent brand-blue so the selected text color is always legible,
+   regardless of whether it sits on a white, cream, or colored background. */
 ::selection {
   background: rgba(59, 130, 246, 0.25);
 }

@@ -1,4 +1,7 @@
-// SignupPage.jsx: Supabase authentication signup.
+// SignupPage.jsx: New account registration page for Bear Tracks.
+// Collects a display name, school email, and password, then creates a Supabase auth user.
+// On success, the user is redirected to the Submit page to make their first report.
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -11,20 +14,28 @@ import BearTracksLogo from "../BearTracksLogo.png";
 
 export default function SignupPage() {
   const navigate = useNavigate();
+
+  // Pull the signup function from AuthContext — it wraps Supabase's signUp method
   const { signup } = useAuth();
 
+  // Controlled input state for the three registration fields
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  // UI feedback state — error message and loading spinner control
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Handle the registration form submission
   async function onSubmit(e) {
     e.preventDefault();
-    setError("");
+    setError("");        // Reset any prior error messages before the new attempt
     setLoading(true);
     try {
+      // Create the Supabase auth user and store the display name in user_metadata
       await signup({ name, email, password });
+      // After successful signup, send the user straight to the Submit page
       navigate("/submit");
     } catch (err) {
       setError(err.message || "Signup failed.");
@@ -38,7 +49,10 @@ export default function SignupPage() {
       <Section className="py-8 sm:py-12">
         <Container>
           <div className="mx-auto max-w-[440px]">
+
+            {/* ── Page Header: Logo + Title ── */}
             <MotionReveal>
+              {/* Bear Tracks logo centered above the form */}
               <div className="flex justify-center mb-6">
                 <img
                   src={BearTracksLogo}
@@ -54,10 +68,14 @@ export default function SignupPage() {
               </p>
             </MotionReveal>
 
+            {/* ── Registration Form Card ── */}
+            {/* Glassmorphism card with gradient border using the 1px padding trick */}
             <MotionReveal delay={0.1}>
               <div className="mt-10 card overflow-hidden border border-brand-blue/30 p-1 shadow-2xl bg-gradient-to-br from-brand-blue/20 via-transparent to-brand-gold/15">
                 <div className="bg-brand-blue/5 backdrop-blur-xl rounded-[22px] p-8 sm:p-10">
                   <form onSubmit={onSubmit} className="grid gap-6">
+
+                    {/* Display name — stored in Supabase user_metadata as full_name */}
                     <div>
                       <label htmlFor="signup-name" className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
                         Name
@@ -73,6 +91,7 @@ export default function SignupPage() {
                       />
                     </div>
 
+                    {/* School email address — used as the Supabase auth identifier */}
                     <div>
                       <label htmlFor="signup-email" className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
                         Email
@@ -89,6 +108,7 @@ export default function SignupPage() {
                       />
                     </div>
 
+                    {/* Password — new-password autocomplete hint prevents browsers from autofilling a saved password */}
                     <div>
                       <label htmlFor="signup-password" className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
                         Password
@@ -105,6 +125,7 @@ export default function SignupPage() {
                       />
                     </div>
 
+                    {/* Inline error alert — animates in with a scale transition when signup fails */}
                     {error && (
                       <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
@@ -115,6 +136,7 @@ export default function SignupPage() {
                       </motion.div>
                     )}
 
+                    {/* Submit button — shows a loading label and disables during the async request */}
                     <motion.button
                       whileHover={{ scale: 1.01 }}
                       whileTap={{ scale: 0.99 }}
@@ -125,6 +147,7 @@ export default function SignupPage() {
                       {loading ? "Creating account" : "Create account"}
                     </motion.button>
 
+                    {/* Horizontal divider — separates the submit button from the secondary link */}
                     <div className="relative my-2">
                       <div
                         className="absolute inset-0 flex items-center"
@@ -134,6 +157,7 @@ export default function SignupPage() {
                       </div>
                     </div>
 
+                    {/* Login redirect — for users who already have an account */}
                     <p className="text-sm text-[#062d78] font-bold text-center">
                       Already have an account?{" "}
                       <Link

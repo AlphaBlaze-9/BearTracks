@@ -1,4 +1,9 @@
-// Navbar.jsx: Updated for multi-page routing.
+// Navbar.jsx: Sticky top navigation bar for BearTracks.
+// Features: brand logo, desktop nav links, accessibility widget, real-time notification bell
+// (match alerts, claim status, admin new-claim alerts), account dropdown (logout / delete),
+// and a mobile slide-down drawer. The header grows a shadow on scroll via useScrollShadow.
+// All menus close automatically when the route changes via the location effect.
+
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
@@ -14,36 +19,49 @@ import {
 import Container from "./Container.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useItems } from "../context/ItemsContext.jsx";
-import DeleteAccountModal from "./DeleteAccountModal.jsx"; // Kept for potential future use or if needed by logic
+import DeleteAccountModal from "./DeleteAccountModal.jsx";
 import AccessibilityWidget from "./AccessibilityWidget.jsx";
 
 import BearTracksLogo from "../BearTracksLogo.png";
 
 
+// ── cx (className utility) ────────────────────────────────────────────────────
+// Joins an arbitrary number of class strings, filtering out falsy values.
+// Keeps conditional className construction readable without a third-party library.
 function cx(...parts) {
   return parts.filter(Boolean).join(" ");
 }
 
+// ── useScrollShadow ───────────────────────────────────────────────────────────
+// Returns `true` when the page has scrolled past 8px, used to add a drop shadow
+// to the header so it visually "lifts" above the page content when scrolled.
 function useScrollShadow() {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
+    onScroll(); // Run once immediately to set the correct initial state
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
   return scrolled;
 }
 
+// ── Navbar ────────────────────────────────────────────────────────────────────
 export default function Navbar() {
   const { isAuthed, user, isAdmin, logout, deleteAccount } = useAuth();
   const { items, claims } = useItems();
   const scrolled = useScrollShadow();
-  const [isOpen, setIsOpen] = useState(false);
-  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
-  const [isNotifOpen, setIsNotifOpen] = useState(false);
-  // const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false) // Unused in provided code but keeping state if needed
-  const [isDeleting, setIsDeleting] = useState(false);
+
+  // ── UI State ───────────────────────────────────────────────────────────────
+  const [isOpen, setIsOpen] = useState(false);             // Mobile drawer open/closed
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false); // Account dropdown
+  const [isNotifOpen, setIsNotifOpen] = useState(false);   // Notification bell panel
+  const [isDeleting, setIsDeleting] = useState(false);     // Account deletion in-flight
+
+  // ── Read Notification IDs ─────────────────────────────────────────────────
+  // Persist which notifications the user has dismissed so the badge count is
+  // accurate across page loads. Keys: item IDs for match alerts, "claim_ID" for
+  // claim updates, and "admin_claim_ID" for admin new-claim alerts.
   const [readNotifs, setReadNotifs] = useState(() => {
     try {
       const saved = localStorage.getItem("read_notifications");
@@ -55,6 +73,8 @@ export default function Navbar() {
 
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
+  // handleLogout: calls AuthContext.logout, navigates home, and guards against
+  // double-clicks with the isLoggingOut flag.
   async function handleLogout() {
     if (isLoggingOut) return;
     setIsLoggingOut(true);
@@ -69,10 +89,17 @@ export default function Navbar() {
     }
   }
 
-  // Calculate notifications: Lost items matches, and Claim status updates
+  // ── Notification Computation ───────────────────────────────────────────────
+  // Builds an array of unread notifications from three sources:
+  //   1. Match alerts — items the user submitted that have AI-matched potential_matches
+  //   2. Claim status — the user's own claims that have been Approved or Denied
+  //   3. Admin alerts — all Pending claims (only shown to admins for review)
   const notifications =
     isAuthed && user
       ? [
+        // ── Match Alerts ───────────────────────────────────────────────────
+        // Shown only to the submitter of the lost/found item when the AI
+        // match-items function has found at least one candidate match.
         ...items
           .filter(
             (it) =>
@@ -80,16 +107,17 @@ export default function Navbar() {
               (it.status === "Lost" || it.status === "Found") &&
               it.potential_matches &&
               it.potential_matches.length > 0 &&
-              !readNotifs.includes(it.id),
+              !readNotifs.includes(it.id), // Skip already-dismissed alerts
           )
           .map((item) => ({ type: "match", item })),
 
-        // User notifications (Claim Approved/Denied)
+        // ── Claim Status Alerts ────────────────────────────────────────────
+        // Shown to the claimant once an admin has approved or denied their claim.
         ...claims
           .filter(
             (claim) =>
               claim.userId === user.id &&
-              claim.status !== "Pending" &&
+              claim.status !== "Pending" &&       // Only resolved claims trigger alerts
               !readNotifs.includes(`claim_${claim.id}`),
           )
           .map((claim) => ({
@@ -98,7 +126,8 @@ export default function Navbar() {
             item: items.find((i) => String(i.id) === String(claim.itemId)),
           })),
 
-        // Admin notifications (New Pending Claims)
+        // ── Admin New-Claim Alerts ─────────────────────────────────────────
+        // Shown exclusively to admins for every Pending claim awaiting review.
         ...(isAdmin
           ? claims
             .filter(
@@ -117,6 +146,8 @@ export default function Navbar() {
       ]
       : [];
 
+  // handleNotificationClick: marks a notification as read by adding its ID to
+  // the readNotifs array and persisting it to localStorage.
   function handleNotificationClick(itemId) {
     setIsNotifOpen(false);
     if (!readNotifs.includes(itemId)) {
@@ -125,27 +156,34 @@ export default function Navbar() {
       localStorage.setItem("read_notifications", JSON.stringify(newRead));
     }
   }
+
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Close the mobile menu when the route changes
+  // Close all open menus when the user navigates to a new route.
+  // This handles both link clicks and programmatic navigation.
   useEffect(() => {
     setIsOpen(false);
     setIsAccountMenuOpen(false);
   }, [location.pathname]);
 
+  // goHomeAndScroll: navigates to / then scrolls to a section anchor.
+  // If already on the home page, scrolls immediately without a route change.
   function goHomeAndScroll(id) {
     if (location.pathname === "/") {
       document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
       return;
     }
     navigate("/");
+    // Brief timeout allows the home page to mount before attempting the scroll
     setTimeout(
       () => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }),
       60,
     );
   }
 
+  // handleDeleteAccount: prompts the user with a native confirm dialog as a
+  // final safeguard before triggering the irreversible deleteAccount RPC.
   async function handleDeleteAccount() {
     const confirmed = window.confirm(
       "Are you sure? All your submitted items will be permanently deleted.",
@@ -165,6 +203,8 @@ export default function Navbar() {
     }
   }
 
+  // desktopLink: NavLink className factory — applies an active background pill
+  // when the link matches the current route.
   const desktopLink = ({ isActive }) =>
     cx(
       "rounded-full px-3 py-2 text-sm font-extrabold text-[#062d78] hover:bg-brand-gold/20 transition-colors",
@@ -180,6 +220,8 @@ export default function Navbar() {
     >
       <Container className="py-3">
         <div className="flex items-center justify-between">
+
+          {/* ── Brand Logo ───────────────────────────────────────────────── */}
           <Link to="/" className="flex items-center gap-2" aria-label="BearTracks Home">
             <img
               src={BearTracksLogo}
@@ -191,21 +233,14 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop nav */}
+          {/* ── Desktop Navigation ──────────────────────────────────────── */}
           <nav className="hidden items-center gap-2 md:flex" aria-label="Main Navigation">
-            <NavLink to="/" className={desktopLink} end>
-              Home
-            </NavLink>
-            <NavLink to="/browse" className={desktopLink}>
-              Browse
-            </NavLink>
-            <NavLink to="/submit" className={desktopLink}>
-              Submit
-            </NavLink>
-            <NavLink to="/citations" className={desktopLink}>
-              Citations
-            </NavLink>
+            <NavLink to="/" className={desktopLink} end>Home</NavLink>
+            <NavLink to="/browse" className={desktopLink}>Browse</NavLink>
+            <NavLink to="/submit" className={desktopLink}>Submit</NavLink>
+            <NavLink to="/citations" className={desktopLink}>Citations</NavLink>
 
+            {/* FAQ: scrolls to the #faq section on the HomePage */}
             <button
               type="button"
               onClick={() => goHomeAndScroll("faq")}
@@ -215,14 +250,17 @@ export default function Navbar() {
               FAQ
             </button>
 
+            {/* Claims link: only visible to authenticated admins */}
             {isAuthed && isAdmin && (
               <NavLink to="/claims" className={desktopLink}>
                 Claims
               </NavLink>
             )}
 
+            {/* Accessibility Widget: renders as a circular icon button in the navbar */}
             <AccessibilityWidget className="ml-2 flex items-center justify-center h-10 w-10 flex-shrink-0 flex-grow-0 rounded-full border border-brand-blue/20 bg-brand-blue/10 text-[#062d78] hover:bg-brand-blue/20 transition-all cursor-pointer shadow-sm" />
 
+            {/* ── Notification Bell (authenticated users only) ──────────── */}
             {isAuthed && (
               <div className="relative ml-2">
                 <button
@@ -232,6 +270,7 @@ export default function Navbar() {
                   className="relative flex items-center justify-center h-10 w-10 rounded-full border border-brand-blue/20 bg-brand-blue/10 text-[#062d78] hover:bg-brand-blue/20 transition-all"
                 >
                   <Bell className="w-5 h-5" strokeWidth={2} />
+                  {/* Red badge shows unread count; only rendered when count > 0 */}
                   {notifications.length > 0 && (
                     <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white border-2 border-white">
                       {notifications.length}
@@ -239,6 +278,7 @@ export default function Navbar() {
                   )}
                 </button>
 
+                {/* ── Notification Panel ──────────────────────────────────── */}
                 <AnimatePresence>
                   {isNotifOpen && (
                     <>
@@ -253,6 +293,7 @@ export default function Navbar() {
                         <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 border-b border-slate-100 mb-2">
                           Notifications
                         </div>
+
                         {notifications.length === 0 ? (
                           <div className="px-4 py-6 text-center text-sm text-slate-500 font-medium">
                             No new alerts
@@ -260,6 +301,9 @@ export default function Navbar() {
                         ) : (
                           <div className="max-h-64 overflow-y-auto flex flex-col gap-1">
                             {notifications.map((notif) => {
+
+                              // ── Match Notification ───────────────────────────
+                              // Links to the matched Found item's details page
                               if (notif.type === "match") {
                                 const { item } = notif;
                                 const matchedItemId = item.potential_matches[0].id;
@@ -267,9 +311,7 @@ export default function Navbar() {
                                   <Link
                                     key={`match_${item.id}`}
                                     to={`/items/${matchedItemId}`}
-                                    onClick={() =>
-                                      handleNotificationClick(item.id)
-                                    }
+                                    onClick={() => handleNotificationClick(item.id)}
                                     aria-label={`Match found (${Math.round((item.potential_matches[0].score || 0) * 100)}%): Possible match for "${item.title}"`}
                                     className="block rounded-xl bg-brand-blue/5 p-3 hover:bg-brand-blue/10 transition-colors"
                                   >
@@ -292,6 +334,10 @@ export default function Navbar() {
                                   </Link>
                                 );
                               }
+
+                              // ── Claim Status Notification ────────────────────
+                              // Shows Approved (green) or Denied (red) with optional
+                              // denial reason and pickup instructions for approvals.
                               if (notif.type === "claim") {
                                 const { claim, item } = notif;
                                 const isApproved = claim.status === "Approved";
@@ -299,38 +345,23 @@ export default function Navbar() {
                                   <Link
                                     key={`claim_${claim.id}`}
                                     to={`/items/${claim.itemId}`}
-                                    onClick={() =>
-                                      handleNotificationClick(
-                                        `claim_${claim.id}`,
-                                      )
-                                    }
+                                    onClick={() => handleNotificationClick(`claim_${claim.id}`)}
                                     aria-label={`Claim ${claim.status}: Your claim for "${item?.title || "an item"}" was ${claim.status.toLowerCase()}`}
                                     className={`block rounded-xl p-3 transition-colors ${isApproved ? "bg-green-50 hover:bg-green-100" : "bg-red-50 hover:bg-red-100"}`}
                                   >
                                     <div className="flex items-start gap-3">
-                                      <div
-                                        className={
-                                          isApproved
-                                            ? "text-green-600 pt-0.5"
-                                            : "text-red-600 pt-0.5"
-                                        }
-                                      >
+                                      <div className={isApproved ? "text-green-600 pt-0.5" : "text-red-600 pt-0.5"}>
                                         <Bell className="w-4 h-4" />
                                       </div>
                                       <div>
-                                        <div
-                                          className={`text-xs font-bold ${isApproved ? "text-green-800" : "text-red-800"}`}
-                                        >
+                                        <div className={`text-xs font-bold ${isApproved ? "text-green-800" : "text-red-800"}`}>
                                           Claim {claim.status}
                                         </div>
                                         <div className="text-xs text-slate-600 mt-0.5">
-                                          Your claim for "
-                                          {item?.title || "an item"}" was{" "}
-                                          {claim.status.toLowerCase()}.
+                                          Your claim for "{item?.title || "an item"}" was {claim.status.toLowerCase()}.
                                           {isApproved && (
                                             <span className="block mt-1 font-bold text-green-700">
-                                              Please pick it up at the Front
-                                              Office.
+                                              Please pick it up at the Front Office.
                                             </span>
                                           )}
                                           {!isApproved && claim.denialReason && (
@@ -344,17 +375,16 @@ export default function Navbar() {
                                   </Link>
                                 );
                               }
+
+                              // ── Admin New-Claim Notification ─────────────────
+                              // Shown only to admins; links to the /claims dashboard
                               if (notif.type === "admin_claim") {
                                 const { claim, item } = notif;
                                 return (
                                   <Link
                                     key={`admin_claim_${claim.id}`}
                                     to="/claims"
-                                    onClick={() =>
-                                      handleNotificationClick(
-                                        `admin_claim_${claim.id}`,
-                                      )
-                                    }
+                                    onClick={() => handleNotificationClick(`admin_claim_${claim.id}`)}
                                     aria-label={`New Claim Request: ${claim.name} filed a claim for "${item?.title || "an item"}"`}
                                     className="block rounded-xl bg-brand-orange/5 p-3 hover:bg-brand-orange/10 transition-colors"
                                   >
@@ -368,8 +398,7 @@ export default function Navbar() {
                                         </div>
                                         <div className="text-xs text-slate-600 mt-0.5">
                                           {claim.name} filed a claim for "
-                                          {item?.title || "an item"}". Review it
-                                          now.
+                                          {item?.title || "an item"}". Review it now.
                                         </div>
                                       </div>
                                     </div>
@@ -380,6 +409,7 @@ export default function Navbar() {
                           </div>
                         )}
                       </motion.div>
+                      {/* Invisible backdrop: clicking outside the panel closes it */}
                       <div
                         className="fixed inset-0 z-[-1]"
                         onClick={() => setIsNotifOpen(false)}
@@ -390,7 +420,9 @@ export default function Navbar() {
               </div>
             )}
 
+            {/* ── Auth Actions ─────────────────────────────────────────────── */}
             {!isAuthed ? (
+              // Unauthenticated: show Log In + Sign Up buttons
               <div className="ml-2 flex items-center gap-2">
                 <NavLink
                   to="/login"
@@ -406,6 +438,7 @@ export default function Navbar() {
                 </NavLink>
               </div>
             ) : (
+              // Authenticated: show account dropdown with user's name
               <div className="relative ml-3">
                 <button
                   onClick={() => setIsAccountMenuOpen(!isAccountMenuOpen)}
@@ -414,7 +447,9 @@ export default function Navbar() {
                   aria-expanded={isAccountMenuOpen}
                   className="flex items-center gap-3 rounded-full border border-brand-blue/20 bg-brand-blue/10 px-4 py-2 text-sm font-black text-[#062d78] hover:bg-brand-blue/20 transition-all"
                 >
+                  {/* Green pulse dot signals active session */}
                   <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                  {/* Display name from user_metadata, fall back to email prefix */}
                   {user.user_metadata?.full_name || user.email?.split("@")[0]}
                   <ChevronDown
                     className={cx(
@@ -424,6 +459,7 @@ export default function Navbar() {
                   />
                 </button>
 
+                {/* ── Account Dropdown Menu ─────────────────────────────────── */}
                 <AnimatePresence>
                   {isAccountMenuOpen && (
                     <>
@@ -438,6 +474,7 @@ export default function Navbar() {
                         <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                           Account
                         </div>
+                        {/* Log out action */}
                         <button
                           onClick={handleLogout}
                           disabled={isLoggingOut}
@@ -449,6 +486,7 @@ export default function Navbar() {
                           {isLoggingOut ? "Logging out" : "Log out"}
                         </button>
                         <div className="my-1 h-px bg-slate-100" />
+                        {/* Delete account action — red text signals destructive intent */}
                         <button
                           onClick={() => {
                             setIsAccountMenuOpen(false);
@@ -462,6 +500,7 @@ export default function Navbar() {
                           Delete Account
                         </button>
                       </motion.div>
+                      {/* Invisible backdrop to dismiss the dropdown on outside click */}
                       <div
                         className="fixed inset-0 z-[-1]"
                         onClick={() => setIsAccountMenuOpen(false)}
@@ -473,7 +512,8 @@ export default function Navbar() {
             )}
           </nav>
 
-          {/* Mobile menu button */}
+          {/* ── Mobile Menu Toggle ──────────────────────────────────────── */}
+          {/* Only rendered on screens narrower than the md breakpoint */}
           <button
             className="md:hidden rounded-xl border border-brand-blue/20 bg-brand-blue/10 px-3 py-2 text-sm font-black text-[#062d78] flex items-center gap-2"
             onClick={() => setIsOpen((s) => !s)}
@@ -487,7 +527,8 @@ export default function Navbar() {
         </div>
       </Container>
 
-      {/* Mobile drawer */}
+      {/* ── Mobile Drawer ─────────────────────────────────────────────────── */}
+      {/* Slides down below the header on small screens, auto-closes on route change */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -502,31 +543,11 @@ export default function Navbar() {
           >
             <Container className="py-3">
               <div className="flex flex-col gap-1">
-                <NavLink
-                  to="/"
-                  className="rounded-xl px-3 py-3 text-sm text-slate-700 hover:bg-brand-gold/15"
-                  end
-                >
-                  Home
-                </NavLink>
-                <NavLink
-                  to="/browse"
-                  className="rounded-xl px-3 py-3 text-sm text-slate-700 hover:bg-brand-gold/15"
-                >
-                  Browse
-                </NavLink>
-                <NavLink
-                  to="/submit"
-                  className="rounded-xl px-3 py-3 text-sm text-slate-700 hover:bg-brand-gold/15"
-                >
-                  Submit
-                </NavLink>
-                <NavLink
-                  to="/citations"
-                  className="rounded-xl px-3 py-3 text-sm text-slate-700 hover:bg-brand-gold/15"
-                >
-                  Citations
-                </NavLink>
+                {/* Mobile nav links — same destinations as the desktop nav */}
+                <NavLink to="/" className="rounded-xl px-3 py-3 text-sm text-slate-700 hover:bg-brand-gold/15" end>Home</NavLink>
+                <NavLink to="/browse" className="rounded-xl px-3 py-3 text-sm text-slate-700 hover:bg-brand-gold/15">Browse</NavLink>
+                <NavLink to="/submit" className="rounded-xl px-3 py-3 text-sm text-slate-700 hover:bg-brand-gold/15">Submit</NavLink>
+                <NavLink to="/citations" className="rounded-xl px-3 py-3 text-sm text-slate-700 hover:bg-brand-gold/15">Citations</NavLink>
 
                 <button
                   type="button"
@@ -537,6 +558,7 @@ export default function Navbar() {
                   FAQ
                 </button>
 
+                {/* Admin-only link to the claims dashboard */}
                 {isAuthed && isAdmin && (
                   <NavLink
                     to="/claims"
@@ -547,20 +569,17 @@ export default function Navbar() {
                 )}
 
                 <div className="my-1 border-t border-brand-blue/10"></div>
+
+                {/* Accessibility widget in mobile drawer — full-width button style */}
                 <AccessibilityWidget className="flex w-full items-center justify-center gap-2 rounded-xl border border-brand-blue/20 bg-brand-blue/5 px-3 py-3 text-sm font-bold text-[#062d78] hover:bg-brand-blue/10 transition-colors" />
 
+                {/* ── Mobile Auth Actions ──────────────────────────────────── */}
                 {!isAuthed ? (
                   <div className="mt-2 grid gap-2">
-                    <NavLink
-                      to="/login"
-                      className="rounded-xl border border-brand-orange/15 bg-white/60 px-3 py-3 text-center text-sm font-medium text-slate-900"
-                    >
+                    <NavLink to="/login" className="rounded-xl border border-brand-orange/15 bg-white/60 px-3 py-3 text-center text-sm font-medium text-slate-900">
                       Log in
                     </NavLink>
-                    <NavLink
-                      to="/signup"
-                      className="rounded-xl bg-brand-orange px-3 py-3 text-center text-sm font-medium text-white"
-                    >
+                    <NavLink to="/signup" className="rounded-xl bg-brand-orange px-3 py-3 text-center text-sm font-medium text-white">
                       Sign up
                     </NavLink>
                   </div>
@@ -575,6 +594,7 @@ export default function Navbar() {
                     >
                       {isLoggingOut ? "Logging out" : "Log out"}
                     </button>
+                    {/* Destructive action: red background to signal danger */}
                     <button
                       type="button"
                       onClick={() => {

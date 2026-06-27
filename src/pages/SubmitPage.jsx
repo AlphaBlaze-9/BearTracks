@@ -1,4 +1,9 @@
-// SubmitPage.jsx: Login-gated page for submitting lost/found items.
+// SubmitPage.jsx: Login-gated form for reporting a lost or found item.
+// Users choose between "Lost" and "Found" status, fill in item details, optionally
+// upload a photo, and submit the report to Supabase. After insertion, an AI matching
+// function is triggered asynchronously to look for similar items in the database.
+// Rapid demo-submission buttons are available for testing the matching algorithm.
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -14,6 +19,7 @@ import ti84Img from "../images/ti-84.jpg";
 import hoodieImg from "../images/black hoodie.webp";
 
 
+// Available category options for the item category dropdown
 const CATEGORIES = [
   "Electronics",
   "Clothing",
@@ -25,30 +31,42 @@ const CATEGORIES = [
 
 export default function SubmitPage() {
   const navigate = useNavigate();
+
+  // Authenticated user — required since this page is protected by ProtectedRoute
   const { user } = useAuth();
+
+  // refreshItems forces the global item list to resync with Supabase after a new insert
   const { refreshItems } = useItems();
 
-  const [status, setStatus] = useState("Lost");
+  // ── Form Field State ──
+  const [status, setStatus] = useState("Lost");         // "Lost" or "Found" toggle
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Electronics");
   const [location, setLocation] = useState("");
   const [date, setDate] = useState("");
-  const [imageDataUrl, setImageDataUrl] = useState(""); // For local preview
-  const [rawFile, setRawFile] = useState(null); // For Supabase upload
+  const [imageDataUrl, setImageDataUrl] = useState(""); // Base64 preview URL for the UI
+  const [rawFile, setRawFile] = useState(null);         // Original File object for Supabase Storage upload
+
+  // ── Async Submission State ──
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  // Quick submission for testing matching algorithm
+  // ─────────────────────────────────────────────────────────────
+  //  submitExample — Rapid Demo Submissions
+  //  Inserts a pre-defined lost or found item with a bundled image
+  //  to quickly demonstrate the AI matching algorithm during FBLA judging.
+  //  Four presets: calc-lost, calc-found, hoodie-lost, hoodie-found
+  // ─────────────────────────────────────────────────────────────
   async function submitExample(type) {
     if (loading) return;
     setLoading(true);
     setError("");
 
+    // Select the metadata template based on the demo type
     let itemData = {};
 
-    // Define example data
     if (type === "calc-lost") {
       itemData = {
         title: "TI-84 Plus Calculator",
@@ -88,8 +106,10 @@ export default function SubmitPage() {
     }
 
     try {
+      // Attempt to upload the bundled demo image to Supabase Storage
       let imageUrl = null;
       try {
+        // Pick the correct local asset based on the demo type
         const imgPath = type.includes("calc") ? ti84Img : hoodieImg;
         const res = await fetch(imgPath);
         const blob = await res.blob();
@@ -99,7 +119,7 @@ export default function SubmitPage() {
           { type: blob.type },
         );
 
-        // uploadImage uses user.id, let's gracefully fallback if absent
+        // Generate a random filename and upload under the user's ID folder
         const fileExt = file.name.split(".").pop();
         const fileName = `${Math.random()}.${fileExt}`;
         const filePath = `${user?.id || "test-user"}/${fileName}`;
@@ -110,14 +130,17 @@ export default function SubmitPage() {
 
         if (uploadError) throw uploadError;
 
+        // Retrieve the public URL for the uploaded image to store in the database row
         const { data: publicUrlData } = supabase.storage
           .from("lost-found-photos")
           .getPublicUrl(filePath);
         imageUrl = publicUrlData.publicUrl;
       } catch (uploadErr) {
+        // Image upload failure is non-fatal for demo submissions — log and continue
         console.error("Failed to upload example image:", uploadErr);
       }
 
+      // Insert the item record into the Supabase database
       const { data, error: dbError } = await supabase
         .from("lost_found_items")
         .insert([
@@ -133,9 +156,10 @@ export default function SubmitPage() {
 
       if (dbError) throw dbError;
 
+      // Force the global item list to refresh so the new post appears immediately
       await refreshItems();
 
-      // Trigger matching
+      // Fire-and-forget AI matching trigger — does not block the success redirect
       if (data && data[0] && data[0].id) {
         const FN_URL = "/.netlify/functions/match-items";
         fetch(FN_URL, {
@@ -145,10 +169,10 @@ export default function SubmitPage() {
         }).catch((err) => console.error("Matching trigger failed:", err));
       }
 
+      // Show success state and redirect to the browse page after 1.5 seconds
       setSuccess(true);
       setTimeout(() => {
         navigate("/browse");
-        // Reset success state after navigation so if they come back it's clean (though it unmounts usually)
         setSuccess(false);
         setLoading(false);
       }, 1500);
@@ -159,29 +183,43 @@ export default function SubmitPage() {
     }
   }
 
+  // ─────────────────────────────────────────────────────────────
+  //  uploadImage — Uploads a file to Supabase Storage
+  //  Returns the public URL of the uploaded image, or null if no file was provided.
+  //  Uses a random filename to avoid conflicts across multiple submissions.
+  // ─────────────────────────────────────────────────────────────
   async function uploadImage(file) {
     if (!file) return null;
+
+    // Build a unique file path: <userId>/<random>.<extension>
     const fileExt = file.name.split(".").pop();
     const fileName = `${Math.random()}.${fileExt}`;
     const filePath = `${user.id}/${fileName}`;
 
+    // Upload to the "lost-found-photos" storage bucket
     const { error: uploadError } = await supabase.storage
       .from("lost-found-photos")
       .upload(filePath, file);
 
     if (uploadError) throw uploadError;
 
+    // Fetch and return the permanent public URL for use in the database row
     const { data } = supabase.storage
       .from("lost-found-photos")
       .getPublicUrl(filePath);
     return data.publicUrl;
   }
 
+  // ─────────────────────────────────────────────────────────────
+  //  onSubmit — Primary form submission handler
+  //  Steps: validate → moderate → upload image → insert row → refresh → match → redirect
+  // ─────────────────────────────────────────────────────────────
   async function onSubmit(e) {
     e.preventDefault();
     setError("");
     setLoading(true);
 
+    // Basic field validation — title and description are required
     if (!title.trim()) {
       setLoading(false);
       return setError("Please add a title.");
@@ -191,25 +229,26 @@ export default function SubmitPage() {
       return setError("Please add a description.");
     }
 
-    // 0. Content moderation — check everything the user typed.
+    // Step 0: Run the content moderation check on all user-typed text fields
     const { flagged, reason } = await moderateFields([
       { label: "Title", value: title },
       { label: "Description", value: description },
       { label: "Location", value: location },
     ]);
+    // Block the submission if any field was flagged and show the reason to the user
     if (flagged) {
       setLoading(false);
       return setError(reason);
     }
 
     try {
-      // 1. Upload image if present
+      // Step 1: Upload the selected image to Supabase Storage (if one was chosen)
       let imageUrl = null;
       if (rawFile) {
         imageUrl = await uploadImage(rawFile);
       }
 
-      // 2. Insert into database
+      // Step 2: Insert the new item record into the `lost_found_items` Supabase table
       const { data, error: dbError } = await supabase
         .from("lost_found_items")
         .insert([
@@ -217,9 +256,9 @@ export default function SubmitPage() {
             title: title.trim(),
             description: description.trim(),
             category,
-            type: status, // Mapping 'Lost'/'Found' status to 'type' column
+            type: status,                                    // Maps "Lost"/"Found" to the `type` column
             location: location.trim(),
-            date_incident: date.trim() || null,
+            date_incident: date.trim() || null,             // Optional field — null if not provided
             image_url: imageUrl,
             user_id: user.id,
             submitter_name: user.user_metadata?.full_name || user.email,
@@ -229,12 +268,11 @@ export default function SubmitPage() {
 
       if (dbError) throw dbError;
 
-      // 3. Refresh global items list to ensure the new item is present
+      // Step 3: Refresh the global item list so the new post appears in browse immediately
       await refreshItems();
 
-      // 4. Trigger AI Matching (Async - don't await blocking the UI)
-      // We fire and forget, or we could await if we want to ensure it started.
-      // Ideally, a background trigger is better, but client-side invocation is requested.
+      // Step 4: Trigger the AI matching Netlify function asynchronously.
+      // We fire-and-forget here so the user is not waiting on the matching result.
       if (data && data[0] && data[0].id) {
         const FN_URL = "/.netlify/functions/match-items";
         fetch(FN_URL, {
@@ -244,7 +282,7 @@ export default function SubmitPage() {
         }).catch((err) => console.error("Matching trigger failed:", err));
       }
 
-      // 5. Success feedback
+      // Step 5: Show the success screen and redirect to browse after 2 seconds
       setSuccess(true);
       setTimeout(() => {
         navigate("/browse");
@@ -257,11 +295,14 @@ export default function SubmitPage() {
     }
   }
 
+  // ── Full-screen success interstitial ──
+  // Renders instead of the form while the redirect countdown is running
   if (success) {
     return (
       <div className="min-h-screen bg-hero flex items-center justify-center p-6">
         <MotionReveal>
           <div className="text-center card p-12 bg-brand-blue/10 backdrop-blur-3xl border border-brand-blue/30 shadow-2xl rounded-[3rem]">
+            {/* Large green checkmark signals successful submission */}
             <div className="inline-flex h-24 w-24 items-center justify-center rounded-[2rem] bg-green-500 text-white text-5xl mb-8 shadow-xl shadow-green-500/30">
               ✓
             </div>
@@ -282,12 +323,15 @@ export default function SubmitPage() {
       <Section className="pt-6 pb-10 sm:pt-10 sm:pb-16 text-center">
         <Container>
           <div className="mx-auto max-w-xl">
+
+            {/* ── Page Header ── */}
             <MotionReveal>
               <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
                 Report an <span className="text-brand-blue">item</span>
               </h1>
+              {/* Display the logged-in user's name or email as a confirmation they're authenticated */}
               <p className="mt-3 text-base text-slate-700 font-medium">
-                You’re signed in as{" "}
+                You're signed in as{" "}
                 <span className="font-bold text-brand-blue">
                   {user.user_metadata?.full_name || user.email}
                 </span>
@@ -295,7 +339,8 @@ export default function SubmitPage() {
               </p>
             </MotionReveal>
 
-            {/* DEV TOOLS: Rapid Submission Buttons */}
+            {/* ── Demo Rapid-Submit Buttons ── */}
+            {/* Four presets that each insert a complete item with an image for FBLA judging demos */}
             <MotionReveal delay={0.05}>
               <div className="mt-6 mb-2 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <button
@@ -325,9 +370,13 @@ export default function SubmitPage() {
               </div>
             </MotionReveal>
 
+            {/* ── Main Submission Form Card ── */}
             <MotionReveal delay={0.1}>
               <div className="mt-8 card overflow-hidden border border-brand-blue/20 p-1 shadow-2xl bg-gradient-to-br from-brand-blue/20 via-transparent to-brand-gold/15">
                 <div className="bg-brand-blue/5 backdrop-blur-2xl rounded-[20px] p-7 sm:p-9 text-left">
+
+                  {/* ── Status Toggle (Lost / Found) ── */}
+                  {/* Two equal-width buttons act as a toggle — the active one fills with brand-blue */}
                   <div className="flex gap-3 mb-8">
                     {["Lost", "Found"].map((s) => (
                       <button
@@ -348,8 +397,11 @@ export default function SubmitPage() {
                     ))}
                   </div>
 
+                  {/* ── Item Details Form ── */}
                   <form className="grid gap-6" onSubmit={onSubmit}>
                     <div className="grid gap-6 sm:grid-cols-2">
+
+                      {/* Title — full-width on all screen sizes */}
                       <div className="sm:col-span-2">
                         <label htmlFor="submit-title" className="text-sm font-bold text-slate-700 ml-1">
                           Title
@@ -364,6 +416,7 @@ export default function SubmitPage() {
                         />
                       </div>
 
+                      {/* Description — full-width textarea for identifying details */}
                       <div className="sm:col-span-2">
                         <label htmlFor="submit-description" className="text-sm font-bold text-slate-700 ml-1">
                           Description
@@ -379,6 +432,7 @@ export default function SubmitPage() {
                         />
                       </div>
 
+                      {/* Category dropdown — maps to the CATEGORIES constant defined above */}
                       <div>
                         <label htmlFor="submit-category" className="text-sm font-bold text-slate-700 ml-1">
                           Category
@@ -397,6 +451,7 @@ export default function SubmitPage() {
                         </select>
                       </div>
 
+                      {/* Location — optional field, stored as a plain text string */}
                       <div>
                         <label htmlFor="submit-location" className="text-sm font-bold text-slate-700 ml-1">
                           Location (optional)
@@ -410,6 +465,7 @@ export default function SubmitPage() {
                         />
                       </div>
 
+                      {/* Date — optional, stored as a string; placeholder changes based on Lost/Found status */}
                       <div>
                         <label htmlFor="submit-date" className="text-sm font-bold text-slate-700 ml-1">
                           Date (optional)
@@ -428,11 +484,14 @@ export default function SubmitPage() {
                       </div>
                     </div>
 
+                    {/* ── Photo Upload ── */}
+                    {/* ImagePicker provides a drag-and-drop or click-to-browse interface */}
                     <div className="mt-2" role="group" aria-label="Upload photos">
                       <label id="submit-photos" className="text-sm font-bold text-slate-700 ml-1">
                         Photos
                       </label>
                       <div className="mt-2" aria-labelledby="submit-photos">
+                        {/* `onChange` updates the local preview URL; `onFileSelect` stores the raw file for upload */}
                         <ImagePicker
                           value={imageDataUrl}
                           onChange={setImageDataUrl}
@@ -441,6 +500,7 @@ export default function SubmitPage() {
                       </div>
                     </div>
 
+                    {/* Inline error alert — shown for validation failures, moderation flags, or API errors */}
                     {error && (
                       <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
@@ -451,6 +511,7 @@ export default function SubmitPage() {
                       </motion.div>
                     )}
 
+                    {/* Submit button — animates on hover/tap; shows a spinner while the async steps run */}
                     <motion.button
                       whileHover={{ scale: 1.01 }}
                       whileTap={{ scale: 0.99 }}
@@ -459,11 +520,13 @@ export default function SubmitPage() {
                       className="mt-4 rounded-2xl bg-brand-blue px-6 py-5 text-sm font-extrabold text-white shadow-xl shadow-brand-blue/30 hover:bg-brand-blue-dark transition-all disabled:opacity-50"
                     >
                       {loading ? (
+                        // Spinner + label shown while the upload and database insert are in progress
                         <span className="flex items-center justify-center gap-2">
                           <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                           Submitting...
                         </span>
                       ) : (
+                        // Dynamic label — matches the selected Lost/Found status
                         `Submit ${status} report`
                       )}
                     </motion.button>

@@ -1,154 +1,148 @@
+/*
+ * tailwind.css — Primary stylesheet for BearTracks.
+ * This is the main CSS entrypoint imported by main.jsx. It contains:
+ *   • Tailwind base / components / utilities directives
+ *   • Brand CSS custom properties (colors)
+ *   • Global document defaults (body, html, focus, selection)
+ *   • Hero and section background gradient classes
+ *   • Reusable @layer component classes (.card, .input-field, .glass, etc.)
+ *   • Accessibility override classes controlled by AccessibilityWidget.jsx
+ *   • Skip-to-content link for keyboard navigation (WCAG 2.2 criterion 2.4.1)
+ *   • Utility helpers (.no-scrollbar used by BearBot suggestion chips)
+ *
+ * Naming convention: BEM-ish for multi-element components (e.g., .item-card__image),
+ * plain descriptive names for single-element utilities.
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ── Custom Utility Layer ───────────────────────────────────────────────────────
+   Placed in the `utilities` layer so it can be used alongside Tailwind classes
+   without specificity conflicts. */
 @layer utilities {
-  /* Custom utility used by .card — keeps shadows consistent and easy to tweak */
+  /* Custom shadow used by .card and .item-card — centralizes the drop-shadow
+     value so tweaking one line updates every card across the site. */
   .shadow-soft {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   }
 }
 
-/*
-  Global polish:
-  - Slightly smoother typography
-  - Consistent focus rings
-  - A soft background gradient + subtle noise
-*/
+/* ── Root Variables & Color Scheme ──────────────────────────────────────────────
+   CSS custom properties for the BearTracks brand palette.
+   These are referenced in gradient and focus styles below, and extended in
+   tailwind.config.js as `theme.extend.colors.brand-blue`, `brand-gold`, etc.
+   so Tailwind utilities like `text-brand-blue` and `bg-brand-gold` work throughout. */
 :root {
+  /* Force light-mode browser chrome (scrollbars, input controls) */
   color-scheme: light;
 
-  /*
-    Brand colors (from your provided scheme)
-    Using CSS vars keeps the gradient/focus styles easy to tweak in one place.
-  */
-  --brand-blue: #083796;
-  --brand-gold: #f49728;
-  --brand-orange: #fb904e;
+  --brand-blue:   #083796; /* Bridgeland navy — primary CTA, links, focus rings      */
+  --brand-gold:   #f49728; /* Bridgeland gold — accents, badges, active states       */
+  --brand-orange: #fb904e; /* Warm complement — used in hero & CTA gradients         */
 }
 
+/* ── Document Base ──────────────────────────────────────────────────────────────
+   Minimal global overrides. Component-specific styles use Tailwind classes. */
 html {
+  /* Smooth anchor scrolling for the Navbar's hash-link and Back-to-Top button */
   scroll-behavior: smooth;
-  /* Enables nice anchor scrolling for the navbar links */
 }
 
 body {
+  /* Light sky-blue tint base, anti-aliased text, OpenType feature flags for
+     cleaner numeral rendering in item dates and statistics. */
   @apply bg-[#eef6ff] text-slate-900 antialiased;
   font-feature-settings:
-    "ss01" on,
-    "ss02" on;
+    "ss01" on, /* Alternate digit style (Inter-specific) */
+    "ss02" on; /* Alternate punctuation (Inter-specific) */
 }
 
-/* A reusable focus style so keyboard navigation looks intentional */
+/* ── Focus Visible ──────────────────────────────────────────────────────────────
+   Applied only on keyboard focus (Tab), never on mouse click.
+   Brand gold at 90% opacity provides > 3:1 contrast against the site's
+   light background, satisfying WCAG 2.2 SC 1.4.11 (Non-text Contrast). */
 :focus-visible {
-  /* Use brand gold so keyboard focus matches the color scheme */
-  outline: 2px solid rgba(244, 151, 40, 0.9);
+  outline: 2px solid rgba(244, 151, 40, 0.9); /* --brand-gold */
   outline-offset: 3px;
   border-radius: 10px;
 }
 
-/* Ultra-vibrant brand palette (maximum saturation, ZERO white) */
+/* ── Text Selection ─────────────────────────────────────────────────────────────
+   Semi-transparent brand navy keeps text legible over any background color. */
+::selection {
+  background: rgba(8, 55, 150, 0.3); /* --brand-blue at 30% */
+  color: #000;
+}
+
+/* ── Hero Background ────────────────────────────────────────────────────────────
+   Used in Hero.jsx as the full-bleed page header background.
+   Three radial gradients layer brand-blue (top-left), brand-orange (top-right),
+   and brand-gold (bottom-center) over a warm linear gradient base — producing
+   the "glowing orb" effect without any raster images. */
 .bg-hero {
   background:
-    /* Brand glows - high opacity */
     radial-gradient(
       1200px 600px at 5% 5%,
-      rgba(8, 55, 150, 0.7),
+      rgba(8, 55, 150, 0.7),   /* Brand-blue glow anchored top-left */
       transparent 70%
     ),
     radial-gradient(
       1100px 600px at 95% 15%,
-      rgba(251, 144, 78, 0.6),
+      rgba(251, 144, 78, 0.6), /* Brand-orange glow anchored top-right */
       transparent 65%
     ),
     radial-gradient(
       1200px 700px at 50% 120%,
-      rgba(244, 151, 40, 0.5),
+      rgba(244, 151, 40, 0.5), /* Brand-gold glow rising from below the fold */
       transparent 70%
     ),
-    /* Saturated base wash - no white */
+    /* Warm-to-cream linear gradient base so no raw white appears */
     linear-gradient(to bottom, #d6e8ff 0%, #fff0d6 50%, #ffd8a8 100%);
 }
 
+/* ── Vibrant Section Backgrounds ────────────────────────────────────────────────
+   Three section background variants used on the homepage and stats sections.
+   Each stacks 4 radial gradients over a solid tint base to create rich,
+   multi-color depth without any images.
+   The ::after pseudo-element adds a subtle SVG noise texture for a premium feel. */
+
+/* Gold variant — warm amber base with orange/blue corner accents */
 .bg-vibrant-gold {
   position: relative;
   background:
-    radial-gradient(
-      circle at 0% 0%,
-      rgba(251, 144, 78, 0.45) 0%,
-      transparent 60%
-    ),
-    radial-gradient(
-      circle at 100% 0%,
-      rgba(244, 151, 40, 0.35) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 10% 90%,
-      rgba(8, 55, 150, 0.15) 0%,
-      transparent 40%
-    ),
-    radial-gradient(
-      circle at 80% 80%,
-      rgba(251, 144, 78, 0.25) 0%,
-      transparent 60%
-    ),
-    #ffd8a8;
+    radial-gradient(circle at 0% 0%,   rgba(251, 144, 78, 0.45) 0%, transparent 60%),
+    radial-gradient(circle at 100% 0%,  rgba(244, 151, 40, 0.35) 0%, transparent 50%),
+    radial-gradient(circle at 10% 90%,  rgba(8, 55, 150, 0.15)   0%, transparent 40%),
+    radial-gradient(circle at 80% 80%,  rgba(251, 144, 78, 0.25) 0%, transparent 60%),
+    #ffd8a8; /* Warm amber base */
 }
 
+/* Blue variant — cool sky base with blue/gold corner accents */
 .bg-vibrant-blue {
   position: relative;
   background:
-    radial-gradient(
-      circle at 100% 0%,
-      rgba(8, 55, 150, 0.35) 0%,
-      transparent 70%
-    ),
-    radial-gradient(
-      circle at 0% 20%,
-      rgba(244, 151, 40, 0.2) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 30% 80%,
-      rgba(59, 130, 246, 0.25) 0%,
-      transparent 60%
-    ),
-    radial-gradient(
-      circle at 90% 90%,
-      rgba(251, 144, 78, 0.15) 0%,
-      transparent 40%
-    ),
-    #d6e8ff;
+    radial-gradient(circle at 100% 0%,  rgba(8, 55, 150, 0.35)   0%, transparent 70%),
+    radial-gradient(circle at 0% 20%,   rgba(244, 151, 40, 0.20)  0%, transparent 50%),
+    radial-gradient(circle at 30% 80%,  rgba(59, 130, 246, 0.25)  0%, transparent 60%),
+    radial-gradient(circle at 90% 90%,  rgba(251, 144, 78, 0.15)  0%, transparent 40%),
+    #d6e8ff; /* Cool sky-blue base */
 }
 
+/* Mixed variant — neutral cream base with balanced blue/gold accents */
 .bg-vibrant-mixed {
   position: relative;
   background:
-    radial-gradient(
-      circle at 0% 0%,
-      rgba(8, 55, 150, 0.25) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 100% 0%,
-      rgba(244, 151, 40, 0.35) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 50% 100%,
-      rgba(251, 144, 78, 0.3) 0%,
-      transparent 60%
-    ),
-    radial-gradient(
-      circle at 0% 100%,
-      rgba(8, 55, 150, 0.1) 0%,
-      transparent 40%
-    ),
-    #fff5e6;
+    radial-gradient(circle at 0% 0%,    rgba(8, 55, 150, 0.25)   0%, transparent 50%),
+    radial-gradient(circle at 100% 0%,  rgba(244, 151, 40, 0.35)  0%, transparent 50%),
+    radial-gradient(circle at 50% 100%, rgba(251, 144, 78, 0.30)  0%, transparent 60%),
+    radial-gradient(circle at 0% 100%,  rgba(8, 55, 150, 0.10)   0%, transparent 40%),
+    #fff5e6; /* Soft cream base */
 }
 
-/* Subtle "Noise" overlay for extra texture and premium feel */
+/* Noise texture overlay: ultra-low-opacity SVG fractalNoise adds tactile depth.
+   pointer-events: none ensures it never blocks clicks on the section content. */
 .bg-vibrant-gold::after,
 .bg-vibrant-blue::after,
 .bg-vibrant-mixed::after {
@@ -160,100 +154,144 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3%3Ffilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
-/* Better default selection */
-::selection {
-  background: rgba(8, 55, 150, 0.3);
-  color: #000;
-}
-
+/* ── Reusable Component Classes ─────────────────────────────────────────────────
+   Placed in @layer components so they are overrideable by Tailwind utilities
+   applied directly in JSX (utility classes win over component classes). */
 @layer components {
-  /*
-    Shared form field styling.
-    Tinted bg to separate from the vibrant background.
-  */
+
+  /* ── Form Fields ────────────────────────────────────────────────────────────
+     Shared styling for <input>, <select>, and <textarea> elements.
+     Frosted-glass look (bg-white/85 + backdrop-blur) separates inputs from
+     the vibrant section backgrounds without losing the overall depth. */
   .input-field {
     @apply w-full rounded-2xl border border-brand-blue/20 bg-white/85 backdrop-blur px-4 py-3 text-sm focus:bg-white;
   }
 
+  /* Select variant — identical to input-field; kept separate so we can
+     add select-specific arrow styles in the future without touching inputs. */
   .select-field {
     @apply w-full rounded-2xl border border-brand-blue/20 bg-white/85 backdrop-blur px-4 py-3 text-sm focus:bg-white;
   }
 
+  /* ── Card ───────────────────────────────────────────────────────────────────
+     The general-purpose container for statistics, FAQ items, and form panels.
+     Brand-blue/5 background tint ties the card to the color palette while
+     keeping it visually distinct from pure white. */
   .card {
     @apply rounded-2xl border border-brand-blue/20 bg-brand-blue/5 backdrop-blur-md shadow-soft;
   }
 
+  /* ── Pill ───────────────────────────────────────────────────────────────────
+     Compact badge/chip used for filter chips and category labels. */
   .pill {
     @apply rounded-full border border-brand-blue/20 bg-brand-blue/5 backdrop-blur-sm px-4 py-2;
   }
 
-  /*
-    Optimized for item listings
-  */
+  /* ── Item Card ──────────────────────────────────────────────────────────────
+     Optimized card variant for the Browse page item grid.
+     The scale(1.01) hover lift gives a subtle interactive feel without
+     overshadowing the card's content on hover. */
   .item-card {
     @apply overflow-hidden rounded-3xl border border-brand-blue/20 bg-brand-blue/5 backdrop-blur-md shadow-soft transition-transform hover:scale-[1.01];
   }
 
+  /* Fixed aspect ratio image wrapper — ensures consistent card heights in the
+     grid regardless of whether the item photo is portrait or landscape. */
   .item-card__image {
     @apply aspect-[4/3] w-full overflow-hidden bg-brand-blue/10;
   }
 
+  /* ── Glass Variants ─────────────────────────────────────────────────────────
+     Frosted-glass surfaces for modals, dropdowns, and overlay panels. */
+
+  /* Light glass — bright white/40 tint, heavier blur, for light-on-light contexts */
   .glass-light {
     @apply bg-white/40 backdrop-blur-xl border border-white/20 shadow-soft;
   }
 
+  /* Standard glass — brand-blue tint, medium blur, for panels on colored backgrounds */
   .glass {
     @apply bg-brand-blue/5 backdrop-blur-md border border-brand-blue/10 shadow-soft;
   }
 }
 
-/* Respect user accessibility preference: reduce motion */
+/* ── Reduced Motion ─────────────────────────────────────────────────────────────
+   Disables smooth scrolling for OS-level "Reduce Motion" preference.
+   CSS animations are also collapsed in globals.css. Framer Motion is handled
+   separately via the `reducedMotion="user"` prop on MotionConfig in App.jsx. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 }
 
-/* Hide scrollbar but keep scrollability (used by BearBot suggestions) */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+/* ── Scrollbar Utility ──────────────────────────────────────────────────────────
+   Applied to BearBot's quick-suggestion chip row (.no-scrollbar) so users can
+   scroll horizontally through chips without a visible scrollbar cluttering the UI.
+   Both vendor-prefixed and standard properties are needed for cross-browser support. */
+.no-scrollbar::-webkit-scrollbar { display: none; }             /* Chrome / Safari */
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; } /* IE 11 / Firefox */
 
-/* Accessibility Overrides */
+/* ── Accessibility Overrides ────────────────────────────────────────────────────
+   These classes are toggled on <body> by AccessibilityWidget.jsx and are also
+   applied before React mounts by main.jsx (reading localStorage) to prevent
+   a flash of default styles on page reload. Each maps to an `accessAid_*`
+   localStorage key and a toggle in the AccessibilityWidget popover. */
+
+/* 1. High Contrast — boosts contrast and desaturates slightly for readability.
+      Applies a CSS filter to the entire document rather than individual elements
+      so every surface (images, gradients, text) is affected uniformly. */
 .high-contrast {
   filter: contrast(125%) saturate(125%) grayscale(20%) !important;
 }
+
+/* 2. Pause Animations — freezes all CSS animations and removes transitions.
+      Framer Motion animations are paused separately via MotionConfig on reload. */
 .pause-animations * {
   animation-play-state: paused !important;
   transition: none !important;
 }
+
+/* 3. Enhanced Focus Ring — replaces the default 2px gold outline with a bold
+      4px ring + translucent background so focus indicators are unmissable.
+      Satisfies WCAG 2.2 SC 2.4.11 (Focus Appearance — Enhanced). */
 .enhanced-focus *:focus-visible {
-  outline: 4px solid #f49728 !important; /* Brand gold */
+  outline: 4px solid #f49728 !important; /* Brand gold — high contrast on light bg */
   outline-offset: 4px !important;
   background-color: rgba(244, 151, 40, 0.1) !important;
 }
 
-/* Skip-to-content link: hidden until focused via keyboard (Tab) */
+/* ── Skip-to-Content Link ───────────────────────────────────────────────────────
+   Satisfies WCAG 2.2 SC 2.4.1 (Bypass Blocks). Rendered in App.jsx as the first
+   focusable element in the DOM. Visually hidden off-screen by default; slides
+   into view (top: 1rem) when the user presses Tab on page load, allowing keyboard
+   users and screen-reader users to jump straight to the main content area. */
 .skip-link {
   position: fixed;
-  top: -100px;
+  top: -100px;    /* Hidden above the viewport by default */
   left: 1rem;
-  z-index: 10000;
+  z-index: 10000; /* Above the Navbar (z-50) and all modals */
   padding: 0.75rem 1.25rem;
   border-radius: 0.75rem;
-  background: #062d78;
+  background: #062d78;  /* Deep brand navy — strong contrast with white text */
   color: #ffffff;
   font-weight: 800;
   font-size: 0.875rem;
   box-shadow: 0 10px 25px rgba(6, 45, 120, 0.35);
-  transition: top 0.2s ease;
+  transition: top 0.2s ease; /* Smooth slide down into the viewport */
 }
+/* Slide into view when focused; brand-gold outline makes it keyboard-navigable */
 .skip-link:focus {
   top: 1rem;
-  outline: 3px solid #f49728;
+  outline: 3px solid #f49728; /* Brand gold focus ring */
   outline-offset: 2px;
 }
 
-/* Larger Text: scale up most readable text site-wide */
+/* ── Larger Text ────────────────────────────────────────────────────────────────
+   Scales up the most-read text elements by ~12% using `em` units so the increase
+   compounds naturally with any existing font-size hierarchy.
+   Headings (h1-h6) are omitted — they're already large enough and scaling them
+   further would break layout on smaller screens. */
 .larger-text p,
 .larger-text li,
 .larger-text label,
@@ -263,24 +301,31 @@ body {
 .larger-text button,
 .larger-text a,
 .larger-text span {
-  font-size: 1.12em !important;
-  line-height: 1.6 !important;
+  font-size: 1.12em !important; /* ~12% increase relative to each element's base size */
+  line-height: 1.6 !important;  /* Slightly looser leading improves readability     */
 }
 
-/* Readable Font: switch to a high-legibility system sans, looser spacing */
+/* ── Readable Font ──────────────────────────────────────────────────────────────
+   Switches the entire page to Verdana/Tahoma — fonts designed for screen legibility
+   at small sizes — and loosens letter and word spacing to reduce crowding.
+   The wildcard selector ensures nested elements (e.g., inside Framer Motion wrappers)
+   also receive the font change. */
 .readable-font,
 .readable-font * {
   font-family: Verdana, Tahoma, "Trebuchet MS", Arial, sans-serif !important;
-  letter-spacing: 0.02em !important;
-  word-spacing: 0.05em !important;
+  letter-spacing: 0.02em !important; /* Slightly open tracking aids dyslexic readers */
+  word-spacing: 0.05em !important;   /* Small word gap reduces river patterns        */
 }
 
-/* Highlight Links: make links unmistakable for low-vision users */
+/* ── Highlight Links ────────────────────────────────────────────────────────────
+   Makes all anchor tags unmistakable for users with low vision or color deficiency.
+   Combines underline + bold weight + a warm amber background tint — three distinct
+   visual cues rather than relying on color alone (WCAG 2.2 SC 1.4.1). */
 .highlight-links a {
   text-decoration: underline !important;
   text-underline-offset: 3px !important;
   font-weight: 700 !important;
-  background-color: rgba(244, 151, 40, 0.18) !important;
+  background-color: rgba(244, 151, 40, 0.18) !important; /* Brand-gold tint */
   border-radius: 4px !important;
-  padding: 0 2px !important;
+  padding: 0 2px !important; /* Breathing room around the tint */
 }

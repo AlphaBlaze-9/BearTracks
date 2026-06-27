@@ -1,4 +1,8 @@
-// LoginPage.jsx: Supabase authentication login.
+// LoginPage.jsx: Supabase-backed authentication page for returning Bear Tracks users.
+// Handles email/password login, displays inline error messages, and redirects the user
+// back to their intended destination (or "/" by default) after a successful login.
+// Also exposes quick-login buttons for the two test accounts used in FBLA judging demos.
+
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -12,22 +16,30 @@ import BearTracksLogo from "../BearTracksLogo.png";
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Pull the login function from the global AuthContext
   const { login } = useAuth();
 
+  // Controlled form field values
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  // UI state for async login feedback
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Capture the page the user was trying to reach before being redirected to login.
+  // After a successful login, they'll be sent back there instead of always going to "/".
   const from = location.state?.from || "/";
 
+  // Handle the main login form submission
   async function onSubmit(e) {
     e.preventDefault();
-    setError("");
+    setError("");       // Clear any previous error before retrying
     setLoading(true);
     try {
       await login({ email, password });
-      navigate(from);
+      navigate(from);   // Return user to their originally intended destination
     } catch (err) {
       setError(err.message || "Login failed.");
     } finally {
@@ -35,6 +47,7 @@ export default function LoginPage() {
     }
   }
 
+  // Pre-fill and submit credentials for a demo account — used during FBLA judging
   async function handleTestLogin(testEmail, testPassword) {
     setError("");
     setLoading(true);
@@ -53,7 +66,10 @@ export default function LoginPage() {
       <Section className="py-4 sm:py-8">
         <Container>
           <div className="mx-auto max-w-[440px]">
+
+            {/* ── Page Header: Logo + Title ── */}
             <MotionReveal>
+              {/* Bear Tracks logo centered above the form card */}
               <div className="flex justify-center mb-6">
                 <img
                   src={BearTracksLogo}
@@ -69,10 +85,14 @@ export default function LoginPage() {
               </p>
             </MotionReveal>
 
+            {/* ── Login Form Card ── */}
+            {/* Glassmorphism card with a gradient border using a 1px padding trick */}
             <MotionReveal delay={0.1}>
               <div className="mt-10 card overflow-hidden border border-brand-blue/30 p-1 shadow-2xl bg-gradient-to-br from-brand-blue/20 via-transparent to-brand-gold/15">
                 <div className="bg-brand-blue/5 backdrop-blur-xl rounded-[22px] p-8 sm:p-10">
                   <form onSubmit={onSubmit} className="grid gap-6">
+
+                    {/* Email input — uses autocomplete="email" for browser autofill support */}
                     <div>
                       <label htmlFor="login-email" className="text-xs font-black text-[#062d78] ml-1 uppercase tracking-widest">
                         Email
@@ -89,11 +109,13 @@ export default function LoginPage() {
                       />
                     </div>
 
+                    {/* Password input — includes a "Forgot password?" link aligned to the right of the label */}
                     <div>
                       <div className="flex items-center justify-between ml-1">
                         <label htmlFor="login-password" className="text-xs font-black text-[#062d78] uppercase tracking-widest">
                           Password
                         </label>
+                        {/* Forgot password link — navigates to the password reset request page */}
                         <Link
                           to="/forgot-password"
                           className="text-xs font-bold text-[#ea580c] hover:text-[#c2410c] transition-colors"
@@ -113,6 +135,7 @@ export default function LoginPage() {
                       />
                     </div>
 
+                    {/* Inline error alert — animates in with a scale transition when an auth error occurs */}
                     {error && (
                       <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
@@ -123,6 +146,7 @@ export default function LoginPage() {
                       </motion.div>
                     )}
 
+                    {/* Submit button — disabled and shows "Logging in" during the async request */}
                     <motion.button
                       whileHover={{ scale: 1.01 }}
                       whileTap={{ scale: 0.99 }}
@@ -133,6 +157,7 @@ export default function LoginPage() {
                       {loading ? "Logging in" : "Log in"}
                     </motion.button>
 
+                    {/* Horizontal divider — visually separates the main form from secondary links */}
                     <div className="relative my-2">
                       <div
                         className="absolute inset-0 flex items-center"
@@ -142,8 +167,9 @@ export default function LoginPage() {
                       </div>
                     </div>
 
+                    {/* Sign-up redirect — sends new users to the account creation page */}
                     <p className="text-sm text-[#062d78] font-bold text-center">
-                      Don’t have an account?{" "}
+                      Don't have an account?{" "}
                       <Link
                         to="/signup"
                         className="font-bold text-[#ea580c] hover:text-[#c2410c] transition-colors duration-300"
@@ -152,6 +178,7 @@ export default function LoginPage() {
                       </Link>
                     </p>
 
+                    {/* Divider with "Test Accounts" label for the demo login section */}
                     <div className="relative my-2">
                       <div
                         className="absolute inset-0 flex items-center"
@@ -166,7 +193,10 @@ export default function LoginPage() {
                       </div>
                     </div>
 
+                    {/* ── FBLA Demo Quick-Login Buttons ── */}
+                    {/* Two pre-configured accounts: one standard user, one admin (director) */}
                     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      {/* Standard user account — can browse items, submit reports, and file claims */}
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -182,6 +212,7 @@ export default function LoginPage() {
                       >
                         Test User Login
                       </motion.button>
+                      {/* Admin account — can access the Claims Workspace and resolve pending claims */}
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
